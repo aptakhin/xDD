@@ -1,7 +1,13 @@
 /** xDDTools */
 #include "xdd/common.hpp"
+#include <QMessageBox>
 
 namespace xdd {
+
+void not_implemented(const QString& msg)
+{
+	QMessageBox::critical(nullptr, "Not implemented", msg);
+}
 
 namespace helper {
 
@@ -148,7 +154,7 @@ namespace helper {
 
 	uint64 get_ms_time()
 	{
-	#ifdef Q_OS_WIN32
+	#ifdef XDD_WIN32_CODE
 		return (uint64)GetTickCount();
 	#else
 	#	error "get_ms_time isn't implemented on this platform"

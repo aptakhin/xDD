@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	enable_cleaning_tab(false);
 
-#ifndef Q_OS_WIN32
+#ifdef XDD_UNIVERSAL_CODE
 	ui->move_to_recycle_opt->hide();
 	ui->move_to_recycle_opt->setCheckable(false);
 	ui->move_to_recycle_opt->setChecked(false);

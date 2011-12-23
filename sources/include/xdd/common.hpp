@@ -25,10 +25,27 @@
 #	undef min
 #	undef max
 #
-#	define XDD_WIN32_SCANNER
 #else
-#	define XDD_UNIVERSAL_SCANNER
+#
+#	define XDD_UNIVERSAL_CODE
+#
 #endif//#ifdef Q_OS_WIN32
+
+#ifdef XDD_UNIVERSAL_CODE
+#
+#	define XDD_UNIVERSAL_SCANNER
+#
+#else 
+#
+#	ifdef Q_OS_WIN32
+#		define XDD_WIN32_CODE
+#	endif
+#
+#endif
+
+#ifdef XDD_WIN32_CODE
+#	define XDD_WIN32_SCANNER
+#endif
 
 #ifdef XDD_WIN32_SCANNER
 	typedef WIN32_FIND_DATA file_data;
@@ -104,6 +121,8 @@ XDD_INLINE bool relation(const T& a, const T& b, Sort_order order)
 {
 	return order == S_ASCENDING? a < b: a > b;
 }
+
+void not_implemented(const QString& msg = "yet");
 
 namespace helper
 {

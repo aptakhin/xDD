@@ -152,7 +152,7 @@ void Clean_manager::make_clean_rec(File* file, Action action)
 
 void Clean_manager::move_file_to_recycle_bin(File* file)
 {
-#ifdef Q_OS_WIN32
+#ifdef XDD_WIN32_CODE
 	WCHAR path[MAX_PATH + 1] = L"";
 	size_t len = 0;
 	fs()->full_path_of(*file, path, &len);
@@ -169,31 +169,31 @@ void Clean_manager::move_file_to_recycle_bin(File* file)
     fileop.lpszProgressTitle = NULL;
     SHFileOperationW(&fileop);
 #else
-#	error "Can't delete files on this platform!"
-#endif//#ifdef Q_OS_WIN32
+	not_implemented("Can't delete files on this platform!");
+#endif//#ifdef XDD_WIN32_CODE
 }
 void Clean_manager::remove_file(File* file)
 {
-#ifdef Q_OS_WIN32
+#ifdef XDD_WIN32_CODE
 	String tmp;
 	fs()->full_path_of(*file, tmp);
 	const wchar_t* path = tmp.c_str();
 	DeleteFile(path);
 #else
-#	error "Can't move to recycle bin on this platform!"
-#endif//#ifdef Q_OS_WIN32
+	not_implemented("Can't move to recycle bin on this platform!");
+#endif//#ifdef XDD_WIN32_CODE
 }
 
 void Clean_manager::remove_directory(File* file)
 {
-#ifdef Q_OS_WIN32
+#ifdef XDD_WIN32_CODE
 	String tmp;
 	fs()->full_path_of(*file, tmp);
 	const wchar_t* path = tmp.c_str();
 	RemoveDirectory(path);
 #else
-#	error "Can't move to recycle bin!"
-#endif//#ifdef Q_OS_WIN32
+	not_implemented("Can't move to recycle bin!");
+#endif//#ifdef XDD_WIN32_CODE
 }
 
 File_system* Clean_manager::fs()
