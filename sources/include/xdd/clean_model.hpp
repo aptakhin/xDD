@@ -50,7 +50,7 @@ protected:
 
 	bool remove_item_at(int row, const QModelIndex& index);
 
-	void sort_rec(File* node, int column, Qt::SortOrder order);
+	static void sort_rec(File* node, int column, Qt::SortOrder order);
 
 	void write_cleaning_files_qt_str(const File* node, const QString& separator, QString& cleaning_files) const;
 

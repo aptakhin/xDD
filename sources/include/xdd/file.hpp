@@ -105,14 +105,6 @@ public:
 	bool has_for_delete_cache() const;
 	bool update_has_for_delete_cache_rec() const;
 
-	template <typename Acc, typename T>
-	Acc deleted_children_accum(Acc accumulate, T fun) const
-	{
-		for (Files::const_iterator i = _to_delete.begin(); i != _to_delete.end(); ++i)
-			accumulate(fun(File_system::i()->file_with_id(*i)));
-		return accumulate;
-	}
-
 	template <typename T>
 	bool deleted_children_if_any(T fun) const
 	{

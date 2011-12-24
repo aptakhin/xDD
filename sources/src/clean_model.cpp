@@ -73,10 +73,11 @@ uint64 Clean_model::Calculate_free_size() const
 	if (!_free_size_valid)
 	{
 	#ifdef XDD_CPP11
-		auto acc = _pseudo_root.deleted_children_accum(Numeric_accum<uint64>(), [] (const File* file) {
-			return file->size();
+		uint64 size = 0;
+		files_each(_pseudo_root.children(), [&size] (const File* file) {
+			size += file->size();
 		});
-		_free_size = acc();
+		_free_size = size;
 	#else
 		_free_size = 0;
 		size_t i = 0, sz = _pseudo_root.num_files_to_delete();
@@ -145,15 +146,15 @@ QModelIndex Clean_model::parent(const QModelIndex& index) const
 		return QModelIndex();
 
     const File* child = assoc_file(index);
-	const File* p = parent(child);
+	const File* model_parent = parent(child);
 
-	if (p->is_root())
+	if (model_parent->is_root())
          return QModelIndex();
 
 	size_t row = 0;
-	const File* parent_of_parent = p->parent();
-	row = parent_of_parent->number_of_deleted(p);
-	return createIndex((int)row, 0, (void*)p);
+	const File* parent_of_parent = model_parent->parent();
+	row = parent_of_parent->number_of_deleted(model_parent);
+	return createIndex((int)row, 0, (void*)model_parent);
 }
 
 QModelIndex	Clean_model::index(int row, int column, const QModelIndex& parent) const
@@ -270,18 +271,24 @@ void Clean_model::sort_rec(File* node, int column, Qt::SortOrder order)
 
 	switch (column)
 	{
-	case C_NAME:	field = File::F_NAME; break;
-	case C_SIZE:	field = File::F_SIZE; break;
-	case C_REASON:	field = File::F_DELETE_REASON; break;
+	case Clean_model::C_NAME:	field = File::F_NAME; break;
+	case Clean_model::C_SIZE:	field = File::F_SIZE; break;
+	case Clean_model::C_REASON:	field = File::F_DELETE_REASON; break;
 	}
 
 	node->sort_marked_for_delete(field, from_qt(order));
 
+#ifdef XDD_CPP11
+	to_delete_each_rec(node, [column, order] (const File* child) {
+		sort_rec(const_cast<File*>(child), column, order);
+	});
+#else
 	size_t i = 0, sz = node->num_files_to_delete();
 	for (; i < sz; ++i)
 	{
 		sort_rec(node->i_file_to_delete(i), column, order);
 	}
+#endif
 }
 
 void Clean_model::write_cleaning_files_qt_str(const QString& separator, QString& cleaning_files) const
@@ -292,15 +299,15 @@ void Clean_model::write_cleaning_files_qt_str(const QString& separator, QString&
 
 void Clean_model::write_cleaning_files_qt_str(const File* node, const QString& separator, QString& cleaning_files) const
 {
-	#ifdef XDD_CPP11
-		auto acc = node->deleted_children_accum(Object_accum<QString>(), [&separator] (const File* file) {
-			return File_system::i()->full_path_of(*file) + separator;
-		});
-
-	#else
-	#	error "I'm too lazy"
-	#endif//#ifdef XDD_CPP11
-	cleaning_files += acc.value();
+#ifdef XDD_CPP11
+	QString acc;
+	files_each(node->files_to_delete(), [&acc, &separator] (const File* file) {
+		acc += File_system::i()->full_path_of(*file) + separator;
+	});
+	cleaning_files = acc;
+#else
+#	error "I'm too lazy"
+#endif//#ifdef XDD_CPP11
 }
 
 } // namespace xdd
