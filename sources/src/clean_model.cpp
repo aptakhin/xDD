@@ -25,10 +25,10 @@ void Clean_model::notify_scan_started()
 	_ready = false;
 }
 
-void Clean_model::notify_scan_finished(const File_system& fs)
+void Clean_model::notify_scan_finished()
 {
 	_ready = true;
-	reset(fs);
+	reset();
 }
 
 File* Clean_model::assoc_file(const QModelIndex& index)
@@ -49,10 +49,10 @@ const File* Clean_model::parent(const File* file) const
 		return file->parent();
 }
 
-void Clean_model::reset(const File_system& fs)
+void Clean_model::reset()
 {
 	_pseudo_root._remove_all_children_from_delete_list();
-	reset_node_rec(fs.root());
+	reset_node_rec(File_system::i()->root());
 	_free_size_valid = false;
 }
 
@@ -68,13 +68,13 @@ void Clean_model::reset_node_rec(const File* node)
 	}
 }
 
-uint64 Clean_model::Calculate_free_size() const
+uint64 Clean_model::calculate_free_size() const
 {
 	if (!_free_size_valid)
 	{
 	#ifdef XDD_CPP11
 		uint64 size = 0;
-		files_each(_pseudo_root.children(), [&size] (const File* file) {
+		files_each(_pseudo_root.files_to_delete(), [&size] (const File* file) {
 			size += file->size();
 		});
 		_free_size = size;

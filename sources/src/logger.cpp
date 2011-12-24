@@ -21,8 +21,6 @@ Logger::~Logger()
         "Problem while deleting logger! Another singleton was created!",
             return);
 
-	XDD_LOG("Exited normally");
-
     Logger::_instance = 0;
 }
 
@@ -61,21 +59,19 @@ void Logger::write_header(Message msg)
 	}
 }
 
-std::ofstream& Logger::write_content()
+std::ostream& Logger::write_content()
 {
 	return _log;
 }
 
-std::ofstream& Logger::write_line() 
+std::ostream& Logger::write_line() 
 {
-	_log << "--------------------------------------------------------------------------------" << std::endl;
-	return _log;
+	return _log << "--------------------------------------------------------------------------------" << std::endl;
 }
 
 std::ostream& operator << (std::ostream& out, const QString& str)
 {
-	out << qPrintable(str);
-	return out;
+	return out << qPrintable(str);
 }
 
 }// namespace xdd

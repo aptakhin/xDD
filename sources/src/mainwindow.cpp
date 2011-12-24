@@ -47,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
 	bind_slots();
+
+	XDD_LOG("Interface successully initalized");
 }
 	
 MainWindow::~MainWindow()
@@ -131,7 +133,7 @@ void MainWindow::enable_cleaning_tab(bool enable)
 {
 	QString msg = "";
 	if (!enable)
-		msg = "Run the Scanner before selecting files";
+		msg = "Run the scanner before selecting files";
 
 	ui->scanner_tab_next->setEnabled(enable);
 	ui->scanner_tab_next->setToolTip(msg);
@@ -149,7 +151,7 @@ void MainWindow::scan_finished()
 		QString("\nFree disk size: ") + helper::format_size(Scan_manager::i()->fs_stat()->free_disk_size())
 	);
 	_files_model->notify_scan_finished();
-	_clean_model->notify_scan_finished(*Scan_manager::i()->fs());
+	_clean_model->notify_scan_finished();
 	update_clean_btn_access();
 
 	enable_cleaning_tab(true);
@@ -159,6 +161,8 @@ void MainWindow::scan_finished()
 
 	ui->clean->reset();
 	ui->clean->setColumnWidth(Files_model::C_NAME, 400);
+
+	update_clean();
 }
 
 void MainWindow::show_file_dlg()
@@ -204,20 +208,20 @@ void MainWindow::scan_updated()
 
 void MainWindow::update_clean()
 {
-	_clean_model->reset(*Scan_manager::i()->fs());
+	_clean_model->reset();
 	ui->clean->reset();
 	clean_updated();
 }
 
 void MainWindow::clean_updated()
 {
-	update_clean_btn_access();// Enable Clean button or disable it
+	update_clean_btn_access();// Enable clean button or disable it
 
 	// Show some statistics
 	QString new_stat = QString() +
-		"Bytes will be free: " + helper::format_size(_clean_model->Calculate_free_size()) +
+		"Bytes will be free: " + helper::format_size(_clean_model->calculate_free_size()) +
 		"\nTotal free disk size will be: " + 
-		helper::format_size(Scan_manager::i()->fs_stat()->free_disk_size() + _clean_model->Calculate_free_size());
+		helper::format_size(Scan_manager::i()->fs_stat()->free_disk_size() + _clean_model->calculate_free_size());
 
 	// update info in both tabs
 	ui->new_stat->setText(new_stat);
@@ -249,7 +253,7 @@ void MainWindow::clean_btn_clicked()
 	QString what_really = ui->move_to_recycle_opt->isChecked()? 
 		"move files to Recycle Bin" : "erase files";
 	submitBox.setInformativeText(QString() + "Do you realy want to " + what_really + " with " +
-		helper::format_size(_clean_model->Calculate_free_size()) + " volume?");
+		helper::format_size(_clean_model->calculate_free_size()) + " volume?");
 	submitBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 	submitBox.setDefaultButton(QMessageBox::No);
 	int button = submitBox.exec();

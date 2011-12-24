@@ -26,12 +26,12 @@ public:
 		C_REASON,
 	};
 
-	void reset(const File_system& fs);
+	void reset();
 
 	void notify_scan_started();
-	void notify_scan_finished(const File_system& fs);
+	void notify_scan_finished();
 
-	uint64 Calculate_free_size() const;
+	uint64 calculate_free_size() const;
 
 	bool empty() const { return !_pseudo_root.has_files_to_delete(); }
 

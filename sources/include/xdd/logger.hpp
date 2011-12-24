@@ -23,11 +23,11 @@ public:
 
 	void write_header(Message msg);
 	void wh(Message msg = M_DEFAULT) { write_header(msg); } 
-	std::ofstream& write_content();
-	std::ofstream& wc() { return write_content(); }
+	std::ostream& write_content();
+	std::ostream& wc() { return write_content(); }
 
-	std::ofstream& write_line();
-	std::ofstream& wl() { return write_line(); }
+	std::ostream& write_line();
+	std::ostream& wl() { return write_line(); }
 
 protected:
 	static Logger* _instance;
