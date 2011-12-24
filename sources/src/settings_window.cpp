@@ -38,8 +38,7 @@ void Settings_window::init_filters()
 
 void Settings_window::install_filter_view(Filter_view* view)
 {
-	_ui->filters_box->addItem(static_cast<QWidget*>(view), 
-		QString::fromStdWString(view->filter()->name()));
+	_ui->filters_box->addItem(static_cast<QWidget*>(view), view->filter()->name());
 }
 	
 Settings_window::~Settings_window()

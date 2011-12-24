@@ -61,15 +61,21 @@ void Logger::write_header(Message msg)
 	}
 }
 
-std::wofstream& Logger::write_content()
+std::ofstream& Logger::write_content()
 {
 	return _log;
 }
 
-std::wofstream& Logger::write_line() 
+std::ofstream& Logger::write_line() 
 {
 	_log << "--------------------------------------------------------------------------------" << std::endl;
 	return _log;
+}
+
+std::ostream& operator << (std::ostream& out, const QString& str)
+{
+	out << qPrintable(str);
+	return out;
 }
 
 }// namespace xdd

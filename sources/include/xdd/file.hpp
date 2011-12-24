@@ -7,8 +7,8 @@
 
 namespace xdd {
 
-const String EMPTY_STR = L"";
-const String USER_WANTS_STR = L"User selected";
+const QString EMPTY_STR = "";
+const QString USER_WANTS_STR = "User selected";
 
 class File
 {
@@ -35,13 +35,13 @@ public:
 public:
     File();
     File(const File& cpy);
-    File(File::ID parent, const String& name, Type type);
+    File(File::ID parent, const QString& name, Type type);
 	File(File::ID parent, const wchar_t* name, size_t len, Type type);
 	~File();
 
     void operator = (const File& cpy);
 
-	const String& name() const { return _name; }
+	const QString& name() const { return _name; }
 	File::ID Id() const { return _id; }
 
     bool is_root() const { return _parent == (ID)-1; }
@@ -74,9 +74,9 @@ public:
 		empty string means not to delete. Other values show the reason of deleting.
 		Remember that File doesn't copy string to object, it just saves pointer to string!
 		Don't push there nullptr pointer! Valid pointer object must be pushed. */
-	void mark_for_delete(const String* reason);
+	void mark_for_delete(const QString* reason);
 
-	const String& delete_reason() const { return *_reason_delete; }
+	const QString& delete_reason() const { return *_reason_delete; }
 
 	bool for_delete() const;
 
@@ -141,7 +141,7 @@ protected:
 	friend class File_system;
 
 	/// Only parent can call this
-	void _parent_marks_for_delete(const String& reason);
+	void _parent_marks_for_delete(const QString& reason);
 
     void _set_id(File::ID id) { _id = id; }
 
@@ -150,14 +150,14 @@ protected:
 protected:
     File::ID _parent;
     File::ID _id;
-    String _name;
+    QString _name;
     Type _type;
 
     uint64 _size;
 
     Files _children;
 
-	const String* _reason_delete;
+	const QString* _reason_delete;
 
 	mutable QIcon _icon_cache;
 

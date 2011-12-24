@@ -56,9 +56,7 @@ bool Scan_manager::is_scan_finished() const
 void Scan_manager::prepare_for_scan()
 {
 	if (!_fs)
-	{
 		_fs = new File_system;
-	}
 	else
 		_fs->flush_and_ready_async();
 		
@@ -69,10 +67,10 @@ void Scan_manager::scan(const Scan_files_param& param)
 {
 	_ready = false;
 	
-	String start = param.start_path;
+	QString start = param.start_path;
 
-	if (*(--start.end()) != L'\\')// add required last slash
-		start += L'\\';
+	if (!start.endsWith('\\'))// add required last slash
+		start += '\\';
 
 	_ready = false;
 	XDD_LOG("Scanner started at: " << start);
@@ -94,7 +92,7 @@ void Scan_manager::scan(const Scan_files_param& param)
 
 const File_system* Scan_manager::fs() const
 {
-	XDD_ASSERT2(_fs, L"File system wasn't yet initialized!");
+	XDD_ASSERT2(_fs, "File system wasn't yet initialized!");
 	return _fs;
 }
 
@@ -163,7 +161,7 @@ void Clean_manager::make_clean_rec(const File* file, Action action)
 void Clean_manager::move_file_to_recycle_bin(const File* file)
 {
 #ifdef XDD_WIN32_CODE
-	WCHAR path[MAX_PATH + 1] = L"";
+	wchar_t path[MAX_PATH + 1] = L"";
 	size_t len = 0;
 	File_system::i()->full_path_of(*file, path, &len);
 	path[len + 1] = L'\0';// Path have to be double-zeroed \0\0. Oh, yep.
@@ -185,9 +183,9 @@ void Clean_manager::move_file_to_recycle_bin(const File* file)
 void Clean_manager::remove_file(const File* file)
 {
 #ifdef XDD_WIN32_CODE
-	String tmp;
+	QString tmp;
 	File_system::i()->full_path_of(*file, tmp);
-	const wchar_t* path = tmp.c_str();
+	const wchar_t* path = tmp.toStdWString().c_str();
 	DeleteFile(path);
 #else
 	not_implemented("Can't move to recycle bin on this platform!");
@@ -197,9 +195,9 @@ void Clean_manager::remove_file(const File* file)
 void Clean_manager::remove_directory(const File* file)
 {
 #ifdef XDD_WIN32_CODE
-	String tmp;
+	QString tmp;
 	File_system::i()->full_path_of(*file, tmp);
-	const wchar_t* path = tmp.c_str();
+	const wchar_t* path = tmp.toStdWString().c_str();
 	RemoveDirectory(path);
 #else
 	not_implemented("Can't move to recycle bin!");
@@ -216,7 +214,7 @@ void File_system_stat::update(const File_system* fs)
 {
 	ULARGE_INTEGER free_bytes_available, total_number_of_bytes, total_number_of_free_bytes;
 
-	GetDiskFreeSpaceEx(fs->root()->name().c_str(),
+	GetDiskFreeSpaceEx(fs->root()->name().toStdWString().c_str(),
 		&free_bytes_available, &total_number_of_bytes, &total_number_of_free_bytes);
 
 	_full_disk_size = total_number_of_bytes.QuadPart;

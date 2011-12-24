@@ -81,8 +81,6 @@ typedef uint32_t uint32;
 typedef uint64_t uint64;
 typedef unsigned int uint;
 
-typedef std::wstring String;
-
 #define XDD_ASSERT3(expr, msg, ret) { if (!(expr)) { xdd::Logger::i().wh(xdd::Logger::M_ERROR); xdd::Logger::i().wc() << msg << std::endl; ret; } }
 #define XDD_ASSERT2(expr, msg) { if (!(expr)) { xdd::Logger::i().wh(xdd::Logger::M_ERROR); xdd::Logger::i().wc() << msg << std::endl; } }
 #define XDD_ERR2(msg, ret) { xdd::Logger::i().wh(xdd::Logger::M_ERROR); xdd::Logger::i().wc() << msg << std::endl; ret; }
@@ -129,15 +127,25 @@ namespace helper
 	/// Unite parts to DDWORD
     uint64 quad_part(DWORD low, DWORD high);
 
-	String format_size(uint64 sz);
+	QString format_size(uint64 sz);
 
-	String format_time_ms(uint32 milliseconds);
-	String format_time_s(uint32 seconds);
+	QString format_time_ms(uint32 milliseconds);
+	QString format_time_s(uint32 seconds);
 
-	String format_date(time_t rawtime);
+	QString format_date(time_t rawtime);
 
 	/// Returns any time in milliseconds
 	uint64 get_ms_time();
+
+	template <typename T>
+	QString num2str(T val)
+	{
+		QString str;
+		str.setNum(val);
+		return str;
+	}
+
+	QString real2str(double val, int prec);
 
 	template <typename T>
 	QString format_percent(T part, T of)

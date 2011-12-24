@@ -7,17 +7,17 @@ namespace xdd{
 /*---------------------------------------------------------
  * Size_simple_filter
  */
-const String Size_simple_filter::BIG_AND_OUT_OF_DATE = L"Big and out of date [Size_simple_filter]";
+const QString Size_simple_filter::BIG_AND_OUT_OF_DATE = "Big and out of date [Size_simple_filter]";
 
 Size_simple_filter::Size_simple_filter()
-:	Filter(L"Size_simple_filter"),
+:	Filter("Size_simple_filter"),
 	_min_size(0),
 	_pref_size(0),
 	_last_access(0)
 {
 }
 
-const String* Size_simple_filter::look(const file_data& data)
+const QString* Size_simple_filter::look(const file_data& data)
 {
 #ifdef XDD_WIN32_SCANNER
     uint64 file_size = helper::quad_part(data.nFileSizeLow, data.nFileSizeHigh);
@@ -46,11 +46,11 @@ const String* Size_simple_filter::look(const file_data& data)
  * Mark_all_filter
  */
 Mark_all_filter::Mark_all_filter()
-    : Filter(L"Mark_all_filter")
+    : Filter("Mark_all_filter")
 {
 }
 
-const String* Mark_all_filter::look(const file_data&)
+const QString* Mark_all_filter::look(const file_data&)
 {
     return &EMPTY_STR;
 }
@@ -59,11 +59,11 @@ const String* Mark_all_filter::look(const file_data&)
  * Mark_nothing_filter
  */
 Mark_nothing_filter::Mark_nothing_filter()
-    : Filter(L"Mark_nothing_filter")
+    : Filter("Mark_nothing_filter")
 {
 }
 
-const String* Mark_nothing_filter::look(const file_data&)
+const QString* Mark_nothing_filter::look(const file_data&)
 {
     return nullptr;
 }

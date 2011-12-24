@@ -11,7 +11,7 @@ class Scanner
 {
 public:
 
-    void start(const String& path);
+    void start(const QString& path);
 
 	/// Fast filter have use only file data, which they will get and no more file reads and analysis.
     void add_fast_filter(Filter* filter);

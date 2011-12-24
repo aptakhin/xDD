@@ -68,11 +68,11 @@ bool Files_model::setData(const QModelIndex& index, const QVariant& value, int r
 	const File* file = locate(index, role);
 	if (role == Qt::CheckStateRole && file != nullptr && index.column() == C_NAME)
     {
-		const String& reason = value.toInt() == Qt::Checked? USER_WANTS_STR : EMPTY_STR;
+		const QString& reason = value.toInt() == Qt::Checked? USER_WANTS_STR : EMPTY_STR;
 		class Delete_thread : public QThread
 		{
 		public:
-			Delete_thread(File* file, const String& reason, Files_model* model) : _file(file), _reason(reason), _model(model) {}
+			Delete_thread(File* file, const QString& reason, Files_model* model) : _file(file), _reason(reason), _model(model) {}
 			void run()
 			{
 				_file->mark_for_delete(&_reason);
@@ -96,7 +96,7 @@ bool Files_model::setData(const QModelIndex& index, const QVariant& value, int r
 
 		protected:
 			File* _file;
-			const String& _reason;
+			const QString& _reason;
 			Files_model* _model;
 		};
 
@@ -140,8 +140,8 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
     {
 		switch (index.column())
 		{
-			case C_NAME: return QString::fromStdWString(file->name());
-			case C_SIZE: return QString::fromStdWString(helper::format_size(file->size()));
+			case C_NAME: return file->name();
+			case C_SIZE: return helper::format_size(file->size());
 		}
 		return QVariant();
     }

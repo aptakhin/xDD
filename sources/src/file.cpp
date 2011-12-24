@@ -34,7 +34,7 @@ File::File(const File& cpy)
 {
 }
 
-File::File(File::ID parent, const String& name, Type type)
+File::File(File::ID parent, const QString& name, Type type)
 :   _parent(parent),
     _id(0),
     _name(name),
@@ -48,7 +48,7 @@ File::File(File::ID parent, const String& name, Type type)
 File::File(File::ID parent, const wchar_t* name, size_t len, Type type)
 :   _parent(parent),
     _id(0),
-    _name(name, len),
+    _name(QString::fromWCharArray(name, len)),
     _type(type),
     _size(0),
 	_reason_delete(&EMPTY_STR),
@@ -128,7 +128,7 @@ const File* File::i_child(size_t i) const
 	return File_system::i()->file_with_id(_children[i]);
 }
 
-void File::mark_for_delete(const String* reason)
+void File::mark_for_delete(const QString* reason)
 { 
 	if (reason != nullptr)
 		_reason_delete = reason;
@@ -148,13 +148,13 @@ void File::mark_for_delete(const String* reason)
 	}
 }
 
-void File::_parent_marks_for_delete(const String& reason)
+void File::_parent_marks_for_delete(const QString& reason)
 {
 	_reason_delete = &reason;
 	_to_delete.clear();
 
 	size_t sz = num_children();
-	bool push = !reason.empty();
+	bool push = reason.length() > 0;
 	if (push) 
 		_to_delete.reserve(sz);
 	for (size_t i = 0; i < sz; ++i)
@@ -168,7 +168,7 @@ void File::_parent_marks_for_delete(const String& reason)
 
 bool File::for_delete() const 
 { 
-	return !_reason_delete->empty(); 
+	return _reason_delete->length() > 0; 
 }
 
 size_t File::number_of_deleted(const File* file) const
@@ -217,9 +217,9 @@ const QIcon& File::_cached_icon() const
 {
 	if (_icon_cache.isNull())
 	{
-		String path;
+		QString path;
 		Scan_manager::i()->fs()->full_path_of(*this, path);
-		QFileInfo info(QString::fromStdWString(path));
+		QFileInfo info(path);
 		_icon_cache = QFileIconProvider().icon(info);
 	}
 

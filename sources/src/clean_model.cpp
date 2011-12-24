@@ -9,7 +9,7 @@ namespace xdd {
 
 Clean_model::Clean_model(QObject *parent)
 :   QAbstractItemModel(parent),
-	_pseudo_root((size_t)-1, String(L"Pseudo root"), File::T_DIRECTORY),
+	_pseudo_root((size_t)-1, QString("Pseudo root"), File::T_DIRECTORY),
 	_ready(false),
 	_free_size(0),
 	_free_size_valid(false)
@@ -124,16 +124,16 @@ QVariant Clean_model::data(const QModelIndex& index, int role) const
     {
 		switch (index.column())
 		{
-		case C_NAME:	return QString::fromStdWString(file->name());
-		case C_SIZE:	return QString::fromStdWString(helper::format_size(file->size()));
-		case C_REASON:	return QString::fromStdWString(file->delete_reason());
+		case C_NAME:	return file->name();
+		case C_SIZE:	return helper::format_size(file->size());
+		case C_REASON:	return file->delete_reason();
 		}
 		return QVariant();
     }
 
 	if (role == Qt::ToolTipRole && index.column() == C_NAME)
     {
-		return QString::fromStdWString(Scan_manager::i()->fs()->full_path_of(*file));
+		return Scan_manager::i()->fs()->full_path_of(*file);
     }
 
 	return QVariant();
@@ -294,7 +294,7 @@ void Clean_model::write_cleaning_files_qt_str(const File* node, const QString& s
 {
 	#ifdef XDD_CPP11
 		auto acc = node->deleted_children_accum(Object_accum<QString>(), [&separator] (const File* file) {
-			return QString::fromStdWString(File_system::i()->full_path_of(*file)) + separator;
+			return File_system::i()->full_path_of(*file) + separator;
 		});
 
 	#else

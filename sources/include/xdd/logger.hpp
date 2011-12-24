@@ -23,16 +23,18 @@ public:
 
 	void write_header(Message msg);
 	void wh(Message msg = M_DEFAULT) { write_header(msg); } 
-	std::wofstream& write_content();
-	std::wofstream& wc() { return write_content(); }
+	std::ofstream& write_content();
+	std::ofstream& wc() { return write_content(); }
 
-	std::wofstream& write_line();
-	std::wofstream& wl() { return write_line(); }
+	std::ofstream& write_line();
+	std::ofstream& wl() { return write_line(); }
 
 protected:
 	static Logger* _instance;
 
-	std::wofstream _log;
+	std::ofstream _log;
 };
+
+std::ostream& operator << (std::ostream& out, const QString& str);
 
 }// namespace xdd

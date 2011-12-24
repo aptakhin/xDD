@@ -19,137 +19,111 @@ namespace helper {
         return large.QuadPart;
     }
 
-	String format_size(uint64 sz)
+	QString real2str(double val, int prec)
 	{
-		std::wostringstream out;
-		out << std::fixed;
-
-		double first = (double)sz;
-		
-		if (first > GIGABYTE)
-		{
-			first /= (double)GIGABYTE;
-			out << std::setprecision(1) << first << " Gb";
-			return out.str();
-		}
-
-		if (first > MEGABYTE)
-		{
-			first /= (double)MEGABYTE;
-			out << std::setprecision(0) << first << " Mb";
-			return out.str();
-		}
-
-		if (first > KILOBYTE)
-		{
-			first /= (double)KILOBYTE;
-			out << std::setprecision(0) << first << " Kb";
-			return out.str();
-		}
-		out << sz << " b";
-		return out.str();
+		QString str;
+		str.setNum(val, 'f', prec);
+		return str;
 	}
 
-	String format_time_ms(uint32 milliseconds)
+	QString format_size(uint64 size)
 	{
-		std::wostringstream out;
+		QString out;
+
+		double sz = (double)size;
+		
+		if (size > GIGABYTE)
+			return real2str(sz / double(GIGABYTE), 1).append(" Gb");
+
+		if (size > MEGABYTE)
+			return real2str(sz / double(MEGABYTE), 0).append(" Mb");
+
+		if (size > KILOBYTE)
+			return real2str(sz / double(KILOBYTE), 0).append(" Kb");
+
+		return real2str(sz, 0).append(" b");
+	}
+
+	QString format_time_ms(uint32 milliseconds)
+	{
+		QString out;
 
 		if (milliseconds < SECOND_MS)
-		{
-			out << milliseconds << " ms";
-			return out.str();
-		}
+			return num2str(milliseconds).append(" ms");
 		
 		if (milliseconds >= DAY_MS)
 		{
 			uint32 days   = milliseconds / DAY_MS;
 			milliseconds -= days * DAY_MS;
-			out << days << " days ";
+			out += num2str(days).append(" days ");
 		}
 
 		if (milliseconds >= HOUR_MS)
 		{
 			uint32 hours  = milliseconds / HOUR_MS;
 			milliseconds -= hours * HOUR_MS;
-			out << hours << " hours ";
+			out += num2str(hours).append(" hours ");
 		}
 
 		if (milliseconds >= MINUTE_MS)
 		{
 			uint32 minutes = milliseconds / MINUTE_MS;
 			milliseconds  -= minutes * MINUTE_MS;
-			out << minutes << " minutes ";
+			out += num2str(minutes).append(" minutes ");
 		}
 
 		if (milliseconds >= SECOND_MS)
 		{
 			uint32 seconds = milliseconds / SECOND_MS;
 			milliseconds  -= seconds * SECOND_MS;
-			out << seconds << " seconds";
+			out += num2str(seconds).append(" seconds ");
 		}
 
-		return out.str();
+		return out.trimmed();
 	}
 
-	String format_time_s(uint32 seconds)
+	QString format_time_s(uint32 seconds)
 	{
-		std::wostringstream out;
+		QString out;
 
 		if (seconds >= AVG_YEAR_S)
 		{
 			uint32 years = seconds / AVG_YEAR_S;
-			out << years << " years";
-			return out.str();
+			return num2str(years).append(" years");
 		}
 
 		if (seconds >= AVG_MONTH_S)
 		{
 			uint32 months = seconds / AVG_MONTH_S;
-			out << months << " months";
-			return out.str();
+			return num2str(months).append(" months");
 		}
 		
 		if (seconds >= DAY_S)
 		{
 			uint32 days = seconds / DAY_S;
-			out << days << " days";
-			return out.str();
+			return num2str(days).append(" days");
 		}
 
 		if (seconds >= HOUR_S)
 		{
 			uint32 hours = seconds / HOUR_MS;
-			out << hours << " hours";
-			return out.str();
+			return num2str(hours).append(" hours");
 		}
 
 		if (seconds >= MINUTE_S)
 		{
 			uint32 minutes = seconds / MINUTE_MS;
-			out << minutes << " minutes";
-			return out.str();
+			return num2str(minutes).append(" minutes");
+
 		}
 
-		out << seconds << " seconds";
-		return out.str();
+		return num2str(seconds).append(" seconds");
 	}
 
-	String format_date(time_t rawtime)
+	QString format_date(time_t rawtime)
 	{
-		wchar_t buffer[80];
-
-		tm timeinfo, *timeinfo_ptr;
-	#ifdef _MSC_VER
-		localtime_s(&timeinfo, &rawtime);
-		timeinfo_ptr = &timeinfo;
-	#else
-		timeinfo_ptr = localtime(&rawtime);
-	#endif
-
-		setlocale(LC_ALL, "russian");
-		wcsftime(buffer, 80, L"%c", timeinfo_ptr);
-
-		return String(buffer);
+		not_implemented("format_date");
+		return "";
 	}
 
 	uint64 get_ms_time()
