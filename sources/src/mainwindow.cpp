@@ -227,7 +227,14 @@ void MainWindow::clean_updated()
 	ui->new_stat->setText(new_stat);
 	ui->new_stat2->setText(new_stat);
 
-	_reset_files_model = true;
+
+	_reset_files_model = true;// Have to update some cache
+
+	if (ui->tab->currentIndex() == T_SCAN)
+	{
+		_files_model->reset();// Can't delay. So update at moment
+		_reset_files_model = false;
+	}
 }
 
 void MainWindow::select_scanner_tab()
@@ -277,10 +284,13 @@ void MainWindow::settings_btn_clicked()
 	_settings->show();
 }
 
-void MainWindow::tab_selected(int)
+void MainWindow::tab_selected(int tab)
 {
-	if (_reset_files_model)
+	if (_reset_files_model && tab == T_SCAN)
+	{
 		_files_model->reset();
+		_reset_files_model = false;
+	}
 }
 
 } // namespace xdd

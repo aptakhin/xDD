@@ -69,6 +69,7 @@ bool Files_model::setData(const QModelIndex& index, const QVariant& value, int r
 	if (role == Qt::CheckStateRole && file != nullptr && index.column() == C_NAME)
     {
 		const QString& reason = value.toInt() == Qt::Checked? USER_WANTS_STR : EMPTY_STR;
+
 		class Delete_thread : public QThread
 		{
 		public:

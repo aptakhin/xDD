@@ -155,7 +155,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 
     FindClose(file_handle);
 
-	path[restore_to_len] = 0, _path_len = restore_to_len;// Restore
+	path[_path_len = restore_to_len] = 0;// Restore
     return full_size;
 }
 // WTF?!!

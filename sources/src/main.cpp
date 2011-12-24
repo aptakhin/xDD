@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	xdd::Logger l;
 	QApplication app(argc, argv);
 	xdd::Scan_manager mgr;
-    xdd::MainWindow w;
-    w.show();
-    return app.exec();
+	xdd::MainWindow w;
+	w.show();
+	return app.exec();
 }

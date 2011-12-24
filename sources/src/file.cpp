@@ -13,22 +13,22 @@
 namespace xdd {
 
 File::File()
-:   _parent(0),
-    _id(0),
-    _name(),
-    _type(T_FILE),
-    _size(0),
+:	_parent(0),
+	_id(0),
+	_name(),
+	_type(T_FILE),
+	_size(0),
 	_reason_delete(&EMPTY_STR),
 	_has_for_delete_cache(false)
 {
 }
 
 File::File(const File& cpy)
-:   _parent(cpy._parent),
-    _id(cpy._id),
-    _name(cpy._name),
-    _type(cpy._type),
-    _size(cpy._size),
+:	_parent(cpy._parent),
+	_id(cpy._id),
+	_name(cpy._name),
+	_type(cpy._type),
+	_size(cpy._size),
 	_reason_delete(&EMPTY_STR),
 	_has_for_delete_cache(false)
 {
@@ -46,11 +46,11 @@ File::File(File::ID parent, const QString& name, Type type)
 }
 
 File::File(File::ID parent, const wchar_t* name, size_t len, Type type)
-:   _parent(parent),
-    _id(0),
-    _name(QString::fromWCharArray(name, len)),
-    _type(type),
-    _size(0),
+:	_parent(parent),
+	_id(0),
+	_name(QString::fromWCharArray(name, len)),
+	_type(type),
+	_size(0),
 	_reason_delete(&EMPTY_STR),
 	_has_for_delete_cache(false)
 {
@@ -59,10 +59,10 @@ File::File(File::ID parent, const wchar_t* name, size_t len, Type type)
 void File::operator = (const File& cpy)
 {
 	_parent               = cpy._parent;
-    _id	                  = cpy._id;
-    _name                 = cpy._name;
-    _type                 = cpy._type;
-    _size                 = cpy._size;
+	_id	                  = cpy._id;
+	_name                 = cpy._name;
+	_type                 = cpy._type;
+	_size                 = cpy._size;
 	_reason_delete        = cpy._reason_delete;
 	_has_for_delete_cache = cpy._has_for_delete_cache;
 }
@@ -229,26 +229,23 @@ const QIcon& File::_cached_icon() const
 bool File::update_has_for_delete_cache_rec() const
 {
 	if (for_delete())
+		return _has_for_delete_cache = true;
+
+#ifdef XDD_CPP11
+	return _has_for_delete_cache = children_if_any([] (const File* child) {
+		return child->update_has_for_delete_cache_rec();
+	});
+#else
+	struct Func
 	{
-		_has_for_delete_cache = true;
-		return true;
-	}
+		bool operator (const File* child) {
+			return child->has_marked_for_delete_rec();
+		}
+	} func;
 
-	#ifdef XDD_CPP11
-		return _has_for_delete_cache = children_if_any([] (const File* child) {
-			return child->update_has_for_delete_cache_rec();
-		});
-	#else
-		struct R
-		{
-			bool operator (const File* child) {
-				return child->has_marked_for_delete_rec();
-			}
-		} pred;
+	return _has_for_delete_cache = children_if_any(func);
 
-		_has_for_delete_cache = deleted_children_if_any(pred);
-
-	#endif//#ifdef XDD_CPP11
+#endif//#ifdef XDD_CPP11
 }
 
 bool File::has_for_delete_cache() const
