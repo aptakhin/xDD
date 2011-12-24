@@ -15,7 +15,7 @@ Scan_manager::Scan_manager()
 	_time_exec(0)
 {
 	XDD_ASSERT3(!Scan_manager::_instance,
-        L"Singleton of Scan_manager is already created!",
+        "Singleton of Scan_manager is already created!",
             return);
 
     Scan_manager::_instance = this;
@@ -26,7 +26,7 @@ Scan_manager::Scan_manager()
 Scan_manager::~Scan_manager()
 {
     XDD_ASSERT3(Scan_manager::_instance == this,
-        L"Problem while deleting Scan_manager! Another singleton was created!",
+        "Problem while deleting Scan_manager! Another singleton was created!",
             return);
 	XDD_LOG("Scan manager destroyed");
 	Logger::i().wl();
@@ -36,7 +36,7 @@ Scan_manager::~Scan_manager()
 Scan_manager* Scan_manager::i() 
 {
 	XDD_ASSERT3(Scan_manager::_instance,
-        L"Singleton of Scan_manager wasn't yet created!",
+        "Singleton of Scan_manager wasn't yet created!",
             return nullptr);
 	return _instance; 
 }
@@ -122,20 +122,20 @@ void Scan_manager::Call_scan::run()
 
 void Clean_manager::make_clean(Action action)
 {
-	XDD_LOG("Start cleaning");
+	XDD_LOG("Cleaning");
 	make_clean_rec(File_system::i()->root(), action);
 }
 
 void Clean_manager::make_clean_rec(const File* file, Action action)
 {
 #ifdef XDD_CPP11
-	to_delete_each_rec(file, [action] (const File* file) {
+	children_each_rec(file, [action] (const File* file) {
 		if (!file->is_directory() && file->for_delete())
 		{
-			//if (action == A_MOVE_TO_RECYCLE_BIN)
-				//move_file_to_recycle_bin(file);
-			//else if (action == A_REMOVE)
-				//remove_file(file);
+			if (action == Clean_manager::A_MOVE_TO_RECYCLE_BIN)
+				move_file_to_recycle_bin(file);
+			else if (action == Clean_manager::A_REMOVE)
+				remove_file(file);
 
 			// TODO: Check if there is no more file files in directory. Remove/move it too
 		}

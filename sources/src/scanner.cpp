@@ -54,13 +54,13 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 
 	HANDLE file_handle = FindFirstFile(path, &file_data);
 
-    XDD_ASSERT3(file_handle != INVALID_HANDLE_VALUE,
-        L"Invalid file handle `" << path << "`!",
-			path[--_path_len] = 0; 
-			return full_size);
-
-    // Query done. Erase last `*` from path
+	// Query done. Erase last `*` from path
     path[--_path_len] = 0;
+
+    XDD_ASSERT3(file_handle != INVALID_HANDLE_VALUE,
+		"Invalid file handle `" << QString::fromStdWString(path) << "`!",
+			return 0);
+    
 	size_t restore_to_len = _path_len;// Save current length to restore fast
 
     do
@@ -148,7 +148,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
     while (FindNextFile(file_handle, &file_data) != 0);
 
     XDD_ASSERT3(GetLastError() == ERROR_NO_MORE_FILES,
-        L"Error happened while reading `" << path << "`!",
+        "Error happened while reading `" << QString::fromStdWString(path) << "`!",
            path[restore_to_len] = 0; _path_len = restore_to_len; return full_size);
 
     FindClose(file_handle);

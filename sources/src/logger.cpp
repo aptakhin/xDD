@@ -10,7 +10,7 @@ Logger::Logger()
 	_log.open("xdd.log", std::ios_base::app);
 
 	XDD_ASSERT3(!Logger::_instance,
-        L"Singleton of logger is already created!",
+        "Singleton of logger is already created!",
             return);
     Logger::_instance = this;
 }
@@ -18,10 +18,10 @@ Logger::Logger()
 Logger::~Logger()
 {
     XDD_ASSERT3(Logger::_instance == this,
-        L"Problem while deleting logger! Another singleton was created!",
+        "Problem while deleting logger! Another singleton was created!",
             return);
 
-	XDD_LOG("Exit normally");
+	XDD_LOG("Exited normally");
 
     Logger::_instance = 0;
 }
@@ -29,7 +29,7 @@ Logger::~Logger()
 Logger& Logger::i() 
 {
 	XDD_ASSERT2(Logger::_instance,
-        L"Singleton of logger wasn't yet created!");
+        "Singleton of logger wasn't yet created!");
 	return *Logger::_instance; 
 }
 
@@ -37,7 +37,7 @@ void Logger::write_header(Message msg)
 {
 	_log << std::setw(21);
 
-	wchar_t buf[100];
+	char buf[100];
 
 	tm timeinfo, *timeinfo_ptr;
 	time_t seconds = time(NULL);
@@ -48,7 +48,7 @@ void Logger::write_header(Message msg)
 	timeinfo_ptr = localtime(&seconds);
 #endif
 	
-	wcsftime(buf, 100, L"%d %b %Y %H:%M:%S", timeinfo_ptr);
+	strftime(buf, 100, "%d %b %Y %H:%M:%S", timeinfo_ptr);
 	_log << std::left << buf;
 
 	_log << std::setw(5);

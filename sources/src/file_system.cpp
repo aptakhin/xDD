@@ -11,7 +11,7 @@ File_system::File_system()
 	_files(new Bucket_vector<File>(_init_bucket_size))
 {
     XDD_ASSERT3(!File_system::_instance,
-        L"Singleton of File_system is already created!",
+        "Singleton of File_system is already created!",
             return);
     File_system::_instance = this;
 }
@@ -21,7 +21,7 @@ File_system::~File_system()
 	delete[] _files;
 
     XDD_ASSERT3(File_system::_instance == this,
-        L"Problem while deleting File_system! Another singleton was created!",
+        "Problem while deleting File_system! Another singleton was created!",
             return);
     File_system::_instance = 0;
 }
@@ -29,7 +29,7 @@ File_system::~File_system()
 File_system* File_system::i()
 {
     XDD_ASSERT2(File_system::_instance,
-        L"Singleton of File_system wasn't created!");
+        "Singleton of File_system wasn't created!");
     return File_system::_instance;
 }
 
