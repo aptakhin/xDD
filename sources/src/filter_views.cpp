@@ -50,8 +50,7 @@ Size_simple_filter_view::Size_simple_filter_view(Size_simple_filter* filter)
 
 void Size_simple_filter_view::min_file_size_changed(int)
 {
-	_ui.min_file_sz_edit->setText(QString::fromStdWString(
-		helper::format_size(min_file_size())));
+	_ui.min_file_sz_edit->setText(helper::format_size(min_file_size()));
 
 	mark_file_size_changed(0);
 }
@@ -60,14 +59,12 @@ void Size_simple_filter_view::mark_file_size_changed(int)
 {
 	_ui.mark_file_sz_slider->setValue((std::max)(_ui.mark_file_sz_slider->value(), 
 		_ui.min_file_sz_slider->value()));
-	_ui.mark_file_sz_edit->setText(QString::fromStdWString(
-		helper::format_size(mark_file_size())));
+	_ui.mark_file_sz_edit->setText(helper::format_size(mark_file_size()));
 }
 
 void Size_simple_filter_view::file_last_access_changed(int)
 {
-	_ui.last_access_edit->setText(QString::fromStdWString(
-		helper::format_time_s(file_last_access_seconds())));
+	_ui.last_access_edit->setText(helper::format_time_s(file_last_access_seconds()));
 }
 
 uint64 Size_simple_filter_view::min_file_size() const

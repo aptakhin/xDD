@@ -16,5 +16,6 @@ Tryes to be ready on any other platform.
 ### Compiling
 
 **Tip**.
-Before using CMake on Windows you have to set Qt installation directory in QTDIR environment variable. 
-Use this gist as hint (msvc10_generate.bat)[https://gist.github.com/1515211]
+Before using CMake on Windows you have to set Qt installation directory in QTDIR environment variable if you've use Qt from archive somewhere.
+Use this gist as hint https://gist.github.com/1515211 
+If you installed Qt from installer possibly you might not use this gist.

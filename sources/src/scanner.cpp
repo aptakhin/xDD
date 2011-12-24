@@ -12,7 +12,7 @@ void Scanner::add_fast_filter(Filter* filter)
     _fast_filters.push_back(filter);
 }
 
-void Scanner::start(const String& path)
+void Scanner::start(const QString& path)
 {
 	_path_len = 0;
 	// add root for file system - it's out start folder
@@ -20,10 +20,13 @@ void Scanner::start(const String& path)
 
 #ifdef XDD_WIN32_SCANNER
 	wchar_t root_path[MAX_PATH];
+
+	std::wstring wpath = path.toStdWString();
+
 #	ifdef _MSC_VER
-    wcscpy_s(root_path, path.c_str());
+    wcscpy_s(root_path, wpath.c_str());
 #	else
-	wcscpy(root_path, path.c_str());
+	wcscpy(root_path, wpath.c_str());
 #	endif//#ifdef _MSC_VER
 	_path_len = wcslen(root_path);
 	uint64 sz = _start(root_path, root, 0);
@@ -95,7 +98,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
         if (file != nullptr)
         {
 			// Fast filter's work
-			const String* reason = nullptr;
+			const QString* reason = nullptr;
                 
             for (Filters::iterator i = _fast_filters.begin(); i != _fast_filters.end(); ++i)
             {

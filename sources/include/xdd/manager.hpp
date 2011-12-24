@@ -13,7 +13,7 @@ class File;
 
 struct Scan_files_param
 {
-	String start_path;
+	QString start_path;
 };
 
 class File_system_stat

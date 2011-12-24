@@ -33,14 +33,14 @@ File_system* File_system::i()
     return File_system::_instance;
 }
 
-String File_system::full_path_of(const File& file) const
+QString File_system::full_path_of(const File& file) const
 {
-    String full_path;
+    QString full_path;
     File_system::_full_path_of(file, full_path);
     return full_path;
 }
 
-void File_system::full_path_of(const File& file, String& full_path) const
+void File_system::full_path_of(const File& file, QString& full_path) const
 {
     _full_path_of(file, full_path);
 }
@@ -56,19 +56,19 @@ void File_system::_full_path_of(const File& file, wchar_t* full_path, size_t* le
 	if (!file.is_root())
         _full_path_of((*_files)[file.parent_id()], full_path, len);
 	size_t add_sz = file.name().size();
-	memcpy(full_path + *len, file.name().c_str(), sizeof(wchar_t) * (*len + add_sz + 1));
-	*len = *len + add_sz;
-	if (full_path[*len - 1] != L'\\')
+	if (*len != 0)
 		full_path[*len] = L'\\', full_path[++(*len)] = '\0';
+	memcpy(full_path + *len, file.name().toStdWString().c_str(), sizeof(wchar_t) * (*len + add_sz + 1));
+	*len = *len + add_sz;
 }
 
-void File_system::_full_path_of(const File& file, String& path) const
+void File_system::_full_path_of(const File& file, QString& path) const
 {
     if (!file.is_root())
         _full_path_of((*_files)[file.parent_id()], path);
-    path += file.name();
-	if (*(--path.end()) != L'\\')
+	if (path.length() != 0)
 		path += L'\\';
+    path += file.name();
 }
 
 File* File_system::file_with_id(File::ID id)

@@ -115,9 +115,9 @@ public:
     File_system();
     ~File_system();
 
-    String full_path_of(const File& file) const;
+    QString full_path_of(const File& file) const;
 
-    void full_path_of(const File& file, String& full_path) const;
+    void full_path_of(const File& file, QString& full_path) const;
 	void full_path_of(const File& file, wchar_t* full_path, size_t* len) const;
 
     File* add_file(const File& file);
@@ -136,7 +136,7 @@ public:
 	void flush_and_ready_async();
 
 protected:
-    void _full_path_of(const File& file, String& path) const;
+    void _full_path_of(const File& file, QString& path) const;
 	void _full_path_of(const File& file, wchar_t* full_path, size_t* len) const;
 
 protected:
