@@ -3,7 +3,7 @@
 
 #include "xdd/common.hpp"
 #include "xdd/filters.hpp"
-#include "xdd/File_system.hpp"
+#include "xdd/file_system.hpp"
 
 namespace xdd {
 	
@@ -13,7 +13,7 @@ public:
 
     void start(const QString& path);
 
-	/// Fast filter have use only file data, which they will get and no more file reads and analysis.
+	/// Fast filter have use only file data, which they will get. They don't use more file information and analysis.
     void add_fast_filter(Filter* filter);
 
 protected:

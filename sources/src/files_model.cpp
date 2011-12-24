@@ -217,7 +217,7 @@ QVariant Files_model::headerData(int section, Qt::Orientation, int role) const
 	switch (section)
 	{
 		case C_NAME: return QString("Name");
-		case C_SIZE: return QString("size");
+		case C_SIZE: return QString("Size");
 	}
 	return QVariant();
  }

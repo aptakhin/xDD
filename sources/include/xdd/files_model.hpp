@@ -1,7 +1,7 @@
 /** xDDTools */
 #pragma once
 
-#include "xdd/File.hpp"
+#include "xdd/file.hpp"
 #include "xdd/manager.hpp"
 #include <QAbstractItemModel>
 #include <QModelIndex>
