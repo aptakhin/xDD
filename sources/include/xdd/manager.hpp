@@ -123,14 +123,11 @@ public:
 	void make_clean(const Action action);
 
 protected:
-	void make_clean_rec(const File* file, Action action);
-	void make_clean_file(const File* file, Action action);
+	static void make_clean_rec(const File* file, Action action);
 
-	void move_file_to_recycle_bin(const File* file);
-	void remove_file(const File* file);
-	void remove_directory(const File* file);
-
-	File_system* fs();
+	static void move_file_to_recycle_bin(const File* file);
+	static void remove_file(const File* file);
+	static void remove_directory(const File* file);
 };
 
 template <typename T, typename S>

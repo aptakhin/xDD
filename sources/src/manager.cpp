@@ -125,13 +125,13 @@ void Scan_manager::Call_scan::run()
 void Clean_manager::make_clean(Action action)
 {
 	XDD_LOG("Start cleaning");
-	make_clean_rec(fs()->root(), action);
+	make_clean_rec(File_system::i()->root(), action);
 }
 
 void Clean_manager::make_clean_rec(const File* file, Action action)
 {
 #ifdef XDD_CPP11
-	to_delete_each_rec(file, [this, action] (File* file) {
+	to_delete_each_rec(file, [action] (File* file) {
 		if (!file->is_directory() && file->for_delete())
 		{
 			//if (action == A_MOVE_TO_RECYCLE_BIN)
@@ -165,7 +165,7 @@ void Clean_manager::move_file_to_recycle_bin(const File* file)
 #ifdef XDD_WIN32_CODE
 	WCHAR path[MAX_PATH + 1] = L"";
 	size_t len = 0;
-	fs()->full_path_of(*file, path, &len);
+	File_system::i()->full_path_of(*file, path, &len);
 	path[len + 1] = L'\0';// Path have to be double-zeroed \0\0. Oh, yep.
 
 	SHFILEOPSTRUCTW fileop;
@@ -186,7 +186,7 @@ void Clean_manager::remove_file(const File* file)
 {
 #ifdef XDD_WIN32_CODE
 	String tmp;
-	fs()->full_path_of(*file, tmp);
+	File_system::i()->full_path_of(*file, tmp);
 	const wchar_t* path = tmp.c_str();
 	DeleteFile(path);
 #else
@@ -198,17 +198,12 @@ void Clean_manager::remove_directory(const File* file)
 {
 #ifdef XDD_WIN32_CODE
 	String tmp;
-	fs()->full_path_of(*file, tmp);
+	File_system::i()->full_path_of(*file, tmp);
 	const wchar_t* path = tmp.c_str();
 	RemoveDirectory(path);
 #else
 	not_implemented("Can't move to recycle bin!");
 #endif//#ifdef XDD_WIN32_CODE
-}
-
-File_system* Clean_manager::fs()
-{
-	return const_cast<File_system*>(Scan_manager::i()->fs());
 }
 
 File_system_stat::File_system_stat()
