@@ -60,6 +60,8 @@ public:
 	Scan_manager();
 	~Scan_manager();
 
+	static Scan_manager* i();
+
 	void prepare_for_scan();
 
 	void start_scan_thread(const Scan_files_param& param);
@@ -68,15 +70,13 @@ public:
 
 	const File_system* fs() const;
 
-	void flush();
-
-	static Scan_manager* i();
-
-	const File_system_stat& fs_stat() const { return _stat; }
+	const File_system_stat* fs_stat() const { return _ready? &_stat : nullptr; }
 
 	uint64 last_time_exec() const { return _time_exec; }
 
 	Scanner& scanner() { return _scanner; }
+
+	void flush();
 
 signals:
 	void scan_finished();
@@ -87,7 +87,7 @@ public slots:
 	void update_timer();
 
 protected:
-	void form_files(File* file);
+	void prepare_files(File* file);
 
 	void scan(const Scan_files_param& param);
 
@@ -120,15 +120,15 @@ public:
 	};
 
 	/// The most terrifying function
-	void make_clean(Action action);
+	void make_clean(const Action action);
 
 protected:
-	void make_clean_rec(File* file, Action action);
-	void make_clean_file(File* file, Action action);
+	void make_clean_rec(const File* file, Action action);
+	void make_clean_file(const File* file, Action action);
 
-	void move_file_to_recycle_bin(File* file);
-	void remove_file(File* file);
-	void remove_directory(File* file);
+	void move_file_to_recycle_bin(const File* file);
+	void remove_file(const File* file);
+	void remove_directory(const File* file);
 
 	File_system* fs();
 };

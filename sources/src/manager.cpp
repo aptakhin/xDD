@@ -1,5 +1,6 @@
 
 #include "xdd/manager.hpp"
+#include "xdd/file.hpp"
 #include <QFileInfo>
 #include <QFileIconProvider>
 
@@ -62,8 +63,6 @@ void Scan_manager::prepare_for_scan()
 		_fs->flush_and_ready_async();
 		
 	_ready = false;
-
-	
 }
 
 void Scan_manager::scan(const Scan_files_param& param)
@@ -78,14 +77,14 @@ void Scan_manager::scan(const Scan_files_param& param)
 	_ready = false;
 	XDD_LOG("Scanner started at: " << start);
 
-    DWORD start_time = GetTickCount();
+    uint64 start_time = helper::get_ms_time();
     _scanner.start(start);
-    DWORD end_time = GetTickCount();
-    _time_exec = uint64(end_time - start_time);
+    uint64 end_time = helper::get_ms_time();
+    _time_exec = end_time - start_time;
 	XDD_LOG("Scanner stopped in " << helper::format_time_ms(_time_exec));
 
 	File* root = _fs->root();
-	form_files(root);
+	prepare_files(root);
 	
 	_stat.update(_fs);
 	
@@ -110,11 +109,11 @@ void Scan_manager::flush()
 	_fs->flush_and_ready_async();
 }
 
-void Scan_manager::form_files(File* file)
+void Scan_manager::prepare_files(File* file)
 {
     file->sort_size_desc();
     for (size_t i = 0; i < file->num_children(); ++i)
-		form_files(file->i_child(i));
+		prepare_files(file->i_child(i));
 }
 
 void Scan_manager::Call_scan::run()
@@ -129,11 +128,21 @@ void Clean_manager::make_clean(Action action)
 	make_clean_rec(fs()->root(), action);
 }
 
-void Clean_manager::make_clean_rec(File* file, Action action)
+void Clean_manager::make_clean_rec(const File* file, Action action)
 {
-	//
-	// TODO: Admin rights
+#ifdef XDD_CPP11
+	to_delete_each_rec(file, [this, action] (File* file) {
+		if (!file->is_directory() && file->for_delete())
+		{
+			//if (action == A_MOVE_TO_RECYCLE_BIN)
+				//move_file_to_recycle_bin(file);
+			//else if (action == A_REMOVE)
+				//remove_file(file);
 
+			// TODO: Check if there is no more file files in directory. Remove/move it too
+		}
+	});
+#else
 	if (file->is_directory())
 	{
 		size_t sz = file->num_children();
@@ -141,22 +150,23 @@ void Clean_manager::make_clean_rec(File* file, Action action)
 			make_clean_rec(file->i_child(i), action);
 		// TODO: Check if there is no more file files in directory. Remove/move it too
 	}
-	else if (file->For_delete())
+	else if (file->for_delete())
 	{
 		if (action == A_MOVE_TO_RECYCLE_BIN)
 			move_file_to_recycle_bin(file);
 		else if (action == A_REMOVE)
 			remove_file(file);
 	}
+#endif
 }
 
-void Clean_manager::move_file_to_recycle_bin(File* file)
+void Clean_manager::move_file_to_recycle_bin(const File* file)
 {
 #ifdef XDD_WIN32_CODE
 	WCHAR path[MAX_PATH + 1] = L"";
 	size_t len = 0;
 	fs()->full_path_of(*file, path, &len);
-	path[++len] = L'\0';// Path have to be double-zeroed \0\0. Oh, yep.
+	path[len + 1] = L'\0';// Path have to be double-zeroed \0\0. Oh, yep.
 
 	SHFILEOPSTRUCTW fileop;
     fileop.hwnd = 0;
@@ -172,7 +182,7 @@ void Clean_manager::move_file_to_recycle_bin(File* file)
 	not_implemented("Can't delete files on this platform!");
 #endif//#ifdef XDD_WIN32_CODE
 }
-void Clean_manager::remove_file(File* file)
+void Clean_manager::remove_file(const File* file)
 {
 #ifdef XDD_WIN32_CODE
 	String tmp;
@@ -184,7 +194,7 @@ void Clean_manager::remove_file(File* file)
 #endif//#ifdef XDD_WIN32_CODE
 }
 
-void Clean_manager::remove_directory(File* file)
+void Clean_manager::remove_directory(const File* file)
 {
 #ifdef XDD_WIN32_CODE
 	String tmp;

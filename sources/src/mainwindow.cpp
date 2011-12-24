@@ -145,8 +145,8 @@ void MainWindow::scan_finished()
 	ui->status->setText("Finished");
 	ui->common_info->setText(QString::fromStdWString(
 		String(L"Execution time: ") + helper::format_time_ms(Scan_manager::i()->last_time_exec()) +
-		String(L"\nFull disk size: ") + helper::format_size(Scan_manager::i()->fs_stat().full_disk_size()) +
-		String(L"\nFree disk size: ") + helper::format_size(Scan_manager::i()->fs_stat().free_disk_size())
+		String(L"\nFull disk size: ") + helper::format_size(Scan_manager::i()->fs_stat()->full_disk_size()) +
+		String(L"\nFree disk size: ") + helper::format_size(Scan_manager::i()->fs_stat()->free_disk_size())
 	));
 	_files_model->notify_scan_finished();
 	_clean_model->notify_scan_finished(*Scan_manager::i()->fs());
@@ -217,7 +217,7 @@ void MainWindow::clean_updated()
 	QString new_stat = QString::fromStdWString(
 		String(L"Bytes will be free: ") + helper::format_size(_clean_model->Calculate_free_size()) +
 		String(L"\nTotal free disk size will be: ") + 
-		helper::format_size(Scan_manager::i()->fs_stat().free_disk_size() + _clean_model->Calculate_free_size())
+		helper::format_size(Scan_manager::i()->fs_stat()->free_disk_size() + _clean_model->Calculate_free_size())
 	);
 
 	// update info in both tabs

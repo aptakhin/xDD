@@ -202,3 +202,4 @@ protected:
 }// namespace xdd
 
 #include "xdd/logger.hpp"
+#include "xdd/fun.hpp"

@@ -166,7 +166,7 @@ void File::_parent_marks_for_delete(const String& reason)
 	}
 }
 
-bool File::For_delete() const 
+bool File::for_delete() const 
 { 
 	return !_reason_delete->empty(); 
 }
@@ -192,7 +192,7 @@ size_t File::num_files_to_delete() const
 	return _to_delete.size();
 }
 
-File* File::I_file_to_delete(size_t i) const
+File* File::i_file_to_delete(size_t i) const
 {
 	XDD_ASSERT3(i < _to_delete.size(), "File item is out of bounds!", return nullptr);
 	return File_system::i()->file_with_id(_to_delete[i]);
@@ -228,14 +228,14 @@ const QIcon& File::_cached_icon() const
 
 bool File::update_has_for_delete_cache_rec() const
 {
-	if (For_delete())
+	if (for_delete())
 	{
 		_has_for_delete_cache = true;
 		return true;
 	}
 
 	#ifdef XDD_CPP11
-		return _has_for_delete_cache = Children_if_any([] (const File* child) {
+		return _has_for_delete_cache = children_if_any([] (const File* child) {
 			return child->update_has_for_delete_cache_rec();
 		});
 	#else
@@ -246,7 +246,7 @@ bool File::update_has_for_delete_cache_rec() const
 			}
 		} pred;
 
-		_has_for_delete_cache = Deleted_children_if_any(pred);
+		_has_for_delete_cache = deleted_children_if_any(pred);
 
 	#endif//#ifdef XDD_CPP11
 }

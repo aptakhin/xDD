@@ -61,6 +61,8 @@ public:
 	bool has_children() const { return !_children.empty(); }
 	size_t num_children() const { return _children.size(); }
 
+	const Files& children() const { return _children; }
+
 	File::ID i_child_id(size_t i) const { return _children[i]; }
 	File* i_child(size_t i);
 	const File* i_child(size_t i) const;
@@ -76,10 +78,12 @@ public:
 
 	const String& delete_reason() const { return *_reason_delete; }
 
-	bool For_delete() const;
+	bool for_delete() const;
+
+	const Files& files_to_delete() const { return _to_delete; }
 
 	size_t num_files_to_delete() const;
-	File* I_file_to_delete(size_t i) const;
+	File* i_file_to_delete(size_t i) const;
 	size_t number_of_deleted(const File* file) const;
 	bool has_to_delete(const File* file) const;
 	bool has_files_to_delete() const;
@@ -102,7 +106,7 @@ public:
 	bool update_has_for_delete_cache_rec() const;
 
 	template <typename Acc, typename T>
-	Acc Deleted_children_accum(Acc accumulate, T fun) const
+	Acc deleted_children_accum(Acc accumulate, T fun) const
 	{
 		for (Files::const_iterator i = _to_delete.begin(); i != _to_delete.end(); ++i)
 			accumulate(fun(File_system::i()->file_with_id(*i)));
@@ -110,7 +114,7 @@ public:
 	}
 
 	template <typename T>
-	bool Deleted_children_if_any(T fun) const
+	bool deleted_children_if_any(T fun) const
 	{
 		bool result = false;
 		for (Files::const_iterator i = _to_delete.begin(); i != _to_delete.end(); ++i)
@@ -122,7 +126,7 @@ public:
 	}
 
 	template <typename T>
-	bool Children_if_any(T fun) const
+	bool children_if_any(T fun) const
 	{
 		bool result = false;
 		for (Files::const_iterator i = _children.begin(); i != _children.end(); ++i)
@@ -162,5 +166,36 @@ protected:
 	mutable bool _has_for_delete_cache;
 };
 
+template <typename F>
+void files_each(const File::Files& files, const F& functor)
+{
+	fun::each(files, [&functor] (File::ID id) {
+		functor(File_system::i()->file_with_id(id));
+	});
+}
+
+template <typename F>
+void children_each_rec(const File* file, const F& functor)
+{
+	fun::files_each(file->children(), [&functor] (const File* file) {
+		if (file->is_direcory()
+		{
+			files_each_rec(file, functor);
+		}
+		functor(file);
+	});
+}
+
+template <typename F>
+void to_delete_each_rec(const File* file, const F& functor)
+{
+	fun::files_each(file->files_to_delete(), [&functor] (const File* file) {
+		if (file->is_direcory()
+		{
+			files_each_rec(file, functor);
+		}
+		functor(file);
+	});
+}
 
 }// namespace xdd

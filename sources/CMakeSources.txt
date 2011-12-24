@@ -11,6 +11,7 @@ ${XDD_HD}/file.hpp
 ${XDD_HD}/file_system.hpp
 ${XDD_HD}/filters.hpp
 ${XDD_HD}/filter_views.hpp
+${XDD_HD}/fun.hpp
 
 ${XDD_HD}/clean_tree_view.hpp
 ${XDD_HD}/clean_model.hpp

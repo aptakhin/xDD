@@ -123,7 +123,7 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 
 	if ((role == Qt::EditRole || role == Qt::CheckStateRole) && index.column() == C_NAME)
     {
-		if (file->For_delete())
+		if (file->for_delete())
 			return QVariant(Qt::Checked);
 		else if (file->has_for_delete_cache())
 			return QVariant(Qt::PartiallyChecked);
@@ -133,7 +133,7 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 
 	if (role == Qt::ForegroundRole)
     {
-		return QVariant(file->For_delete()? _red_brush : _black_brush);
+		return QVariant(file->for_delete()? _red_brush : _black_brush);
 	}
 
     if (role == Qt::DisplayRole || role == Qt::ForegroundRole)
