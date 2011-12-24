@@ -177,10 +177,10 @@ void files_each(const File::Files& files, const F& functor)
 template <typename F>
 void children_each_rec(const File* file, const F& functor)
 {
-	fun::files_each(file->children(), [&functor] (const File* file) {
-		if (file->is_direcory()
+	files_each(file->children(), [file, &functor] (const File* file) {
+		if (file->is_directory())
 		{
-			files_each_rec(file, functor);
+			children_each_rec(file, functor);
 		}
 		functor(file);
 	});
@@ -189,10 +189,10 @@ void children_each_rec(const File* file, const F& functor)
 template <typename F>
 void to_delete_each_rec(const File* file, const F& functor)
 {
-	fun::files_each(file->files_to_delete(), [&functor] (const File* file) {
-		if (file->is_direcory()
+	files_each(file->files_to_delete(), [file, &functor] (const File* file) {
+		if (file->is_directory())
 		{
-			files_each_rec(file, functor);
+			to_delete_each_rec(file, functor);
 		}
 		functor(file);
 	});

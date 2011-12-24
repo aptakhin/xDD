@@ -131,7 +131,7 @@ void Clean_manager::make_clean(Action action)
 void Clean_manager::make_clean_rec(const File* file, Action action)
 {
 #ifdef XDD_CPP11
-	to_delete_each_rec(file, [action] (File* file) {
+	to_delete_each_rec(file, [action] (const File* file) {
 		if (!file->is_directory() && file->for_delete())
 		{
 			//if (action == A_MOVE_TO_RECYCLE_BIN)
