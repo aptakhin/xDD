@@ -122,7 +122,9 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 				if (cur_file != nullptr && file->add_child(cur_file->Id()))
 				{
 					goto_file = cur_file, cur_file->_set_size(size);
-					cur_file->mark_for_delete(reason);// Child added. Can set reason
+
+					if (reason != nullptr && *reason != EMPTY_STR)// Child added. Can set reason if has some
+						cur_file->mark_for_delete(reason);
 				}
 				else
 					goto_file = nullptr;					

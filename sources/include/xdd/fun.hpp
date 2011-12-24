@@ -2,7 +2,6 @@
 #pragma once
 
 #include "xdd/proto.hpp"
-#include "xdd/file.hpp"
 
 namespace xdd {
 
@@ -11,10 +10,7 @@ namespace fun {
 	template <typename T, typename F>
 	void each(const std::vector<T>& vec, const F& functor)
 	{
-		for (std::vector<T>::const_iterator i = vec.begin(); i != vec.end(); ++i)
-		{
-			functor(*i);
-		}
+		std::for_each(vec.begin(), vec.end(), functor);
 	}
 
 	template <typename T, typename F>
@@ -27,6 +23,6 @@ namespace fun {
 	}
 
 
-}  // namespace fun
+} // namespace fun
 
 } // namespace xdd

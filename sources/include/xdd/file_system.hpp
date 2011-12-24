@@ -27,7 +27,8 @@ public:
 
     Bucket_vector(uint32 bucket_size)
     :   _buckets(), 
-	 	_bucket_size(bucket_size)
+	 	_bucket_size(bucket_size),
+		_last_bucket(nullptr)
     {
         extend();// add first bucket at creation
     }
@@ -39,10 +40,10 @@ public:
 
     void push_back(const T& obj)
     {
-		if (_buckets.back().size == _bucket_size)
+		if (_last_bucket->size == _bucket_size)
             extend();// No place. add another one bucket.
 
-		_buckets.back().base[_buckets.back().size++] = obj;
+		_last_bucket->base[_last_bucket->size++] = obj;
     }
 
 	T& operator [] (uint64 i)
@@ -61,14 +62,13 @@ public:
 
     T& back()
     {
-		Bucket& last = _buckets.back();
-        return _buckets.back().base[last.size - 1];
+        return _last_bucket->base[_last_bucket->size - 1];
     }
 
     uint32 size() const
     {
 		// So easy, because there are no deleting interface, yep.
-        return (_buckets.size() - 1) * _bucket_size + _buckets.back().size;
+        return (_buckets.size() - 1) * _bucket_size + _last_bucket->size;
     }
 
 	void clear()
@@ -98,6 +98,7 @@ protected:
 		bucket.base = new T[_bucket_size];
 		bucket.size = 0;
         _buckets.push_back(bucket);
+		_last_bucket = &_buckets.back();
     }
 
 protected:
@@ -107,6 +108,8 @@ protected:
 
 	/// size of each bucket vector
 	const uint32 _bucket_size;
+
+	Bucket* _last_bucket;
 };
 
 class File_system
