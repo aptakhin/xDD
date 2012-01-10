@@ -12,6 +12,7 @@ ${XDD_HD}/file_system.hpp
 ${XDD_HD}/filters.hpp
 ${XDD_HD}/filter_views.hpp
 ${XDD_HD}/fun.hpp
+${XDD_HD}/settings.hpp
 
 ${XDD_HD}/clean_tree_view.hpp
 ${XDD_HD}/clean_model.hpp
@@ -33,6 +34,7 @@ ${XDD_SD}/file.cpp
 ${XDD_SD}/file_system.cpp
 ${XDD_SD}/filters.cpp
 ${XDD_SD}/filter_views.cpp
+${XDD_SD}/settings.cpp
 
 ${XDD_SD}/clean_tree_view.cpp
 ${XDD_SD}/clean_model.cpp

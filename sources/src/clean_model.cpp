@@ -92,24 +92,24 @@ uint64 Clean_model::calculate_free_size() const
 
 const File* Clean_model::locate(const QModelIndex& index, int role) const
 {
-    QModelIndex parent = index.parent();
-    const File* file = nullptr;
+	QModelIndex parent = index.parent();
+	const File* file = nullptr;
 
-    if (parent == QModelIndex())
-        file = &_pseudo_root;
-    else
-        file = locate(parent, role);
+	if (parent == QModelIndex())
+		file = &_pseudo_root;
+	else
+		file = locate(parent, role);
 
-    if (file != nullptr && (size_t)index.row() < file->num_files_to_delete())
+	if (file != nullptr && (size_t)index.row() < file->num_files_to_delete())
 		return file->i_file_to_delete((size_t)index.row());
-    else
-        return nullptr;
+	else
+		return nullptr;
 }
 
 QVariant Clean_model::data(const QModelIndex& index, int role) const
 {
-    if (!index.isValid())
-        return QVariant();
+	if (!index.isValid())
+		return QVariant();
 
 	const File* file = locate(index, role);
 
@@ -117,12 +117,12 @@ QVariant Clean_model::data(const QModelIndex& index, int role) const
 		return QVariant();
 
 	if (role == Qt::DecorationRole && index.column() == C_NAME)
-    {
+	{
 		return QVariant(file->_cached_icon());
 	}
 
 	if (role == Qt::DisplayRole)
-    {
+	{
 		switch (index.column())
 		{
 		case C_NAME:	return file->name();
@@ -130,12 +130,12 @@ QVariant Clean_model::data(const QModelIndex& index, int role) const
 		case C_REASON:	return file->delete_reason();
 		}
 		return QVariant();
-    }
+	}
 
 	if (role == Qt::ToolTipRole && index.column() == C_NAME)
-    {
+	{
 		return Scan_manager::i()->fs()->full_path_of(*file);
-    }
+	}
 
 	return QVariant();
 }
@@ -145,11 +145,11 @@ QModelIndex Clean_model::parent(const QModelIndex& index) const
 	if (!index.isValid())
 		return QModelIndex();
 
-    const File* child = assoc_file(index);
+	const File* child = assoc_file(index);
 	const File* model_parent = parent(child);
 
 	if (model_parent->is_root())
-         return QModelIndex();
+		 return QModelIndex();
 
 	size_t row = 0;
 	const File* parent_of_parent = model_parent->parent();
@@ -189,8 +189,8 @@ bool Clean_model::hasChildren(const QModelIndex& parent) const
 
 Qt::ItemFlags Clean_model::flags(const QModelIndex &index) const
  {
-     if (!index.isValid())
-         return Qt::ItemIsEnabled;
+	 if (!index.isValid())
+		 return Qt::ItemIsEnabled;
 
 	 return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
  }

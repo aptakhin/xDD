@@ -14,9 +14,9 @@ template <typename T>
 class Bucket_vector
 {
 protected:
-    struct Bucket
-    {
-        T* base;
+	struct Bucket
+	{
+		T* base;
 		uint32 size;
 
 		Bucket() : base(nullptr), size(0) {}
@@ -25,51 +25,51 @@ protected:
 
 public:
 
-    Bucket_vector(uint32 bucket_size)
-    :   _buckets(), 
+	Bucket_vector(uint32 bucket_size)
+	:   _buckets(), 
 	 	_bucket_size(bucket_size),
 		_last_bucket(nullptr)
-    {
-        extend();// add first bucket at creation
-    }
+	{
+		extend();// add first bucket at creation
+	}
 
-    ~Bucket_vector()
+	~Bucket_vector()
 	{
 		clear();
 	}
 
-    void push_back(const T& obj)
-    {
+	void push_back(const T& obj)
+	{
 		if (_last_bucket->size == _bucket_size)
-            extend();// No place. add another one bucket.
+			extend();// No place. add another one bucket.
 
 		_last_bucket->base[_last_bucket->size++] = obj;
-    }
+	}
 
 	T& operator [] (uint64 i)
-    {
-        uint bucket = uint(i / _bucket_size);
-        uint local  = uint(i - bucket * _bucket_size);
-        return _buckets[bucket].base[local];
-    }
+	{
+		uint bucket = uint(i / _bucket_size);
+		uint local  = uint(i - bucket * _bucket_size);
+		return _buckets[bucket].base[local];
+	}
 
-    const T& operator [] (uint64 i) const
-    {
-        uint64 bucket = uint(i / _bucket_size);
-        uint64 local  = uint(i - bucket * _bucket_size);
-        return _buckets[bucket].base[local];
-    }
+	const T& operator [] (uint64 i) const
+	{
+		uint64 bucket = uint(i / _bucket_size);
+		uint64 local  = uint(i - bucket * _bucket_size);
+		return _buckets[bucket].base[local];
+	}
 
-    T& back()
-    {
-        return _last_bucket->base[_last_bucket->size - 1];
-    }
+	T& back()
+	{
+		return _last_bucket->base[_last_bucket->size - 1];
+	}
 
-    uint32 size() const
-    {
+	uint32 size() const
+	{
 		// So easy, because there are no deleting interface, yep.
-        return (_buckets.size() - 1) * _bucket_size + _last_bucket->size;
-    }
+		return (_buckets.size() - 1) * _bucket_size + _last_bucket->size;
+	}
 
 	void clear()
 	{
@@ -92,19 +92,19 @@ public:
 
 protected:
 
-    void extend()
-    {
-        Bucket bucket;
+	void extend()
+	{
+		Bucket bucket;
 		bucket.base = new T[_bucket_size];
 		bucket.size = 0;
-        _buckets.push_back(bucket);
+		_buckets.push_back(bucket);
 		_last_bucket = &_buckets.back();
-    }
+	}
 
 protected:
 
 	typedef std::vector<Bucket> Buckets;
-    Buckets _buckets;
+	Buckets _buckets;
 
 	/// size of each bucket vector
 	const uint32 _bucket_size;
@@ -115,22 +115,22 @@ protected:
 class File_system
 {
 public:
-    File_system();
-    ~File_system();
+	File_system();
+	~File_system();
 
-    QString full_path_of(const File& file) const;
+	QString full_path_of(const File& file) const;
 
-    void full_path_of(const File& file, QString& full_path) const;
+	void full_path_of(const File& file, QString& full_path) const;
 	void full_path_of(const File& file, wchar_t* full_path, size_t* len) const;
 
-    File* add_file(const File& file);
+	File* add_file(const File& file);
 
 	/// O(1) access-time
 	File* file_with_id(File::ID id);
 	/// O(1) access-time
 	const File* file_with_id(File::ID id) const;
 
-    static File_system* i();
+	static File_system* i();
 	uint32 num_files() const;
 
 	File* root();
@@ -139,15 +139,15 @@ public:
 	void flush_and_ready_async();
 
 protected:
-    void _full_path_of(const File& file, QString& path) const;
+	void _full_path_of(const File& file, QString& path) const;
 	void _full_path_of(const File& file, wchar_t* full_path, size_t* len) const;
 
 protected:
-    static File_system* _instance;
+	static File_system* _instance;
 
 	int _init_bucket_size;
 
-    Bucket_vector<File>* _files;
+	Bucket_vector<File>* _files;
 };
 
 }// namespace xdd

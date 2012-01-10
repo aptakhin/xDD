@@ -15,13 +15,13 @@ class File
 
 public:
 	/// Unique global file id
-    typedef uint32 ID;
+	typedef uint32 ID;
 
-    enum Type
-    {
-        T_FILE,
-        T_DIRECTORY
-    };
+	enum Type
+	{
+		T_FILE,
+		T_DIRECTORY
+	};
 
 	enum Field
 	{
@@ -33,28 +33,28 @@ public:
 	typedef std::vector<File::ID> Files;
 
 public:
-    File();
-    File(const File& cpy);
-    File(File::ID parent, const QString& name, Type type);
+	File();
+	File(const File& cpy);
+	File(File::ID parent, const QString& name, Type type);
 	File(File::ID parent, const wchar_t* name, size_t len, Type type);
 	~File();
 
-    void operator = (const File& cpy);
+	void operator = (const File& cpy);
 
 	const QString& name() const { return _name; }
 	File::ID Id() const { return _id; }
 
-    bool is_root() const { return _parent == (ID)-1; }
-    bool is_directory() const { return _type == T_DIRECTORY; }
+	bool is_root() const { return _parent == (ID)-1; }
+	bool is_directory() const { return _type == T_DIRECTORY; }
 
-    uint64 size() const { return _size; }
-    void _set_size(uint64 size) { _size = size; }
+	uint64 size() const { return _size; }
+	void _set_size(uint64 size) { _size = size; }
 
-    File::ID parent_id() const { return _parent; }
+	File::ID parent_id() const { return _parent; }
 	File* parent();
 	const File* parent() const;
 
-    bool add_child(const File::ID& file);
+	bool add_child(const File::ID& file);
 
 	void sort_size_desc();
 
@@ -71,7 +71,7 @@ public:
 	bool has_child(File::ID id) const;
 
 	/** Marks to delete all child files with reason. 
-		empty string means not to delete. Other values show the reason of deleting.
+		Empty string means not to delete. Other values show the reason of deleting.
 		Remember that File doesn't copy string to object, it just saves pointer to string!
 		Don't push there nullptr pointer! Valid pointer object must be pushed. */
 	void mark_for_delete(const QString* reason);
@@ -135,19 +135,19 @@ protected:
 	/// Only parent can call this
 	void _parent_marks_for_delete(const QString& reason);
 
-    void _set_id(File::ID id) { _id = id; }
+	void _set_id(File::ID id) { _id = id; }
 
 	Files::iterator child_to_delete_iter_by_id(File::ID id);
 	
 protected:
-    File::ID _parent;
-    File::ID _id;
-    QString _name;
-    Type _type;
+	File::ID _parent;
+	File::ID _id;
+	QString _name;
+	Type _type;
 
-    uint64 _size;
+	uint64 _size;
 
-    Files _children;
+	Files _children;
 
 	const QString* _reason_delete;
 

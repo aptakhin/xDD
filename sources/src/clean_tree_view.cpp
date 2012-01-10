@@ -9,7 +9,7 @@ Clean_tree_view::Clean_tree_view(QObject *parent)
 :	QTreeView((QWidget*)parent)
 {
 	QObject::connect(this->header(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-        this, SLOT(sort_indicator_changed(int, Qt::SortOrder)));
+		this, SLOT(sort_indicator_changed(int, Qt::SortOrder)));
 }
 
 Clean_tree_view::~Clean_tree_view()

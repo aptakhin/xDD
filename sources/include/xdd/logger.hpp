@@ -9,7 +9,7 @@ namespace xdd {
 class Logger
 {
 public:
-    Logger();
+	Logger();
 	~Logger();
 
 	enum Message

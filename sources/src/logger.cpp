@@ -10,24 +10,24 @@ Logger::Logger()
 	_log.open("xdd.log", std::ios_base::app);
 
 	XDD_ASSERT3(!Logger::_instance,
-        "Singleton of logger is already created!",
-            return);
-    Logger::_instance = this;
+		"Singleton of logger is already created!",
+			return);
+	Logger::_instance = this;
 }
 
 Logger::~Logger()
 {
-    XDD_ASSERT3(Logger::_instance == this,
-        "Problem while deleting logger! Another singleton was created!",
-            return);
+	XDD_ASSERT3(Logger::_instance == this,
+		"Problem while deleting logger! Another singleton was created!",
+			return);
 
-    Logger::_instance = 0;
+	Logger::_instance = 0;
 }
 
 Logger& Logger::i() 
 {
 	XDD_ASSERT2(Logger::_instance,
-        "Singleton of logger wasn't yet created!");
+		"Singleton of logger wasn't yet created!");
 	return *Logger::_instance; 
 }
 
@@ -53,7 +53,7 @@ void Logger::write_header(Message msg)
 
 	switch (msg)
 	{
-	case M_DEFAULT: _log << "     "; break;
+	case M_DEFAULT: _log << "	 "; break;
 	case M_ERROR:   _log << "ERR  "; break;
 	case M_WARNING: _log << "warn "; break;
 	}

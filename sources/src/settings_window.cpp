@@ -8,18 +8,18 @@
 namespace xdd {
 
 Settings_window::Settings_window(QWidget *parent) :
-    QDialog(parent),
-    _ui(new ::Ui::SettingsWindow),
+	QDialog(parent),
+	_ui(new ::Ui::SettingsWindow),
 	_simple_size_filter_view()
 {
-    _ui->setupUi(this);
+	_ui->setupUi(this);
 	_ui->filters_box->removeItem(0);// It was obligatory in Qt Designer. Remove it.
 
 	QObject::connect(_ui->apply_btn, SIGNAL(clicked()),
-        this, SLOT(apply_btn_clicked()));
+		this, SLOT(apply_btn_clicked()));
 
 	QObject::connect(_ui->cancel_btn, SIGNAL(clicked()),
-        this, SLOT(cancel_btn_clicked()));
+		this, SLOT(cancel_btn_clicked()));
 
 	init_filters();
 }
@@ -43,7 +43,7 @@ void Settings_window::install_filter_view(Filter_view* view)
 	
 Settings_window::~Settings_window()
 {
-    delete _ui;
+	delete _ui;
 }
 
 void Settings_window::show()

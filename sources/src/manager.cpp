@@ -15,29 +15,29 @@ Scan_manager::Scan_manager()
 	_time_exec(0)
 {
 	XDD_ASSERT3(!Scan_manager::_instance,
-        "Singleton of Scan_manager is already created!",
-            return);
+		"Singleton of Scan_manager is already created!",
+			return);
 
-    Scan_manager::_instance = this;
+	Scan_manager::_instance = this;
 	Logger::i().wl();
 	XDD_LOG("Scan manager initalized");
 }
 
 Scan_manager::~Scan_manager()
 {
-    XDD_ASSERT3(Scan_manager::_instance == this,
-        "Problem while deleting Scan_manager! Another singleton was created!",
-            return);
+	XDD_ASSERT3(Scan_manager::_instance == this,
+		"Problem while deleting Scan_manager! Another singleton was created!",
+			return);
 	XDD_LOG("Scan manager destroyed");
 	Logger::i().wl();
-    Scan_manager::_instance = 0;
+	Scan_manager::_instance = 0;
 }
 
 Scan_manager* Scan_manager::i() 
 {
 	XDD_ASSERT3(Scan_manager::_instance,
-        "Singleton of Scan_manager wasn't yet created!",
-            return nullptr);
+		"Singleton of Scan_manager wasn't yet created!",
+			return nullptr);
 	return _instance; 
 }
 
@@ -75,10 +75,10 @@ void Scan_manager::scan(const Scan_files_param& param)
 	_ready = false;
 	XDD_LOG("Scanner started at: " << start);
 
-    uint64 start_time = helper::get_ms_time();
-    _scanner.start(start);
-    uint64 end_time = helper::get_ms_time();
-    _time_exec = end_time - start_time;
+	uint64 start_time = helper::get_ms_time();
+	_scanner.start(start);
+	uint64 end_time = helper::get_ms_time();
+	_time_exec = end_time - start_time;
 	XDD_LOG("Scanner stopped in " << helper::format_time_ms(_time_exec));
 
 	File* root = _fs->root();
@@ -109,8 +109,8 @@ void Scan_manager::flush()
 
 void Scan_manager::prepare_files(File* file)
 {
-    file->sort_size_desc();
-    for (size_t i = 0; i < file->num_children(); ++i)
+	file->sort_size_desc();
+	for (size_t i = 0; i < file->num_children(); ++i)
 		prepare_files(file->i_child(i));
 }
 
@@ -155,7 +155,7 @@ void Clean_manager::make_clean_rec(const File* file, Action action)
 		else if (action == A_REMOVE)
 			remove_file(file);
 	}
-#endif
+#endif//#ifdef XDD_CPP11
 }
 
 void Clean_manager::move_file_to_recycle_bin(const File* file)
@@ -167,15 +167,15 @@ void Clean_manager::move_file_to_recycle_bin(const File* file)
 	path[len + 1] = L'\0';// Path have to be double-zeroed \0\0. Oh, yep.
 
 	SHFILEOPSTRUCTW fileop;
-    fileop.hwnd = 0;
-    fileop.wFunc = FO_DELETE;
-    fileop.pFrom = path;
-    fileop.pTo = NULL;
-    fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
-    fileop.fAnyOperationsAborted = 0;
-    fileop.hNameMappings = 0;
-    fileop.lpszProgressTitle = NULL;
-    SHFileOperationW(&fileop);
+	fileop.hwnd = 0;
+	fileop.wFunc = FO_DELETE;
+	fileop.pFrom = path;
+	fileop.pTo = NULL;
+	fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
+	fileop.fAnyOperationsAborted = 0;
+	fileop.hNameMappings = 0;
+	fileop.lpszProgressTitle = NULL;
+	SHFileOperationW(&fileop);
 #else
 	not_implemented("Can't delete files on this platform!");
 #endif//#ifdef XDD_WIN32_CODE

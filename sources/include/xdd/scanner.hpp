@@ -11,15 +11,15 @@ class Scanner
 {
 public:
 
-    void start(const QString& path);
+	void start(const QString& path);
 
 	/// Fast filter have use only file data, which they will get. They don't use more file information and analysis.
-    void add_fast_filter(Filter* filter);
+	void add_fast_filter(Filter* filter);
 
 protected:
 #ifdef XDD_WIN32_SCANNER
 	/// Fastest Scanner in Win32. WTF code and global variables:).
-    uint64 _start(wchar_t* path, File* file, int depth);
+	uint64 _start(wchar_t* path, File* file, int depth);
 #endif
 
 #ifdef XDD_UNIVERSAL_SCANNER
@@ -27,15 +27,15 @@ protected:
 	uint64 _start(File* file, const QDir& cur_dir);	
 #endif
 
-    bool does_look_at(const file_data& data, int depth);
+	bool does_look_at(const file_data& data, int depth);
 
 protected:
 
-    typedef std::vector<Filter*> Filters;
+	typedef std::vector<Filter*> Filters;
 
-    Filters _fast_filters;
+	Filters _fast_filters;
 
-    Filters _filters;
+	Filters _filters;
 
 	size_t _path_len;
 };

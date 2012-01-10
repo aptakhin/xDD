@@ -16,7 +16,7 @@ Files_model::Files_model(QObject *parent)
 
 Files_model::~Files_model()
 {
-    delete _fs;
+	delete _fs;
 }
 
 File* Files_model::assoc_file(const QModelIndex& index) 
@@ -49,16 +49,16 @@ void Files_model::notify_scan_finished()
 
 const File* Files_model::locate(const QModelIndex& index, int role) const
 {
-    QModelIndex parent = index.parent();
-    const File* file = nullptr;
+	QModelIndex parent = index.parent();
+	const File* file = nullptr;
 
-    if (parent == QModelIndex())
-        file = _fs->root();
-    else
-        file = locate(parent, role);
+	if (parent == QModelIndex())
+		file = _fs->root();
+	else
+		file = locate(parent, role);
 
-    if (file != nullptr && (size_t)index.row() < file->num_children())
-        return file->i_child((size_t)index.row());
+	if (file != nullptr && (size_t)index.row() < file->num_children())
+		return file->i_child((size_t)index.row());
 	else
 		return nullptr;
 }
@@ -67,7 +67,7 @@ bool Files_model::setData(const QModelIndex& index, const QVariant& value, int r
 {
 	const File* file = locate(index, role);
 	if (role == Qt::CheckStateRole && file != nullptr && index.column() == C_NAME)
-    {
+	{
 		const QString& reason = value.toInt() == Qt::Checked? USER_WANTS_STR : EMPTY_STR;
 
 		class Delete_thread : public QThread
@@ -110,20 +110,20 @@ bool Files_model::setData(const QModelIndex& index, const QVariant& value, int r
 
 QVariant Files_model::data(const QModelIndex& index, int role) const
 {
-    if (!index.isValid())
-        return QVariant();
+	if (!index.isValid())
+		return QVariant();
 
 	const File* file = locate(index, role);
 	if (file == nullptr)
 		return QVariant();
 
 	if (role == Qt::DecorationRole && index.column() == C_NAME)
-    {
+	{
 		return QVariant(file->_cached_icon());
 	}
 
 	if ((role == Qt::EditRole || role == Qt::CheckStateRole) && index.column() == C_NAME)
-    {
+	{
 		if (file->for_delete())
 			return QVariant(Qt::Checked);
 		else if (file->has_for_delete_cache())
@@ -133,32 +133,38 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 	}
 
 	if (role == Qt::ForegroundRole)
-    {
+	{
 		return QVariant(file->for_delete()? _red_brush : _black_brush);
 	}
 
-    if (role == Qt::DisplayRole || role == Qt::ForegroundRole)
-    {
+	if (role == Qt::DisplayRole || role == Qt::ForegroundRole)
+	{
 		switch (index.column())
 		{
 			case C_NAME: return file->name();
 			case C_SIZE: return helper::format_size(file->size());
 		}
 		return QVariant();
-    }
+	}
+
+	if (role == Qt::TextAlignmentRole && index.column() == C_SIZE)
+	{
+		return QVariant(Qt::AlignRight);
+	}
+
 	return QVariant();
 }
 
 QModelIndex Files_model::parent(const QModelIndex& index) const
 {
-     if (!index.isValid())
-         return QModelIndex();
+	 if (!index.isValid())
+		 return QModelIndex();
 
-     const File* child = assoc_file(index);
+	 const File* child = assoc_file(index);
 	 const File* parent = child->parent();
 
 	 if (parent->is_root())
-         return QModelIndex();
+		 return QModelIndex();
 
 	 size_t row = 0;
 	 const File* parent_of_parent = parent->parent();
@@ -169,7 +175,7 @@ QModelIndex Files_model::parent(const QModelIndex& index) const
 QModelIndex	Files_model::index(int row, int column, const QModelIndex& parent) const
 {
 	if (!_ready || !hasIndex(row, column, parent))
-         return QModelIndex();
+		 return QModelIndex();
 
 	const File* parent_file = nullptr;
 	if (parent.isValid())
@@ -201,13 +207,13 @@ bool Files_model::hasChildren(const QModelIndex& parent) const
 
 Qt::ItemFlags Files_model::flags(const QModelIndex &index) const
  {
-     if (!index.isValid())
-         return Qt::ItemIsEnabled;
+	 if (!index.isValid())
+		 return Qt::ItemIsEnabled;
 
 	 if (index.column() == C_NAME)
 		 return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
 
-     return Qt::ItemIsEnabled;
+	 return Qt::ItemIsEnabled;
  }
 
 QVariant Files_model::headerData(int section, Qt::Orientation, int role) const

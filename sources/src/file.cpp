@@ -36,10 +36,10 @@ File::File(const File& cpy)
 
 File::File(File::ID parent, const QString& name, Type type)
 :   _parent(parent),
-    _id(0),
-    _name(name),
-    _type(type),
-    _size(0),
+	_id(0),
+	_name(name),
+	_type(type),
+	_size(0),
 	_reason_delete(&EMPTY_STR),
 	_has_for_delete_cache(false)
 {
@@ -58,12 +58,12 @@ File::File(File::ID parent, const wchar_t* name, size_t len, Type type)
 
 void File::operator = (const File& cpy)
 {
-	_parent               = cpy._parent;
-	_id	                  = cpy._id;
-	_name                 = cpy._name;
-	_type                 = cpy._type;
-	_size                 = cpy._size;
-	_reason_delete        = cpy._reason_delete;
+	_parent			   = cpy._parent;
+	_id					  = cpy._id;
+	_name				 = cpy._name;
+	_type				 = cpy._type;
+	_size				 = cpy._size;
+	_reason_delete		= cpy._reason_delete;
 	_has_for_delete_cache = cpy._has_for_delete_cache;
 }
 
@@ -86,10 +86,10 @@ void File::sort_size_desc()
 			File_system* fs = File_system::i();
 			return fs->file_with_id(a)->size() > fs->file_with_id(b)->size();
 		}
-    } pred;
+	} pred;
 
-    if (!_children.empty())
-        std::sort(_children.begin(), _children.end(), pred);
+	if (!_children.empty())
+		std::sort(_children.begin(), _children.end(), pred);
 }
 
 size_t File::number_of(File::ID id) const

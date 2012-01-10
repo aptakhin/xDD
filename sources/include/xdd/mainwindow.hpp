@@ -13,19 +13,19 @@
 #include "xdd/settings_window.hpp"
 
 namespace Ui {
-    class MainWindow;
+	class MainWindow;
 }
 
 namespace xdd {
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+	explicit MainWindow(QWidget *parent = 0);
+	~MainWindow();
 
 	enum Tabs
 	{
@@ -34,7 +34,7 @@ public:
 	};
 
 public slots:
-    void run_btn_clicked();
+	void run_btn_clicked();
 
 	void scan_finished();
 
@@ -70,13 +70,13 @@ private /*overriden*/:
 
 
 private:
-    ::Ui::MainWindow* ui;
+	::Ui::MainWindow* ui;
 
 	Settings_window* _settings;
 
 	QFileDialog* _file_dlg;
 
-    Files_model* _files_model;
+	Files_model* _files_model;
 	Clean_model* _clean_model;
 
 	QTimer _timer;

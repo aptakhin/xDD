@@ -11,13 +11,13 @@ void not_implemented(const QString& msg)
 
 namespace helper {
 
-    uint64 quad_part(DWORD low, DWORD high)
-    {
-        LARGE_INTEGER large;
-        large.LowPart  = low;
-        large.HighPart = high;
-        return large.QuadPart;
-    }
+	uint64 quad_part(DWORD low, DWORD high)
+	{
+		LARGE_INTEGER large;
+		large.LowPart  = low;
+		large.HighPart = high;
+		return large.QuadPart;
+	}
 
 	QString real2str(double val, int prec)
 	{

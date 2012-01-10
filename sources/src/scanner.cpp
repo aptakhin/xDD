@@ -1,22 +1,22 @@
 /** xDDTools */
-#include "xdd/Scanner.hpp"
+#include "xdd/scanner.hpp"
 
 #ifdef XDD_UNIVERSAL_SCANNER
-#include <QDir>
+#	include <QDir>
 #endif
 
 namespace xdd {
 
 void Scanner::add_fast_filter(Filter* filter)
 {
-    _fast_filters.push_back(filter);
+	_fast_filters.push_back(filter);
 }
 
 void Scanner::start(const QString& path)
 {
 	_path_len = 0;
 	// add root for file system - it's out start folder
-    File* root = File_system::i()->add_file(File((File::ID)-1, path, File::T_DIRECTORY));
+	File* root = File_system::i()->add_file(File((File::ID)-1, path, File::T_DIRECTORY));
 
 #ifdef XDD_WIN32_SCANNER
 	wchar_t root_path[MAX_PATH];
@@ -24,7 +24,7 @@ void Scanner::start(const QString& path)
 	std::wstring wpath = path.toStdWString();
 
 #	ifdef _MSC_VER
-    wcscpy_s(root_path, wpath.c_str());
+	wcscpy_s(root_path, wpath.c_str());
 #	else
 	wcscpy(root_path, wpath.c_str());
 #	endif//#ifdef _MSC_VER
@@ -47,28 +47,28 @@ It must be fast:).
 */
 uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 {
-    uint64 full_size = 0;
-    WIN32_FIND_DATA file_data;
+	uint64 full_size = 0;
+	WIN32_FIND_DATA file_data;
 
 	path[_path_len++] = L'*', path[_path_len] = 0;// Cat `*` for query
 
 	HANDLE file_handle = FindFirstFile(path, &file_data);
 
 	// Query done. Erase last `*` from path
-    path[--_path_len] = 0;
+	path[--_path_len] = 0;
 
-    XDD_ASSERT3(file_handle != INVALID_HANDLE_VALUE,
+	XDD_ASSERT3(file_handle != INVALID_HANDLE_VALUE,
 		"Invalid file handle `" << QString::fromStdWString(path) << "`!",
 			return 0);
-    
+	
 	size_t restore_to_len = _path_len;// Save current length to restore fast
 
-    do
-    {
-        File::Type type = File::T_FILE;
+	do
+	{
+		File::Type type = File::T_FILE;
 		File* goto_file = nullptr;
 
-        uint64 size = 0;
+		uint64 size = 0;
 
 		if (file_data.cFileName[0] == '.' && 
 		   (file_data.cFileName[1] == 0 || file_data.cFileName[1] == '.' && file_data.cFileName[2] == 0))
@@ -77,13 +77,13 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		// back to original filename
 		path[_path_len = restore_to_len] = 0;
 
-        if (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-            type = File::T_DIRECTORY;
-        else
-        {
-            size = helper::quad_part(file_data.nFileSizeLow, file_data.nFileSizeHigh);
-            full_size += size;// update size and full folder size
-        }
+		if (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			type = File::T_DIRECTORY;
+		else
+		{
+			size = helper::quad_part(file_data.nFileSizeLow, file_data.nFileSizeHigh);
+			full_size += size;// update size and full folder size
+		}
 
 		// cat new filename
 		size_t file_name_sz = wcslen(file_data.cFileName);
@@ -93,30 +93,30 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		if (type == File::T_DIRECTORY)
 			path[_path_len++] = L'\\', path[_path_len] = 0;
 
-        bool add2fs = false;
+		bool add2fs = false;
 
-        if (file != nullptr)
-        {
+		if (file != nullptr)
+		{
 			// Fast filter's work
 			const QString* reason = nullptr;
-                
-            for (Filters::iterator i = _fast_filters.begin(); i != _fast_filters.end(); ++i)
-            {
+				
+			for (Filters::iterator i = _fast_filters.begin(); i != _fast_filters.end(); ++i)
+			{
 				reason = (*i)->look(file_data);
 				if (reason != nullptr)
-                {
-                    add2fs = true;
-                    break;
-                }
-            }
+				{
+					add2fs = true;
+					break;
+				}
+			}
 
-            if (add2fs)
-                add2fs = does_look_at(file_data, depth + 1);
+			if (add2fs)
+				add2fs = does_look_at(file_data, depth + 1);
 
-            if (add2fs)// Intresting yet?
-            {
-                File* cur_file = File_system::i()->add_file(
-                    File(file->Id(), file_data.cFileName, file_name_sz, type));
+			if (add2fs)// Intresting yet?
+			{
+				File* cur_file = File_system::i()->add_file(
+					File(file->Id(), file_data.cFileName, file_name_sz, type));
 
 				// Add file to fs. If successful, set size and go on
 				if (cur_file != nullptr && file->add_child(cur_file->Id()))
@@ -128,35 +128,35 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 				}
 				else
 					goto_file = nullptr;					
-            }
-        }
-
-        if (!add2fs)
-        {
-            goto_file = nullptr;
-            // We calculate size of this directory, but don't add file
-            // to file tree
+			}
 		}
 
-        if (type == File::T_DIRECTORY)
-        {
+		if (!add2fs)
+		{
+			goto_file = nullptr;
+			// We calculate size of this directory, but don't add file
+			// to file tree
+		}
+
+		if (type == File::T_DIRECTORY)
+		{
 			// go to subfolder
-            uint64 set_size = _start(path, goto_file, depth + 1);
-            if (goto_file != nullptr)
-                goto_file->_set_size(set_size);
-            full_size += set_size;
-        }
-    }
-    while (FindNextFile(file_handle, &file_data) != 0);
+			uint64 set_size = _start(path, goto_file, depth + 1);
+			if (goto_file != nullptr)
+				goto_file->_set_size(set_size);
+			full_size += set_size;
+		}
+	}
+	while (FindNextFile(file_handle, &file_data) != 0);
 
-    XDD_ASSERT3(GetLastError() == ERROR_NO_MORE_FILES,
-        "Error happened while reading `" << QString::fromStdWString(path) << "`!",
-           path[restore_to_len] = 0; _path_len = restore_to_len; return full_size);
+	XDD_ASSERT3(GetLastError() == ERROR_NO_MORE_FILES,
+		"Error happened while reading `" << QString::fromStdWString(path) << "`!",
+		   path[restore_to_len] = 0; _path_len = restore_to_len; return full_size);
 
-    FindClose(file_handle);
+	FindClose(file_handle);
 
 	path[_path_len = restore_to_len] = 0;// Restore
-    return full_size;
+	return full_size;
 }
 // WTF?!!
 #endif//#ifdef XDD_WIN32_SCANNER
@@ -166,8 +166,8 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 {
 	uint64 full_size = 0;
 
-    QFileInfoList list = cur_dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-    for (int child_i = 0; child_i < list.size(); ++child_i) 
+	QFileInfoList list = cur_dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+	for (int child_i = 0; child_i < list.size(); ++child_i) 
 	{
 		File* goto_file = nullptr;
 		QFileInfo file_data = list.at(child_i);
@@ -179,22 +179,22 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 		full_size += size;
 
 		for (Filters::iterator i = _fast_filters.begin(); i != _fast_filters.end(); ++i)
-        {
+		{
 			if ((*i)->look(file_data) == Filter::S_MARK)
-            {
+			{
 				add2fs = true;
-                break;
+				break;
 			}
-        }
+		}
 
 		if (file_data.isDir())
 			type = File::T_DIRECTORY;
 
-        if (add2fs)
+		if (add2fs)
 			add2fs = does_look_at(file_data, 0);
 
-        if (add2fs)
-        {
+		if (add2fs)
+		{
 			File* cur_file = File_system::i()->add_file(
 				File(file->Id(), file_data.filename().toStdWString(), type));
 
@@ -207,9 +207,9 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 		if (file_data.isDir())
 		{
 			uint64 set_size = _start(goto_file, QDir(file_data.absoluteFilePath()));
-            if (goto_file != nullptr)
-                goto_file->_set_size(set_size);
-            full_size += set_size;
+			if (goto_file != nullptr)
+				goto_file->_set_size(set_size);
+			full_size += set_size;
 		}
 	}
 	return full_size;
@@ -218,7 +218,7 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 
 bool Scanner::does_look_at(const file_data&, int)
 {
-    return true;
+	return true;
 }
 
 }// namespace xdd

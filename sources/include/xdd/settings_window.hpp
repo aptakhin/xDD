@@ -7,19 +7,19 @@
 #include <QDialog>
 
 namespace Ui {
-    class SettingsWindow;
+	class SettingsWindow;
 }
 
 namespace xdd {
 
 class Settings_window : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 
-    explicit Settings_window(QWidget* parent = 0);
-    ~Settings_window();
+	explicit Settings_window(QWidget* parent = 0);
+	~Settings_window();
 
 	void init_filters();
 

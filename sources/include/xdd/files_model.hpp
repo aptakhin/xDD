@@ -12,11 +12,11 @@ namespace xdd {
 
 class Files_model : public QAbstractItemModel
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit Files_model(QObject* parent = 0);
+	explicit Files_model(QObject* parent = 0);
 
-    ~Files_model();
+	~Files_model();
 
 	enum Columns
 	{
@@ -24,7 +24,7 @@ public:
 		C_SIZE
 	};
 
-    const File* locate(const QModelIndex& index, int role) const;
+	const File* locate(const QModelIndex& index, int role) const;
 
 	void notify_scan_started();
 	void notify_scan_finished();
@@ -37,16 +37,16 @@ signals:
 
 public /*overriden*/:
 
-    int	columnCount(const QModelIndex& parent) const;
-    QVariant data (const QModelIndex& index, int role = Qt::DisplayRole) const;
-    Qt::ItemFlags flags(const QModelIndex& index) const;
-    bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-    QModelIndex	index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
+	int	columnCount(const QModelIndex& parent) const;
+	QVariant data (const QModelIndex& index, int role = Qt::DisplayRole) const;
+	Qt::ItemFlags flags(const QModelIndex& index) const;
+	bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+	QModelIndex	index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
 	QModelIndex parent(const QModelIndex& index) const;
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+	int rowCount(const QModelIndex& parent = QModelIndex()) const;
 	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-    
+	
 private:
 	File* assoc_file(const QModelIndex& index);
 	const File* assoc_file(const QModelIndex& index) const;

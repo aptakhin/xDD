@@ -11,7 +11,7 @@ namespace xdd{
  */
 Size_simple_filter_view::Size_simple_filter_view(Size_simple_filter* filter)
 :   Filter_view(static_cast<Filter*>(filter)),
-    _filter(filter),
+	_filter(filter),
 	_ui()
 {
 	_ui.setupUi(this);
@@ -25,7 +25,7 @@ Size_simple_filter_view::Size_simple_filter_view(Size_simple_filter* filter)
 	_ui.min_file_sz_slider->setTickInterval(Max_megabytes / 8);
 
 	QObject::connect(_ui.min_file_sz_slider, SIGNAL(valueChanged(int)),
-        this, SLOT(min_file_size_changed(int)));
+		this, SLOT(min_file_size_changed(int)));
 
 	_ui.min_file_sz_edit->setEnabled(false);
 
@@ -34,7 +34,7 @@ Size_simple_filter_view::Size_simple_filter_view(Size_simple_filter* filter)
 	_ui.mark_file_sz_slider->setTickInterval(Max_megabytes / 8);
 
 	QObject::connect(_ui.mark_file_sz_slider, SIGNAL(valueChanged(int)),
-        this, SLOT(mark_file_size_changed(int)));
+		this, SLOT(mark_file_size_changed(int)));
 
 	_ui.mark_file_sz_edit->setEnabled(false);
 
@@ -45,7 +45,7 @@ Size_simple_filter_view::Size_simple_filter_view(Size_simple_filter* filter)
 	_ui.last_access_slider->setTickInterval(Max_last_access_days / 8);
 
 	QObject::connect(_ui.last_access_slider, SIGNAL(valueChanged(int)),
-        this, SLOT(file_last_access_changed(int)));
+		this, SLOT(file_last_access_changed(int)));
 }
 
 void Size_simple_filter_view::min_file_size_changed(int)

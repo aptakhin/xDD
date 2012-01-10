@@ -8,7 +8,7 @@
 namespace xdd {
 
 	namespace Ui {
-    class Simple_filter_form;
+	class Simple_filter_form;
 }
 
 
@@ -20,18 +20,18 @@ class Filter_view : public QWidget
 
 public:
 
-    Filter_view(Filter* filter) : _base_filter(filter), QWidget() {}
+	Filter_view(Filter* filter) : _base_filter(filter), QWidget() {}
 
 	/// Called before presetings settings view
 	virtual void update_view() = 0;
 
 	/// Called after applying settings
-    virtual void update_filter() = 0;
+	virtual void update_filter() = 0;
 
 	const Filter* filter() const { return _base_filter; }
 
 protected:
-    Filter* _base_filter;
+	Filter* _base_filter;
 };
 
 class Size_simple_filter_view : public Filter_view
@@ -39,11 +39,11 @@ class Size_simple_filter_view : public Filter_view
 	Q_OBJECT
 
 public:
-    Size_simple_filter_view(Size_simple_filter* filter = nullptr);
+	Size_simple_filter_view(Size_simple_filter* filter = nullptr);
 
-    void update_view();
+	void update_view();
 
-    void update_filter();
+	void update_filter();
 
 	uint64 min_file_size() const;
 	uint64 mark_file_size() const;

@@ -9,19 +9,19 @@
 
 namespace xdd {
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new ::Ui::MainWindow),
+MainWindow::MainWindow(QWidget *parent) 
+:	QMainWindow(parent),
+	ui(new ::Ui::MainWindow),
 	_file_dlg(nullptr),
 	_reset_files_model(false)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 
 	_settings = new Settings_window(this);
 	_settings->hide();
 	
-    _files_model = new Files_model();
-    ui->files->setModel(_files_model);
+	_files_model = new Files_model();
+	ui->files->setModel(_files_model);
 	ui->files->setAnimated(true);
 	ui->files->setAutoScroll(false);
 
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->clean->setSortingEnabled(true);
 
 	_file_dlg = new QFileDialog(this);
-    _file_dlg->setFileMode(QFileDialog::DirectoryOnly);
+	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
 
 	ui->root_file->setText("E:\\");
 	root_file_changed("");
@@ -55,40 +55,40 @@ MainWindow::~MainWindow()
 {
 	delete _file_dlg;
 	delete _settings;
-    delete ui;
+	delete ui;
 }
 
 void MainWindow::bind_slots()
 {
 	QObject::connect(_files_model, SIGNAL(update_clean()),
-        this, SLOT(update_clean()));
+		this, SLOT(update_clean()));
 
 	_file_dlg = new QFileDialog(this);
-    _file_dlg->setFileMode(QFileDialog::DirectoryOnly);
+	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
 
-    QObject::connect(ui->run_btn, SIGNAL(clicked()),
-        this, SLOT(run_btn_clicked()));
+	QObject::connect(ui->run_btn, SIGNAL(clicked()),
+		this, SLOT(run_btn_clicked()));
 
 	QObject::connect(ui->root_file, SIGNAL(textChanged(QString)),
-        this, SLOT(root_file_changed(QString)));
+		this, SLOT(root_file_changed(QString)));
 	
 	QObject::connect(ui->view_root_file, SIGNAL(clicked()),
-        this, SLOT(show_file_dlg()));
+		this, SLOT(show_file_dlg()));
 
 	QObject::connect(_file_dlg, SIGNAL(fileSelected(QString)),
-        this, SLOT(file_selected(QString)));
+		this, SLOT(file_selected(QString)));
 
 	QObject::connect(Scan_manager::i(), SIGNAL(scan_finished()),
-        this, SLOT(scan_finished()));
+		this, SLOT(scan_finished()));
 
 	QObject::connect(Scan_manager::i(), SIGNAL(update_info()),
-        this, SLOT(scan_updated()));
+		this, SLOT(scan_updated()));
 
 	QObject::connect(ui->scanner_tab_next, SIGNAL(clicked()),
-        this, SLOT(select_cleaning_tab()));
+		this, SLOT(select_cleaning_tab()));
 
 	QObject::connect(ui->cleaning_tab_back, SIGNAL(clicked()),
-        this, SLOT(select_scanner_tab()));
+		this, SLOT(select_scanner_tab()));
 
 	QObject::connect(ui->clean_btn, SIGNAL(clicked()),
 		this, SLOT(clean_btn_clicked()));
@@ -105,7 +105,7 @@ void MainWindow::bind_slots()
 		this, SLOT(clean_updated()));
 
 	QObject::connect(ui->tab, SIGNAL(currentChanged(int)),
-        this, SLOT(tab_selected(int)));
+		this, SLOT(tab_selected(int)));
 }
 
 void MainWindow::run_btn_clicked()
@@ -156,23 +156,26 @@ void MainWindow::scan_finished()
 
 	enable_cleaning_tab(true);
 
+	//ui->files->setColumnWidth(Files_model::C_NAME, 400);
+	//ui->files->setColumnWidth(Files_model::C_SIZE,  50);
+	ui->files->resizeColumnToContents(Files_model::C_NAME);
+	ui->files->resizeColumnToContents(Files_model::C_NAME);
 	ui->files->reset();
-	ui->files->setColumnWidth(Files_model::C_NAME, 400);
 
-	ui->clean->reset();
 	ui->clean->setColumnWidth(Files_model::C_NAME, 400);
+	ui->clean->reset();
 
 	update_clean();
 }
 
 void MainWindow::show_file_dlg()
 {
-    _file_dlg->show();
+	_file_dlg->show();
 }
 
 void MainWindow::file_selected(const QString& file)
 {
-    ui->root_file->setText(file);
+	ui->root_file->setText(file);
 	root_file_changed("");
 }
 

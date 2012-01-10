@@ -20,7 +20,7 @@ Size_simple_filter::Size_simple_filter()
 const QString* Size_simple_filter::look(const file_data& data)
 {
 #ifdef XDD_WIN32_SCANNER
-    uint64 file_size = helper::quad_part(data.nFileSizeLow, data.nFileSizeHigh);
+	uint64 file_size = helper::quad_part(data.nFileSizeLow, data.nFileSizeHigh);
 	uint64 last_access = helper::quad_part(data.ftLastAccessTime.dwLowDateTime, data.ftLastAccessTime.dwHighDateTime);
 
 	if (file_size > _pref_size && last_access > _last_access)
@@ -46,26 +46,26 @@ const QString* Size_simple_filter::look(const file_data& data)
  * Mark_all_filter
  */
 Mark_all_filter::Mark_all_filter()
-    : Filter("Mark_all_filter")
+	: Filter("Mark_all_filter")
 {
 }
 
 const QString* Mark_all_filter::look(const file_data&)
 {
-    return &EMPTY_STR;
+	return &EMPTY_STR;
 }
 
 /*---------------------------------------------------------
  * Mark_nothing_filter
  */
 Mark_nothing_filter::Mark_nothing_filter()
-    : Filter("Mark_nothing_filter")
+	: Filter("Mark_nothing_filter")
 {
 }
 
 const QString* Mark_nothing_filter::look(const file_data&)
 {
-    return nullptr;
+	return nullptr;
 }
 
 

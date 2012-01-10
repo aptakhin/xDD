@@ -13,11 +13,11 @@ namespace xdd {
 
 class Clean_model : public QAbstractItemModel
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit Clean_model(QObject *parent = 0);
+	explicit Clean_model(QObject *parent = 0);
 
-    ~Clean_model();
+	~Clean_model();
 
 	enum Columns
 	{
@@ -57,14 +57,14 @@ protected:
 	
 public /*overriden*/:
 
-    int	columnCount(const QModelIndex& parent) const;
-    QVariant data (const QModelIndex& index, int role = Qt::DisplayRole) const;
-    Qt::ItemFlags flags(const QModelIndex& index) const;
-    bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-    QModelIndex	index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
+	int	columnCount(const QModelIndex& parent) const;
+	QVariant data (const QModelIndex& index, int role = Qt::DisplayRole) const;
+	Qt::ItemFlags flags(const QModelIndex& index) const;
+	bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+	QModelIndex	index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
 	QModelIndex parent(const QModelIndex& index) const;
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+	int rowCount(const QModelIndex& parent = QModelIndex()) const;
 	bool removeRow(int row, const QModelIndex& parent = QModelIndex());
 	bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
 	void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
