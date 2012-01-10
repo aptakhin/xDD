@@ -1,6 +1,8 @@
 /** xDDTools */
 #pragma once
 
+#define NOMINMAX /* hate, hate, hate! */
+
 #include <stdio.h>
 #include <locale.h>
 #include <tchar.h>
@@ -19,11 +21,8 @@
 #include <Qt>
 
 #ifdef Q_OS_WIN32
-#	include <windows.h>
 #
-#	define NOMINMAX /* hate, hate, hate! */
-#	undef min
-#	undef max
+#	include <windows.h>
 #
 #else
 #
@@ -94,14 +93,14 @@ const uint64 GIGABYTE = 1 << 30;
 const uint32 SECOND_MS = 1000;
 const uint32 MINUTE_MS = 60 * SECOND_MS;
 const uint32 HOUR_MS   = 60 * MINUTE_MS;
-const uint32 DAY_MS	= 24 * HOUR_MS;
+const uint32 DAY_MS    = 24 * HOUR_MS;
 
-const uint32 SECOND_S	 = 1;
-const uint32 MINUTE_S	 = 60;
-const uint32 HOUR_S	   = 60  * MINUTE_S;
-const uint32 DAY_S		= 24  * HOUR_S;
-const uint32 AVG_MONTH_S  = 30  * DAY_S;
-const uint32 AVG_YEAR_S   = 365 * DAY_S;
+const uint32 SECOND_S    = 1;
+const uint32 MINUTE_S    = 60;
+const uint32 HOUR_S      = 60  * MINUTE_S;
+const uint32 DAY_S       = 24  * HOUR_S;
+const uint32 AVG_MONTH_S = 30  * DAY_S;
+const uint32 AVG_YEAR_S  = 365 * DAY_S;
 
 class File;
 class File_system;

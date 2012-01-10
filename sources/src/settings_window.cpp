@@ -7,8 +7,8 @@
 
 namespace xdd {
 
-Settings_window::Settings_window(QWidget *parent) :
-	QDialog(parent),
+Settings_window::Settings_window(QWidget *parent) 
+:	QDialog(parent),
 	_ui(new ::Ui::SettingsWindow),
 	_simple_size_filter_view()
 {
