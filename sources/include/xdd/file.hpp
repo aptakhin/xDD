@@ -103,7 +103,7 @@ public:
 	const QIcon& _cached_icon() const;
 
 	bool has_for_delete_cache() const;
-	bool update_has_for_delete_cache_rec() const;
+	bool update_delete_cache_rec() const;
 
 	template <typename T>
 	bool deleted_children_if_any(T fun) const

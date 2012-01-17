@@ -156,14 +156,13 @@ void MainWindow::scan_finished()
 
 	enable_cleaning_tab(true);
 
-	//ui->files->setColumnWidth(Files_model::C_NAME, 400);
-	//ui->files->setColumnWidth(Files_model::C_SIZE,  50);
-	ui->files->resizeColumnToContents(Files_model::C_NAME);
-	ui->files->resizeColumnToContents(Files_model::C_NAME);
 	ui->files->reset();
+	ui->files->setColumnWidth(Files_model::C_NAME, 400);
+	ui->files->setColumnWidth(Files_model::C_SIZE,  50);
 
-	ui->clean->setColumnWidth(Files_model::C_NAME, 400);
 	ui->clean->reset();
+	ui->clean->setColumnWidth(Clean_model::C_NAME, 400);
+	
 
 	update_clean();
 }

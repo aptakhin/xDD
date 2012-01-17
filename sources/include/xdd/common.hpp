@@ -64,6 +64,10 @@
 #	endif
 #endif//#ifdef _MSC_VER
 
+#ifndef XDD_CPP11 // For cpp11 compilers
+#	define XDD_CPP11
+#endif
+
 #ifdef _MSC_VER
 #	define XDD_INLINE __forceinline
 #endif

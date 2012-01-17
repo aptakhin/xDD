@@ -35,7 +35,7 @@ public:
 
 	bool empty() const { return !_pseudo_root.has_files_to_delete(); }
 
-	void write_cleaning_files_qt_str(const QString& separator, QString& cleaning_files) const;
+	void write_cleaning_files_str(const QString& separator, QString& cleaning_files) const;
 	
 
 protected:
@@ -52,7 +52,7 @@ protected:
 
 	static void sort_rec(File* node, int column, Qt::SortOrder order);
 
-	void write_cleaning_files_qt_str(const File* node, const QString& separator, QString& cleaning_files) const;
+	void write_cleaning_files_str(const File* node, const QString& separator, QString& cleaning_files) const;
 
 	
 public /*overriden*/:

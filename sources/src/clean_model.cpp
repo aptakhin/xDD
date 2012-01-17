@@ -125,9 +125,9 @@ QVariant Clean_model::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-		case C_NAME:	return file->name();
-		case C_SIZE:	return helper::format_size(file->size());
-		case C_REASON:	return file->delete_reason();
+		case C_NAME:    return file->name();
+		case C_SIZE:    return helper::format_size(file->size());
+		case C_REASON:  return file->delete_reason();
 		}
 		return QVariant();
 	}
@@ -202,9 +202,9 @@ QVariant Clean_model::headerData(int section, Qt::Orientation, int role) const
 
 	switch (section)
 	{
-	case C_NAME:	return QString("Name");
-	case C_SIZE:	return QString("size");
-	case C_REASON:	return QString("Reason");
+	case C_NAME:    return QString("Name");
+	case C_SIZE:    return QString("Size");
+	case C_REASON:  return QString("Reason");
 	}
 	return QVariant();
  }
@@ -271,9 +271,9 @@ void Clean_model::sort_rec(File* node, int column, Qt::SortOrder order)
 
 	switch (column)
 	{
-	case Clean_model::C_NAME:	field = File::F_NAME; break;
-	case Clean_model::C_SIZE:	field = File::F_SIZE; break;
-	case Clean_model::C_REASON:	field = File::F_DELETE_REASON; break;
+	case Clean_model::C_NAME:   field = File::F_NAME; break;
+	case Clean_model::C_SIZE:   field = File::F_SIZE; break;
+	case Clean_model::C_REASON: field = File::F_DELETE_REASON; break;
 	}
 
 	node->sort_marked_for_delete(field, from_qt(order));
@@ -291,13 +291,13 @@ void Clean_model::sort_rec(File* node, int column, Qt::SortOrder order)
 #endif
 }
 
-void Clean_model::write_cleaning_files_qt_str(const QString& separator, QString& cleaning_files) const
+void Clean_model::write_cleaning_files_str(const QString& separator, QString& cleaning_files) const
 {
 	cleaning_files.clear();
-	write_cleaning_files_qt_str(&_pseudo_root, separator, cleaning_files);
+	write_cleaning_files_str(&_pseudo_root, separator, cleaning_files);
 }
 
-void Clean_model::write_cleaning_files_qt_str(const File* node, const QString& separator, QString& cleaning_files) const
+void Clean_model::write_cleaning_files_str(const File* node, const QString& separator, QString& cleaning_files) const
 {
 #ifdef XDD_CPP11
 	QString acc;

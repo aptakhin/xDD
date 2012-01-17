@@ -31,7 +31,7 @@ const File* Files_model::assoc_file(const QModelIndex& index) const
 
 void Files_model::reset()
 {
-	File_system::i()->root()->update_has_for_delete_cache_rec();
+	File_system::i()->root()->update_delete_cache_rec();
 }
 
 void Files_model::notify_scan_started()

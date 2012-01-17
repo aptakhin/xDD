@@ -226,14 +226,14 @@ const QIcon& File::_cached_icon() const
 	return _icon_cache;
 }
 
-bool File::update_has_for_delete_cache_rec() const
+bool File::update_delete_cache_rec() const
 {
 	if (for_delete())
 		return _has_for_delete_cache = true;
 
 #ifdef XDD_CPP11
 	return _has_for_delete_cache = children_if_any([] (const File* child) {
-		return child->update_has_for_delete_cache_rec();
+		return child->update_delete_cache_rec();
 	});
 #else
 	struct Func
