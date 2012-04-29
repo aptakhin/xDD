@@ -48,6 +48,12 @@ void Scan_manager::start_scan_thread(const Scan_files_param& param)
 	_thread.start();
 }
 
+void Scan_manager::stop_scan_thread()
+{
+	_thread.terminate();
+	_fs->flush_and_ready_async();
+}
+
 bool Scan_manager::is_scan_finished() const
 {
 	return _ready;

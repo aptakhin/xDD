@@ -56,7 +56,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="run_btn">
+       <widget class="QPushButton" name="runstop_btn">
         <property name="enabled">
          <bool>false</bool>
         </property>

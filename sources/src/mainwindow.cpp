@@ -13,7 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
 :	QMainWindow(parent),
 	ui(new ::Ui::MainWindow),
 	_file_dlg(nullptr),
-	_reset_files_model(false)
+	_reset_files_model(false),
+	_mbs(MBS_RUN)
 {
 	ui->setupUi(this);
 
@@ -66,8 +67,8 @@ void MainWindow::bind_slots()
 	_file_dlg = new QFileDialog(this);
 	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
 
-	QObject::connect(ui->run_btn, SIGNAL(clicked()),
-		this, SLOT(run_btn_clicked()));
+	QObject::connect(ui->runstop_btn, SIGNAL(clicked()),
+		this, SLOT(runstop_btn_clicked()));
 
 	QObject::connect(ui->root_file, SIGNAL(textChanged(QString)),
 		this, SLOT(root_file_changed(QString)));
@@ -108,26 +109,36 @@ void MainWindow::bind_slots()
 		this, SLOT(tab_selected(int)));
 }
 
-void MainWindow::run_btn_clicked()
+void MainWindow::runstop_btn_clicked()
 {
-	_timer.setSingleShot(false);
-	_timer.start(500);
+	if (_mbs == MBS_RUN)
+	{
+		_timer.setSingleShot(false);
+		_timer.start(500);
 
-	Scan_manager::i()->prepare_for_scan();
+		Scan_manager::i()->prepare_for_scan();
 
-	Scan_files_param params;
+		Scan_files_param params;
+		params.start_path = ui->root_file->text();
 
-	params.start_path = ui->root_file->text();
+		_files_model->notify_scan_started();
+		_clean_model->notify_scan_started();
+		ui->files->reset();
+		ui->clean->reset();
 
-	_files_model->notify_scan_started();
-	_clean_model->notify_scan_started();
-	ui->files->reset();
-	ui->clean->reset();
-	//ui->files->
+		Scan_manager::i()->start_scan_thread(params);
 
-	Scan_manager::i()->start_scan_thread(params);
+		update_main_btn(MBS_STOP);
 
-	ui->status->setText("Processing");
+		ui->status->setText("Processing");
+	}
+	else
+	{
+		_timer.stop();
+		Scan_manager::i()->stop_scan_thread();
+		ui->status->setText("Stopped");
+		update_main_btn(MBS_RUN);
+	}
 }
 
 void MainWindow::enable_cleaning_tab(bool enable)
@@ -164,8 +175,9 @@ void MainWindow::scan_finished()
 	ui->clean->reset();
 	ui->clean->setColumnWidth(Clean_model::C_NAME, 400);
 	
-
 	update_clean(true);
+
+	update_main_btn(MBS_RUN);
 }
 
 void MainWindow::show_file_dlg()
@@ -182,7 +194,7 @@ void MainWindow::file_selected(const QString& file)
 void MainWindow::root_file_changed(const QString&)
 {
 	if (!ui->root_file->text().isEmpty())
-		ui->run_btn->setEnabled(true);
+		ui->runstop_btn->setEnabled(true);
 }
 
 void MainWindow::scan_updated()
@@ -302,6 +314,15 @@ void MainWindow::tab_selected(int tab)
 		_files_model->flush();
 		_reset_files_model = false;
 	}
+}
+
+void MainWindow::update_main_btn(Main_button_state new_bs)
+{
+	_mbs = new_bs;
+	if (_mbs == MBS_RUN)
+		ui->runstop_btn->setText(QString("Run"));
+	else
+		ui->runstop_btn->setText(QString("Stop"));
 }
 
 } // namespace xdd

@@ -22,6 +22,12 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
+	enum Main_button_state
+	{
+		MBS_RUN,
+		MBS_STOP
+	};
+
 public:
 
 	explicit MainWindow(QWidget *parent = 0);
@@ -34,7 +40,7 @@ public:
 	};
 
 public slots:
-	void run_btn_clicked();
+	void runstop_btn_clicked();
 
 	void scan_finished();
 
@@ -63,6 +69,8 @@ public slots:
 
 	void tab_selected(int index);
 
+	void update_main_btn(Main_button_state new_bs);
+
 private /*overriden*/:
 
 	void bind_slots();
@@ -83,6 +91,8 @@ private:
 	QTimer _timer;
 
 	bool _reset_files_model;
+
+	Main_button_state _mbs;
 };
 
 } // namespace xdd

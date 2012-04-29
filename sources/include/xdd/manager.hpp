@@ -66,6 +66,8 @@ public:
 
 	void start_scan_thread(const Scan_files_param& param);
 
+	void stop_scan_thread();
+
 	bool is_scan_finished() const;
 
 	const File_system* fs() const;
