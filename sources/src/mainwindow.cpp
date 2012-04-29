@@ -1,6 +1,6 @@
 #include "xdd/mainwindow.hpp"
 #include "xdd/files_model.hpp"
-#include "xdd/Clean_model.hpp"
+#include "xdd/clean_model.hpp"
 #include "xdd/manager.hpp"
 #include "ui_mainwindow.h"
 

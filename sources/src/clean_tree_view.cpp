@@ -1,6 +1,6 @@
-#include "xdd/Clean_tree_view.hpp"
+#include "xdd/clean_tree_view.hpp"
 #include <QKeyEvent>
-#include "xdd/Clean_model.hpp"
+#include "xdd/clean_model.hpp"
 #include <QHeaderView>
 
 namespace xdd {

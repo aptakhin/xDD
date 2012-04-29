@@ -1,6 +1,6 @@
 /** xDDTools */
 #include "xdd/file.hpp"
-#include "xdd/Clean_model.hpp"
+#include "xdd/clean_model.hpp"
 #include "xdd/manager.hpp"
 #include <QFileInfo>
 #include <QFileIconProvider>

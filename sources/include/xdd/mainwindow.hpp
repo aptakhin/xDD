@@ -2,7 +2,7 @@
 #pragma once
 
 #include "xdd/files_model.hpp"
-#include "xdd/Clean_model.hpp"
+#include "xdd/clean_model.hpp"
 
 #include <QMainWindow>
 #include <QThread>

@@ -63,9 +63,8 @@ void Scan_manager::prepare_for_scan()
 {
 	if (!_fs)
 		_fs = new File_system;
-	else
-		_fs->flush_and_ready_async();
-		
+	
+	_fs->flush_and_ready_async();
 	_ready = false;
 }
 
@@ -258,6 +257,5 @@ const File_system* File_histogram_manager::fs()
 {
 	return Scan_manager::i()->fs();
 }
-
 
 } // namespace xdd
