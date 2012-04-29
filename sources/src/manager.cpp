@@ -12,7 +12,8 @@ Scan_manager::Scan_manager()
 :	_fs(nullptr),
 	_thread(this),
 	_ready(false),
-	_time_exec(0)
+	_time_exec(0),
+	_start_time(0)
 {
 	XDD_ASSERT3(!Scan_manager::_instance,
 		"Singleton of Scan_manager is already created!",
@@ -78,18 +79,17 @@ void Scan_manager::scan(const Scan_files_param& param)
 		start += '\\';
 
 	_ready = false;
+	_stat.update(start);
 	XDD_LOG("Scanner started at: " << start);
-
-	uint64 start_time = helper::get_ms_time();
+	_start_time = helper::get_ms_time();
 	_scanner.start(start);
 	uint64 end_time = helper::get_ms_time();
-	_time_exec = end_time - start_time;
+	_time_exec = end_time - _start_time;
+	_start_time = 0;
 	XDD_LOG("Scanner stopped in " << helper::format_time_ms(_time_exec));
 
 	File* root = _fs->root();
 	prepare_files(root);
-	
-	_stat.update(_fs);
 	
 	_ready = true;
 	emit scan_finished();
@@ -124,6 +124,28 @@ void Scan_manager::Call_scan::run()
 	if (_mgr != nullptr)
 		_mgr->scan(_params);
 }
+
+uint64 Scan_manager::approx_scan_time_left() const
+{
+	if (_start_time == 0)
+		return 0;
+
+	uint64 time_done = helper::get_ms_time() - _start_time;
+
+	if (time_done < 1000)
+		return 0;
+
+	uint64 looked_size = _scanner.get_current_looked_size();
+
+	uint64 speed = looked_size / (time_done / 1000);
+
+	std::cout << helper::format_size(looked_size).toStdString() << "/" << helper::format_size(_stat.full_disk_size()).toStdString() << " " << helper::format_size(speed) << std::endl;
+
+	uint64 t = (_stat.full_disk_size() - looked_size) / speed * SECOND_MS;
+
+	return t;
+}
+
 
 void Clean_manager::make_clean(Action action)
 {
@@ -215,11 +237,11 @@ File_system_stat::File_system_stat()
 {
 }
 
-void File_system_stat::update(const File_system* fs)
+void File_system_stat::update(const QString& path)
 {
 	ULARGE_INTEGER free_bytes_available, total_number_of_bytes, total_number_of_free_bytes;
 
-	GetDiskFreeSpaceEx(fs->root()->name().toStdWString().c_str(),
+	GetDiskFreeSpaceEx(path.toStdWString().c_str(),
 		&free_bytes_available, &total_number_of_bytes, &total_number_of_free_bytes);
 
 	_full_disk_size = total_number_of_bytes.QuadPart;

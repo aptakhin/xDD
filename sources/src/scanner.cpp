@@ -15,6 +15,7 @@ void Scanner::add_fast_filter(Filter* filter)
 void Scanner::start(const QString& path)
 {
 	_path_len = 0;
+	_all_looked_size = 0;
 	// add root for file system - it's out start folder
 	File* root = File_system::i()->add_file(File((File::ID)-1, path, File::T_DIRECTORY));
 
@@ -83,6 +84,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		{
 			size = helper::quad_part(file_data.nFileSizeLow, file_data.nFileSizeHigh);
 			full_size += size;// update size and full folder size
+			_all_looked_size += size;
 		}
 
 		// cat new filename

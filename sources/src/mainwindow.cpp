@@ -219,6 +219,8 @@ void MainWindow::scan_updated()
 		dots = 1;
 
 	ui->status->setText(status + QString(".").repeated(dots));
+
+	ui->common_info->setText("ETA: " + helper::format_time_ms(Scan_manager::i()->approx_scan_time_left()));
 }
 
 void MainWindow::update_clean(bool hint_do_rec_reset)

@@ -21,7 +21,7 @@ class File_system_stat
 public:
 	File_system_stat();
 
-	void update(const File_system* fs);
+	void update(const QString& path);
 
 	uint64 full_disk_size() const { return _full_disk_size; }
 	uint64 free_disk_size() const { return _free_disk_size; }
@@ -76,6 +76,8 @@ public:
 
 	uint64 last_time_exec() const { return _time_exec; }
 
+	uint64 approx_scan_time_left() const;
+
 	Scanner& scanner() { return _scanner; }
 
 	void flush();
@@ -107,6 +109,7 @@ protected:
 	File_system_stat _stat;
 
 	uint64 _time_exec;
+	uint64 _start_time;
 };
 
 class Clean_manager

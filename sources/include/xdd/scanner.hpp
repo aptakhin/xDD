@@ -16,6 +16,8 @@ public:
 	/// Fast filter have use only file data, which they will get. They don't use more file information and analysis.
 	void add_fast_filter(Filter* filter);
 
+	uint64 get_current_looked_size() const { return _all_looked_size; } 
+
 protected:
 #ifdef XDD_WIN32_SCANNER
 	/// Fastest Scanner in Win32. WTF code and global variables:).
@@ -38,6 +40,8 @@ protected:
 	Filters _filters;
 
 	size_t _path_len;
+
+	uint64 _all_looked_size;
 };
 
 }// namespace xdd
