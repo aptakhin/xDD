@@ -117,7 +117,7 @@ void File_system::flush_and_ready_async()
 	{
 	public:
 		Bucket_vector<File>* _to_flush;
-		Flush_thread(Bucket_vector<File>*  to_flush) : _to_flush(to_flush) {}
+		Flush_thread(Bucket_vector<File>* to_flush) : _to_flush(to_flush) {}
 		void run()
 		{
 			delete _to_flush;

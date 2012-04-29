@@ -2,9 +2,9 @@ cmake_minimum_required (VERSION 2.6)
 project(XDD)
 
 include_directories("sources/include/")
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR}) # For MOCced source files
 
-IF(MSVC)
+if (MSVC)
 	add_definitions(-D_UNICODE -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT)
 
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:wchar_t-")
@@ -13,12 +13,10 @@ IF(MSVC)
 	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 	set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 
-ENDIF(MSVC)
+endif(MSVC)
 
 find_package(Qt4 REQUIRED QtCore QtGui QtMain)
 include(${QT_USE_FILE})
-
-message ("${CMAKE_SYSTEM_NAME}")
 
 include("sources/CmakeSources.txt")
 

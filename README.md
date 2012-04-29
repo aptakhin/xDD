@@ -11,11 +11,12 @@ Uses universal Qt-code for scanning disk drives and optimized code for Windows.
 
 Tested on Windows and MSVS2010 compiler with Qt 4.7.4.
 
-Tryes to be ready on any other platform.
+It's try to be ready on any other Qt platform.
 
 ### Compiling
 
 **Tip**.
 Before using CMake on Windows you have to set Qt installation directory in QTDIR environment variable if you've use Qt from archive somewhere.
-Use this gist as hint https://gist.github.com/1515211 
+Use this gist as hint https://gist.github.com/1515211 .
+
 If you installed Qt from installer you might not use this gist.
