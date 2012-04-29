@@ -13,7 +13,7 @@ public:
 
 	void start(const QString& path);
 
-	/// Fast filter have use only file data, which they will get. They don't use more file information and analysis.
+	/// Fast filter have to use only file data, which they will get. They don't use more file information and analysis.
 	void add_fast_filter(Filter* filter);
 
 	uint64 get_current_looked_size() const { return _all_looked_size; } 

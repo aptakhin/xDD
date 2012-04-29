@@ -58,12 +58,12 @@ File::File(File::ID parent, const wchar_t* name, size_t len, Type type)
 
 void File::operator = (const File& cpy)
 {
-	_parent			   = cpy._parent;
+	_parent			      = cpy._parent;
 	_id					  = cpy._id;
-	_name				 = cpy._name;
-	_type				 = cpy._type;
-	_size				 = cpy._size;
-	_reason_delete		= cpy._reason_delete;
+	_name				  = cpy._name;
+	_type				  = cpy._type;
+	_size				  = cpy._size;
+	_reason_delete		  = cpy._reason_delete;
 	_has_for_delete_cache = cpy._has_for_delete_cache;
 }
 
