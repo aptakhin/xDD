@@ -46,7 +46,8 @@ public slots:
 
 	void scan_updated();
 
-	void update_clean();
+	void update_clean(bool hint_do_rec_reset);
+	void update_clean_rec();
 
 	void enable_cleaning_tab(bool enable);
 

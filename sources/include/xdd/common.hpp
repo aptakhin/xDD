@@ -47,13 +47,13 @@
 #endif
 
 #ifdef XDD_WIN32_SCANNER
-	typedef WIN32_FIND_DATA file_data;
+	typedef WIN32_FIND_DATA File_data;
 #endif
 
 #ifdef XDD_UNIVERSAL_SCANNER
 #	include <QDir>
 #
-	typedef QFileInfo file_data;
+	typedef QFileInfo File_data;
 #endif//#ifdef XDD_UNIVERSAL_SCANNER
 
 #ifdef _MSC_VER

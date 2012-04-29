@@ -26,7 +26,7 @@ public:
 		C_REASON,
 	};
 
-	void reset();
+	void flush(bool hint_do_rec_reset);
 
 	void notify_scan_started();
 	void notify_scan_finished();

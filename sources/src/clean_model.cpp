@@ -49,17 +49,18 @@ const File* Clean_model::parent(const File* file) const
 		return file->parent();
 }
 
-void Clean_model::reset()
+void Clean_model::flush(bool hint_do_rec_reset)
 {
 	_pseudo_root._remove_all_children_from_delete_list();
-	reset_node_rec(File_system::i()->root());
+	if (hint_do_rec_reset)
+		reset_node_rec(File_system::i()->root());
 	_free_size_valid = false;
 }
 
 void Clean_model::reset_node_rec(const File* node)
 {
 	if (node->for_delete())
-		_pseudo_root.child_marked_for_delete(node);// Find child. add to list and return.
+		_pseudo_root.child_marked_for_delete(node);// Find child. Add to list and return.
 	else
 	{
 		size_t sz = node->num_children();

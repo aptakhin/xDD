@@ -29,7 +29,9 @@ public:
 	void notify_scan_started();
 	void notify_scan_finished();
 
-	void reset();
+	void flush();
+
+	void remove_deleted();
 
 signals:
 	/// Notify selected files to clean changed

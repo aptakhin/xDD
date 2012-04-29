@@ -41,8 +41,8 @@ void Scanner::start(const QString& path)
 
 #ifdef XDD_WIN32_SCANNER
 /*
-Before you've said "WTF code?!" I try to to say that it's one of the most 
-useful method in whole program.
+Before you've said "WTF code?!" I try to say that it's one of the most 
+important method in whole program.
 It must be fast:).
 */
 uint64 Scanner::_start(wchar_t* path, File* file, int depth)
@@ -61,7 +61,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		"Invalid file handle `" << QString::fromStdWString(path) << "`!",
 			return 0);
 	
-	size_t restore_to_len = _path_len;// Save current length to restore fast
+	size_t restore_to_len = _path_len; // Save current length to restore later fast
 
 	do
 	{
@@ -70,7 +70,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 
 		uint64 size = 0;
 
-		if (file_data.cFileName[0] == '.' && 
+		if (file_data.cFileName[0] == '.' && // Omit `.` and `..`
 		   (file_data.cFileName[1] == 0 || file_data.cFileName[1] == '.' && file_data.cFileName[2] == 0))
 			continue;
 
@@ -151,14 +151,15 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 
 	XDD_ASSERT3(GetLastError() == ERROR_NO_MORE_FILES,
 		"Error happened while reading `" << QString::fromStdWString(path) << "`!",
-		   path[restore_to_len] = 0; _path_len = restore_to_len; return full_size);
+		   path[_path_len = restore_to_len] = 0; return full_size);
 
 	FindClose(file_handle);
 
 	path[_path_len = restore_to_len] = 0;// Restore
 	return full_size;
 }
-// WTF?!!
+// — WTF?!
+// - xDD
 #endif//#ifdef XDD_WIN32_SCANNER
 
 #ifdef XDD_UNIVERSAL_SCANNER
@@ -216,7 +217,7 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 }
 #endif
 
-bool Scanner::does_look_at(const file_data&, int)
+bool Scanner::does_look_at(const File_data&, int)
 {
 	return true;
 }

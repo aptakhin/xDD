@@ -17,7 +17,7 @@ Size_simple_filter::Size_simple_filter()
 {
 }
 
-const QString* Size_simple_filter::look(const file_data& data)
+const QString* Size_simple_filter::look(const File_data& data)
 {
 #ifdef XDD_WIN32_SCANNER
 	uint64 file_size = helper::quad_part(data.nFileSizeLow, data.nFileSizeHigh);
@@ -50,7 +50,7 @@ Mark_all_filter::Mark_all_filter()
 {
 }
 
-const QString* Mark_all_filter::look(const file_data&)
+const QString* Mark_all_filter::look(const File_data&)
 {
 	return &EMPTY_STR;
 }
@@ -63,7 +63,7 @@ Mark_nothing_filter::Mark_nothing_filter()
 {
 }
 
-const QString* Mark_nothing_filter::look(const file_data&)
+const QString* Mark_nothing_filter::look(const File_data&)
 {
 	return nullptr;
 }

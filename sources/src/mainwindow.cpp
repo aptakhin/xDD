@@ -61,7 +61,7 @@ MainWindow::~MainWindow()
 void MainWindow::bind_slots()
 {
 	QObject::connect(_files_model, SIGNAL(update_clean()),
-		this, SLOT(update_clean()));
+		this, SLOT(update_clean_rec()));
 
 	_file_dlg = new QFileDialog(this);
 	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
@@ -123,6 +123,7 @@ void MainWindow::run_btn_clicked()
 	_clean_model->notify_scan_started();
 	ui->files->reset();
 	ui->clean->reset();
+	//ui->files->
 
 	Scan_manager::i()->start_scan_thread(params);
 
@@ -164,7 +165,7 @@ void MainWindow::scan_finished()
 	ui->clean->setColumnWidth(Clean_model::C_NAME, 400);
 	
 
-	update_clean();
+	update_clean(true);
 }
 
 void MainWindow::show_file_dlg()
@@ -208,11 +209,16 @@ void MainWindow::scan_updated()
 	ui->status->setText(status + QString(".").repeated(dots));
 }
 
-void MainWindow::update_clean()
+void MainWindow::update_clean(bool hint_do_rec_reset)
 {
-	_clean_model->reset();
+	_clean_model->flush(hint_do_rec_reset);
 	ui->clean->reset();
 	clean_updated();
+}
+
+void MainWindow::update_clean_rec()
+{
+	update_clean(true);
 }
 
 void MainWindow::clean_updated()
@@ -229,12 +235,11 @@ void MainWindow::clean_updated()
 	ui->new_stat->setText(new_stat);
 	ui->new_stat2->setText(new_stat);
 
-
 	_reset_files_model = true;// Have to update some cache
 
 	if (ui->tab->currentIndex() == T_SCAN)
 	{
-		_files_model->reset();// Can't delay. So update at moment
+		_files_model->flush();// Can't delay. So update at moment
 		_reset_files_model = false;
 	}
 }
@@ -276,6 +281,10 @@ void MainWindow::clean_btn_clicked()
 			clean.make_clean(Clean_manager::A_MOVE_TO_RECYCLE_BIN);
 		else if (ui->remove_from_hd_opt->isChecked())// or to recycle bin
 			clean.make_clean(Clean_manager::A_REMOVE);
+
+		_files_model->remove_deleted();
+
+		update_clean(false);
 	}
 		break;
 	}
@@ -290,7 +299,7 @@ void MainWindow::tab_selected(int tab)
 {
 	if (_reset_files_model && tab == T_SCAN)
 	{
-		_files_model->reset();
+		_files_model->flush();
 		_reset_files_model = false;
 	}
 }

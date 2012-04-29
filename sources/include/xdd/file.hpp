@@ -190,4 +190,16 @@ void to_delete_each_rec(const File* file, const F& functor)
 	});
 }
 
+template <typename F>
+void filter_each_rec(const File* file, const F& functor)
+{
+	files_each(file->children(), [file, &functor] (const File* file) {
+		if (file->is_directory())
+		{
+			children_each_rec(file, functor);
+		}
+		functor(file);
+	});
+}
+
 }// namespace xdd

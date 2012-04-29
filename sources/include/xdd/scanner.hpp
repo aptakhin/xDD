@@ -27,7 +27,7 @@ protected:
 	uint64 _start(File* file, const QDir& cur_dir);	
 #endif
 
-	bool does_look_at(const file_data& data, int depth);
+	bool does_look_at(const File_data& data, int depth);
 
 protected:
 

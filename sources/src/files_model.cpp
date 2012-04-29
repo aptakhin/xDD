@@ -29,7 +29,12 @@ const File* Files_model::assoc_file(const QModelIndex& index) const
 	return reinterpret_cast<const File*>(index.internalPointer());
 }
 
-void Files_model::reset()
+void Files_model::flush()
+{
+	File_system::i()->root()->update_delete_cache_rec();
+}
+
+void Files_model::remove_deleted()
 {
 	File_system::i()->root()->update_delete_cache_rec();
 }

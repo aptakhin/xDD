@@ -7,7 +7,7 @@ namespace xdd {
 
 /**
 Filters just say mark file for delete or not. Can be `fast` and... and the others.
-Suggested that fast filters use file_data only and not more. They've to placed in fast filters in Scanner.
+Suggested that fast filters use given file_data only and not more. They've to placed in fast filters in Scanner.
 */
 class Filter
 {
@@ -21,7 +21,7 @@ public:
 	Pointer to empty string means show file in views, but not mark it as deleted.
 	Other values show file in views and marks it as deleted with this reason.
 	*/
-	virtual const QString* look(const file_data& data) = 0;
+	virtual const QString* look(const File_data& data) = 0;
 
 	const QString& name() const { return _name; }
 
@@ -35,7 +35,7 @@ class Size_simple_filter : public Filter
 public:
 	Size_simple_filter();
 
-	const QString* look(const file_data& data);
+	const QString* look(const File_data& data);
 
 	void set_min_size(uint64 min_size) { _min_size = min_size; }
 	uint64 min_size() const { return _min_size; }
@@ -60,7 +60,7 @@ class Mark_all_filter : public Filter
 public:
 	Mark_all_filter();
 
-	const QString* look(const file_data& data);
+	const QString* look(const File_data& data);
 };
 
 /// It doesn't want to delete anything
@@ -69,7 +69,7 @@ class Mark_nothing_filter : public Filter
 public:
 	Mark_nothing_filter();
 
-	const QString* look(const file_data& data);
+	const QString* look(const File_data& data);
 };
 
 class Filter_view;
