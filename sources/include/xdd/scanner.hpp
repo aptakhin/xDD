@@ -13,19 +13,19 @@ public:
 
 	void start(const QString& path);
 
-	/// Fast filter have to use only file data, which they will get. They don't use more file information and analysis.
+	/// Fast filter have to use only file data, which they will get. They have not use more file information and analysis.
 	void add_fast_filter(Filter* filter);
 
 	uint64 get_current_looked_size() const { return _all_looked_size; } 
 
 protected:
 #ifdef XDD_WIN32_SCANNER
-	/// Fastest Scanner in Win32. WTF code and global variables:).
+	/// Fastest scanner for Win32. WTF-code and global variables:).
 	uint64 _start(wchar_t* path, File* file, int depth);
 #endif
 
 #ifdef XDD_UNIVERSAL_SCANNER
-	/// Universal Scanner code based on Qt-framework. It works compared to Win32 version 10 times slowler.
+	/// Universal Scanner code based on Qt-framework. 
 	uint64 _start(File* file, const QDir& cur_dir);	
 #endif
 

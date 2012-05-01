@@ -16,7 +16,7 @@ void Scanner::start(const QString& path)
 {
 	_path_len = 0;
 	_all_looked_size = 0;
-	// add root for file system - it's out start folder
+	// Add root for file system - it's out start folder
 	File* root = File_system::i()->add_file(File((File::ID)-1, path, File::T_DIRECTORY));
 
 #ifdef XDD_WIN32_SCANNER
@@ -75,7 +75,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		   (file_data.cFileName[1] == 0 || file_data.cFileName[1] == '.' && file_data.cFileName[2] == 0))
 			continue;
 
-		// back to original filename
+		// Back to original filename
 		path[_path_len = restore_to_len] = 0;
 
 		if (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -83,11 +83,11 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		else
 		{
 			size = helper::quad_part(file_data.nFileSizeLow, file_data.nFileSizeHigh);
-			full_size += size;// update size and full folder size
+			full_size += size;// Update size and full folder size
 			_all_looked_size += size;
 		}
 
-		// cat new filename
+		// Cat new filename
 		size_t file_name_sz = wcslen(file_data.cFileName);
 		memcpy(path + _path_len, file_data.cFileName, sizeof(wchar_t) * (file_name_sz + 1));
 		_path_len += file_name_sz;
@@ -142,7 +142,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 
 		if (type == File::T_DIRECTORY)
 		{
-			// go to subfolder
+			// Go to subfolder
 			uint64 set_size = _start(path, goto_file, depth + 1);
 			if (goto_file != nullptr)
 				goto_file->_set_size(set_size);
