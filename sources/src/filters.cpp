@@ -14,7 +14,7 @@ Size_simple_filter::Size_simple_filter()
 	_min_size(0),
 	_pref_size(0),
 	_last_access(0),
-	_sett_group("Size_simple_filter", Value::T_GROUP),
+	_sett_group("Size_simple_filter", Value::T_GROUP, this),
 	_sett_min_size(&_sett_group, "min_size", Value::T_UINT64),
 	_sett_pref_size(&_sett_group, "pref_size", Value::T_UINT64),
 	_sett_last_access(&_sett_group, "last_access", Value::T_UINT32)

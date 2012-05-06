@@ -28,15 +28,17 @@ QString Value::to_str() const
 	}
 }
 
-Setting::Setting(const QString& name, Value::Type type)
+Setting::Setting(const QString& name, Value::Type type, I_love_settings* binding)
 :	_name(name),
-	_val(type)
+	_val(type),
+	_binding(binding)
 {
 }
 
 Setting::Setting(Setting* group, const QString& name, Value::Type type)
 :	_name(name),
-	_val(type)
+	_val(type),
+	_binding(nullptr)
 {
 	group->_settings.push_back(this);
 }
@@ -51,7 +53,7 @@ Settings_manager* Settings_manager::_instance = nullptr;
 Settings_manager::Settings_manager()
 :	_config("xDDConfig.yaml"),
 	_export(""),
-	_root("root", Value::T_GROUP)
+	_root("root", Value::T_GROUP, nullptr)
 {
 	XDD_ASSERT3(!Settings_manager::_instance,
 		"Singleton of Settings_manager is already created!",
@@ -95,10 +97,9 @@ Setting* Settings_manager::_find_setting(Setting* setting, const QString& name)
 		if (s->_name == name)
 			return s;
 		else if (!s->settings().empty())
-			return this->_find_setting(s, name);
-		else
-			return nullptr;
+			return this->_find_setting(s, name);			
 	}
+	return nullptr;
 }
 
 void Settings_manager::notify_everything_initialized()

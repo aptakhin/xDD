@@ -20,7 +20,7 @@ class Filter_view : public QWidget
 
 public:
 
-	Filter_view(Filter* filter) : _base_filter(filter), QWidget() {}
+	Filter_view(Filter* filter) : QWidget(), _base_filter(filter) {}
 
 	/// Called before presetings settings view
 	virtual void update_view() = 0;

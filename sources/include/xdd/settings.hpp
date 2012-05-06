@@ -42,7 +42,7 @@ public:
 	typedef std::vector<Setting*> Settings;
 
 	Setting(Setting* group, const QString& name, Value::Type type);
-	Setting(const QString& name, Value::Type type);
+	Setting(const QString& name, Value::Type type, I_love_settings* binding);
 
 	virtual ~Setting() {}
 
@@ -67,6 +67,8 @@ public:
 protected:
 	QString _name;
 	Value _val;
+
+	I_love_settings* _binding;
 	
 	Settings _settings;
 
