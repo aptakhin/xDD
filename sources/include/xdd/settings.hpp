@@ -86,7 +86,6 @@ public:
 
 	static Settings_manager* i() { return _instance; }
 
-	static void bind_in_group(Setting* setting, Setting* group);
 	static void bind_group(Setting* group);
 
 	void update();

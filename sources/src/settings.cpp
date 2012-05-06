@@ -105,12 +105,7 @@ Settings_manager::~Settings_manager()
 
 void Settings_manager::bind_group(Setting* group)
 {
-	bind_in_group(group, &Settings_manager::i()->_root);
-}
-
-void Settings_manager::bind_in_group(Setting* setting, Setting* group)
-{
-	group->_settings.push_back(setting);
+	Settings_manager::i()->_root._settings.push_back(group);
 }
 
 Setting* Settings_manager::find_setting(const QString& name)
