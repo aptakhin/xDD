@@ -84,6 +84,7 @@ typedef uint32_t uint32;
 typedef uint64_t uint64;
 typedef unsigned int uint;
 
+#define XDD_CAT(a, b) a##b
 #define XDD_ASSERT3(expr, msg, ret) { if (!(expr)) { xdd::Logger::i().wh(xdd::Logger::M_ERROR); xdd::Logger::i().wc() << msg << std::endl; ret; } }
 #define XDD_ASSERT2(expr, msg) { if (!(expr)) { xdd::Logger::i().wh(xdd::Logger::M_ERROR); xdd::Logger::i().wc() << msg << std::endl; } }
 #define XDD_ERR2(msg, ret) { xdd::Logger::i().wh(xdd::Logger::M_ERROR); xdd::Logger::i().wc() << msg << std::endl; ret; }

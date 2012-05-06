@@ -2,6 +2,7 @@
 #pragma once
 
 #include "xdd/common.hpp"
+#include "xdd/settings.hpp"
 
 namespace xdd {
 
@@ -30,21 +31,29 @@ protected:
 	const QString _name;
 };
 
-class Size_simple_filter : public Filter
+class Size_simple_filter : public Filter, I_love_settings
 {
 public:
+
 	Size_simple_filter();
 
 	const QString* look(const File_data& data);
 
-	void set_min_size(uint64 min_size) { _min_size = min_size; }
+	void set_min_size(uint64 min_size);
 	uint64 min_size() const { return _min_size; }
 
-	void set_pref_size(uint64 pref_size) { _pref_size= pref_size; }
-	uint64 Pref_size() const { return _pref_size; }
+	void set_pref_size(uint64 pref_size);
+	uint64 pref_size() const { return _pref_size; }
 
-	void set_last_access_sec(uint32 last_access) { _last_access = last_access; }
-	uint32 Last_access_sec() const { return _last_access; }
+	void set_last_access_sec(uint32 last_access);
+	uint32 last_access_sec() const { return _last_access; }
+
+	void import_setting(Setting* setting);
+
+	Setting _sett_group;
+	Setting _sett_min_size;
+	Setting _sett_pref_size;
+	Setting _sett_last_access;
 
 	static const QString BIG_AND_OUT_OF_DATE;
 

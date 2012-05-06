@@ -4,79 +4,108 @@
 #include "xdd/common.hpp"
 
 namespace xdd {
-/*
+
+class Setting;
+class Settings_manager;
+
+class I_love_settings
+{
+public:
+	virtual void import_setting(Setting* setting) = 0;
+};
+
+struct Value
+{
+	enum Type
+	{
+		T_BOOL,
+		T_UINT32,
+		T_UINT64,
+		T_GROUP
+	};
+
+	Value(Type type);
+
+	Type type;
+
+	QString to_str() const;
+
+	bool v_bool;
+	uint32 v_uint32;
+	uint64 v_uint64;
+};
+
 class Setting
 {
 public:
 
-	enum Type
-	{
-		T_BOOL,
-		T_UINT32,
-	};
+	typedef std::vector<Setting*> Settings;
+
+	Setting(Setting* group, const QString& name, Value::Type type);
+	Setting(const QString& name, Value::Type type);
+
+	virtual ~Setting() {}
+
+	void exp(Value::Type t) const;
+
+	bool is(const QString& name) const { return _name == name; }
+
+	const QString& name() const { return _name; }
+	const Value& value() const { return _val; }
+	Value::Type type() const { return _val.type; }
+
+#define GS(enum_type, ctype) void XDD_CAT(set_, ctype)(ctype v) { exp(Value::enum_type); _val.XDD_CAT(v_, ctype) = v; }    ctype XDD_CAT(get_, ctype)() const  { exp(Value::enum_type); return _val.XDD_CAT(v_, ctype); }
+
+	GS(T_BOOL,   bool);
+	GS(T_UINT32, uint32);
+	GS(T_UINT64, uint64);
+
+#undef GS
+
+	const Settings& settings() const { return _settings; }
 
 protected:
 	QString _name;
-	uint32 _id;
-	Type _type;
+	Value _val;
+	
+	Settings _settings;
+
+	friend class Settings_manager;
 };
-
-class Setting_value
-{
-public:
-	struct Value
-	{
-		union {
-			bool b;
-			uint32 ui32;
-		};
-		uint32 size;
-	};
-
-	enum Type
-	{
-		T_BOOL,
-		T_UINT32,
-	};
-
-protected:
-	uint32 _sett_id;
-	Value _value;
-};
-
-
-class bind_setting;
 
 class Settings_manager
 {
 public:
-
-	struct Setting
-	{
-
-	};
+	Settings_manager();
+	~Settings_manager();
 
 	static Settings_manager* i() { return _instance; }
 
+	static void bind_in_group(Setting* setting, Setting* group);
+	static void bind_group(Setting* group);
+
+	void update();
+
+	void notify_everything_initialized();
+
 protected:
 
-	void bind(const QString& name, Setting::Type type, void* var);
+	void read_config(const QString& filename);
+
+	void write_config(const QString& filename);
+
+	Setting* find_setting(const QString& name);
+
+	Setting* _find_setting(Setting* setting, const QString& name);
+
+protected:
 
 	static Settings_manager* _instance;
 
-	friend class bind_setting;
+	Setting _root;
+
+	const QString _config;
+	QString _export;
 };
 
-class bind_setting
-{
-public:
-
-	explicit bind_setting(const QString& name, bool* var, const std::function<bool>& func_on_update = std::function<bool>())
-	{
-		Settings_manager::i()->bind(name, &var)
-	}
-
-	explicit bind_setting(const QString& name, uint32* var, const std::function<uint32>& func_on_update = std::function<uint32>());
-};
-*/
 }// namespace xdd

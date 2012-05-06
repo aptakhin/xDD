@@ -91,8 +91,8 @@ uint32 Size_simple_filter_view::file_last_access_seconds() const
 void Size_simple_filter_view::update_view()
 {
 	_ui.min_file_sz_slider->setValue(_filter->min_size() / MEGABYTE);
-	_ui.mark_file_sz_slider->setValue(_filter->Pref_size() / MEGABYTE);
-	_ui.last_access_slider->setValue(_filter->Last_access_sec() / DAY_S);
+	_ui.mark_file_sz_slider->setValue(_filter->pref_size() / MEGABYTE);
+	_ui.last_access_slider->setValue(_filter->last_access_sec() / DAY_S);
 }
 
 void Size_simple_filter_view::update_filter()
