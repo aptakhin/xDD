@@ -28,6 +28,32 @@ QString Value::to_str() const
 	}
 }
 
+void Value::parse_str(const QString& str)
+{
+	bool ok = true;
+	switch (type)
+	{
+	case T_BOOL:
+		if (str == "+") v_bool = true;
+		else if (str == "-") v_bool = false;
+		else XDD_ERR("Can't parse");
+		break;
+
+	case T_UINT32:
+		v_uint32 = str.toUInt(&ok);
+		if (!ok) XDD_ERR("Can't parse");
+		break;
+
+	case T_UINT64:
+		v_uint64 = str.toULongLong(&ok);
+		if (!ok) XDD_ERR("Can't parse");
+		break;
+
+	default:
+		not_implemented("Can't parse string `" + str + "` to type " + type);
+	}
+}
+
 Setting::Setting(const QString& name, Value::Type type, I_love_settings* binding)
 :	_name(name),
 	_val(type),
@@ -41,6 +67,11 @@ Setting::Setting(Setting* group, const QString& name, Value::Type type)
 	_binding(nullptr)
 {
 	group->_settings.push_back(this);
+}
+
+void Setting::parse_str(const QString& str)
+{
+	_val.parse_str(str);
 }
 
 void Setting::exp(Value::Type t) const
@@ -185,7 +216,35 @@ void Settings_manager::read_config(const QString& filename)
 
 			for(YAML::Iterator i = doc.begin(); i != doc.end(); ++i) 
 			{
-			
+				std::string key, value;
+				i.first() >> key;
+
+				QString setting_name = QString::fromStdString(key);
+
+				if (Setting* setting = find_setting(setting_name))
+				{
+					if (setting->settings().empty())
+					{
+						i.second() >> value;
+						QString qvalue = QString::fromStdString(value);
+						setting->parse_str(qvalue);
+					}
+					else
+					{
+						for(YAML::Iterator s = i.second().begin(); s != i.second().end(); ++s) 
+						{
+							s.first() >> key;
+							QString sub_setting_name = QString::fromStdString(key);
+
+							if (Setting* sub_setting = _find_setting(setting, sub_setting_name))
+							{
+								s.second() >> value;
+								QString qvalue = QString::fromStdString(value);
+								sub_setting->parse_str(qvalue);
+							}
+						}
+					}
+				}
 			}
 		}
 	} 

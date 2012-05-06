@@ -29,6 +29,7 @@ struct Value
 	Type type;
 
 	QString to_str() const;
+	void parse_str(const QString& str);
 
 	bool v_bool;
 	uint32 v_uint32;
@@ -63,6 +64,8 @@ public:
 #undef GS
 
 	const Settings& settings() const { return _settings; }
+
+	void parse_str(const QString& str);
 
 protected:
 	QString _name;
