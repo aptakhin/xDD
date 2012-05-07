@@ -141,14 +141,6 @@ namespace helper
 	/// Returns any time in milliseconds
 	uint64 get_ms_time();
 
-	template <typename T>
-	QString num2str(T val)
-	{
-		QString str;
-		str.setNum(val);
-		return str;
-	}
-
 	QString real2str(double val, int prec);
 
 	template <typename T>
