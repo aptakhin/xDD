@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
 	_file_dlg = new QFileDialog(this);
 	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
 
+	ui->tab->setSizePolicy(QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored));
+
 	ui->root_file->setText("E:\\");
 	root_file_changed("");
 
@@ -64,14 +66,14 @@ void MainWindow::bind_slots()
 	QObject::connect(_files_model, SIGNAL(update_clean()),
 		this, SLOT(update_clean_rec()));
 
-	_file_dlg = new QFileDialog(this);
-	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
-
 	QObject::connect(ui->runstop_btn, SIGNAL(clicked()),
 		this, SLOT(runstop_btn_clicked()));
 
 	QObject::connect(ui->root_file, SIGNAL(textChanged(QString)),
 		this, SLOT(root_file_changed(QString)));
+
+	_file_dlg = new QFileDialog(this);
+	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
 	
 	QObject::connect(ui->view_root_file, SIGNAL(clicked()),
 		this, SLOT(show_file_dlg()));

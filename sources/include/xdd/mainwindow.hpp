@@ -77,7 +77,6 @@ private /*overriden*/:
 
 	void init_filters();
 
-
 private:
 	::Ui::MainWindow* ui;
 
