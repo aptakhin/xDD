@@ -123,7 +123,7 @@ Setting* Settings_manager::_find_setting(Setting* setting, const QString& name)
 		if (s->_name == name)
 			return s;
 		else if (!s->settings().empty())
-			return this->_find_setting(s, name);			
+			return _find_setting(s, name);			
 	}
 	return nullptr;
 }
@@ -155,13 +155,13 @@ YAML::Emitter& operator << (YAML::Emitter& out, const QString& str)
 
 YAML::Emitter& operator << (YAML::Emitter& out, const Value& val)
 {
-	QString q = val.to_str();
 	return out << val.to_str();
 }
 
-// Not a member of Settings_manager due to source internal YAML including
-void write_config_node(YAML::Emitter& out, const Setting* node)
+void Settings_manager::write_config_node(YAML::Emitter* emit_out, const Setting* node)
 {
+	YAML::Emitter& out = *emit_out;
+
 	out << YAML::BeginMap;
 
 	fun::each(node->settings(), [&out] (const Setting* child) {
@@ -174,7 +174,7 @@ void write_config_node(YAML::Emitter& out, const Setting* node)
 		{
 			out << YAML::Key << child->name();
 			out << YAML::Value;
-			write_config_node(out, child);
+			Settings_manager::write_config_node(&out, child);
 		}
 	});
 
@@ -190,10 +190,34 @@ void Settings_manager::write_config(const QString& filename)
 	out << YAML::Key << "version" << YAML::Value << 1;
 	out << YAML::EndMap;
 
-	write_config_node(out, &_root);
+	write_config_node(&out, &_root);
 
 	std::ofstream fout(filename.toStdWString());
 	fout << out.c_str();
+}
+
+void Settings_manager::read_config_node(Setting* setting, const YAML::Node* node)
+{
+	std::string key, value;
+	for(YAML::Iterator i = node->begin(); i != node->end(); ++i) 
+	{
+		i.first() >> key;
+		QString sub_setting_name = QString::fromStdString(key);
+
+		if (Setting* sub_setting = _find_setting(setting, sub_setting_name))
+		{
+			if (sub_setting->settings().empty())
+			{
+				i.second() >> value;
+				QString qvalue = QString::fromStdString(value);
+				sub_setting->parse_str(qvalue);
+			}
+			else
+			{
+				read_config_node(sub_setting, &i.second());
+			}
+		}
+	}
 }
 
 void Settings_manager::read_config(const QString& filename)
@@ -226,18 +250,7 @@ void Settings_manager::read_config(const QString& filename)
 					}
 					else
 					{
-						for(YAML::Iterator s = i.second().begin(); s != i.second().end(); ++s) 
-						{
-							s.first() >> key;
-							QString sub_setting_name = QString::fromStdString(key);
-
-							if (Setting* sub_setting = _find_setting(setting, sub_setting_name))
-							{
-								s.second() >> value;
-								QString qvalue = QString::fromStdString(value);
-								sub_setting->parse_str(qvalue);
-							}
-						}
+						read_config_node(setting, &i.second());
 					}
 				}
 			}

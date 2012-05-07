@@ -3,6 +3,11 @@
 
 #include "xdd/common.hpp"
 
+namespace YAML {
+	class Node;
+	class Emitter;
+}
+
 namespace xdd {
 
 class Setting;
@@ -95,12 +100,14 @@ public:
 protected:
 
 	void read_config(const QString& filename);
+	static void read_config_node(Setting* setting, const YAML::Node* node);
 
 	void write_config(const QString& filename);
+	static void write_config_node(YAML::Emitter* emit_out, const Setting* node);
 
 	Setting* find_setting(const QString& name);
 
-	Setting* _find_setting(Setting* setting, const QString& name);
+	static Setting* _find_setting(Setting* setting, const QString& name);
 
 protected:
 
