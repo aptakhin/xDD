@@ -1,8 +1,6 @@
 /** xDDTools */
 #pragma once
 
-#define NOMINMAX /* hate, hate, hate! */
-
 #include <stdio.h>
 #include <locale.h>
 #include <tchar.h>

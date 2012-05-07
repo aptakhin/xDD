@@ -3,14 +3,19 @@
 Program for finding waste on user's disk drives. Even huge hard disk drives with terrabyte volume and more have to be cleaned some time. xDD shows you the biggest and unused files, which you want to delete:).
 
 ### Dependencies
-- CMake
 - Qt
+To show tiny windows
 - YamlCpp (http://code.google.com/p/yaml-cpp/)
+Human-readable config files
+- cotire (https://github.com/sakra/cotire)
+Project precompiled headers and single compilation units
+
+Also you need to have installed CMake build tool.
 
 ### Platforms
 Uses universal Qt-code for scanning disk drives and optimized code for Windows.
 
-Tested on Windows and MSVS2010 compiler with Qt 4.7.4.
+Tested on Windows and MSVS2010 compiler with Qt 4.8.1 (Previous 4.7.4).
 
 It's try to be ready on any other Qt platform.
 
