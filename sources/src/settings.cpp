@@ -57,6 +57,7 @@ void Value::parse_str(const QString& str)
 Setting::Setting(const QString& name, Value::Type type, I_love_settings* binding)
 :	_name(name),
 	_val(type),
+	_parent(nullptr),
 	_binding(binding)
 {
 }
@@ -64,6 +65,7 @@ Setting::Setting(const QString& name, Value::Type type, I_love_settings* binding
 Setting::Setting(Setting* group, const QString& name, Value::Type type)
 :	_name(name),
 	_val(type),
+	_parent(group),
 	_binding(nullptr)
 {
 	group->_settings.push_back(this);
@@ -77,6 +79,13 @@ void Setting::parse_str(const QString& str)
 void Setting::exp(Value::Type t) const
 {
 	XDD_ASSERT2(t == _val.type, "Expected type: " << _val.type << ", but got " << t); 
+}
+
+void Setting::update_binded()
+{
+	XDD_ASSERT3(_parent != nullptr, "Expected parent", return);
+	XDD_ASSERT3(_parent->_binding != nullptr, "Expected binding of parent", return);
+	_parent->_binding->import_setting(this);
 }
 
 Settings_manager* Settings_manager::_instance = nullptr;
@@ -117,6 +126,8 @@ Setting* Settings_manager::_find_setting(Setting* setting, const QString& name)
 {
 	Setting::Settings::const_iterator i = setting->settings().begin();
 
+	// One lambda-function dead here. RIP
+
 	for (; i != setting->settings().end(); ++i)
 	{
 		Setting* s = *i;
@@ -130,22 +141,28 @@ Setting* Settings_manager::_find_setting(Setting* setting, const QString& name)
 
 void Settings_manager::notify_everything_initialized()
 {
+	// For portable version. Config file near the binary has max priority.
 	if (QDir::current().exists(_config))
 	{
 		_export = QDir::current().filePath(_config);
 	}
 	else 
 	{
+		// Otherwise use file in user home folder
 		_export = QDir::home().filePath(_config);
-		if (!QDir::home().exists(_config))
+		if (!QDir::home().exists(_config)) // Write default config
 			write_config(_export);
 	}
-	write_config(_export);
 
 	XDD_LOG("Settings manager uses config file at: " << _export);
 	read_config(_export);
 
 	XDD_LOG("Settings manager initialized");
+}
+
+void Settings_manager::update()
+{
+	write_config(_export);
 }
 
 YAML::Emitter& operator << (YAML::Emitter& out, const QString& str)
@@ -211,6 +228,7 @@ void Settings_manager::read_config_node(Setting* setting, const YAML::Node* node
 				i.second() >> value;
 				QString qvalue = QString::fromStdString(value);
 				sub_setting->parse_str(qvalue);
+				sub_setting->update_binded();
 			}
 			else
 			{
@@ -247,6 +265,7 @@ void Settings_manager::read_config(const QString& filename)
 						i.second() >> value;
 						QString qvalue = QString::fromStdString(value);
 						setting->parse_str(qvalue);
+						setting->update_binded();
 					}
 					else
 					{

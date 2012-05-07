@@ -27,8 +27,6 @@ Settings_window::Settings_window(QWidget *parent)
 void Settings_window::init_filters()
 {
 	Size_simple_filter* ssf = new Size_simple_filter;
-	ssf->set_min_size(0);
-	ssf->set_pref_size(1 * GIGABYTE);
 
 	_simple_size_filter_view.set_filter(ssf);
 	install_filter_view(&_simple_size_filter_view);
@@ -55,6 +53,7 @@ void Settings_window::show()
 void Settings_window::apply_btn_clicked()
 {
 	_simple_size_filter_view.update_filter();
+	Settings_manager::i()->update();
 	hide();
 }
 

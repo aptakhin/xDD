@@ -60,6 +60,8 @@ public:
 	const Value& value() const { return _val; }
 	Value::Type type() const { return _val.type; }
 
+	void update_binded();
+
 #define GS(enum_type, ctype) void XDD_CAT(set_, ctype)(ctype v) { exp(Value::enum_type); _val.XDD_CAT(v_, ctype) = v; }    ctype XDD_CAT(get_, ctype)() const  { exp(Value::enum_type); return _val.XDD_CAT(v_, ctype); }
 
 	GS(T_BOOL,   bool);
@@ -75,6 +77,8 @@ public:
 protected:
 	QString _name;
 	Value _val;
+
+	Setting* _parent;
 
 	I_love_settings* _binding;
 	
