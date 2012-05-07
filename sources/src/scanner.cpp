@@ -16,6 +16,7 @@ void Scanner::start(const QString& path)
 {
 	_path_len = 0;
 	_all_looked_size = 0;
+	_soft_stop = false;
 	// Add root for file system - it's out start folder
 	File* root = File_system::i()->add_file(File((File::ID)-1, path, File::T_DIRECTORY));
 
@@ -66,6 +67,9 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 
 	do
 	{
+		if (_soft_stop)
+			break;
+
 		File::Type type = File::T_FILE;
 		File* goto_file = nullptr;
 
@@ -144,6 +148,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		{
 			// Go to subfolder
 			uint64 set_size = _start(path, goto_file, depth + 1);
+
 			if (goto_file != nullptr)
 				goto_file->_set_size(set_size);
 			full_size += set_size;
@@ -172,6 +177,9 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 	QFileInfoList list = cur_dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
 	for (int child_i = 0; child_i < list.size(); ++child_i) 
 	{
+		if (_soft_stop)
+			break;
+
 		File* goto_file = nullptr;
 		QFileInfo file_data = list.at(child_i);
 		File::Type type = File::T_FILE;

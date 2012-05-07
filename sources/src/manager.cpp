@@ -13,7 +13,8 @@ Scan_manager::Scan_manager()
 	_thread(this),
 	_ready(false),
 	_time_exec(0),
-	_start_time(0)
+	_start_time(0),
+	_soft_stop(false)
 {
 	XDD_ASSERT3(!Scan_manager::_instance,
 		"Singleton of Scan_manager is already created!",
@@ -51,7 +52,8 @@ void Scan_manager::start_scan_thread(const Scan_files_param& param)
 
 void Scan_manager::stop_scan_thread()
 {
-	_thread.terminate();
+	_soft_stop = true;
+	_scanner.sig_soft_stop();
 	_fs->flush_and_ready_async();
 }
 
@@ -71,6 +73,7 @@ void Scan_manager::prepare_for_scan()
 
 void Scan_manager::scan(const Scan_files_param& param)
 {
+	_soft_stop = false;
 	_ready = false;
 	
 	QString start = param.start_path;
@@ -83,16 +86,19 @@ void Scan_manager::scan(const Scan_files_param& param)
 	XDD_LOG("Scanner started at: " << start);
 	_start_time = helper::get_ms_time();
 	_scanner.start(start);
-	uint64 end_time = helper::get_ms_time();
-	_time_exec = end_time - _start_time;
-	_start_time = 0;
-	XDD_LOG("Scanner stopped in " << helper::format_time_ms(_time_exec));
+	if (!_soft_stop)
+	{
+		uint64 end_time = helper::get_ms_time();
+		_time_exec = end_time - _start_time;
+		_start_time = 0;
+		XDD_LOG("Scanner stopped in " << helper::format_time_ms(_time_exec));
 
-	File* root = _fs->root();
-	prepare_files(root);
+		File* root = _fs->root();
+		prepare_files(root);
 	
-	_ready = true;
-	emit scan_finished();
+		_ready = true;
+		emit scan_finished();
+	}
 }
 
 const File_system* Scan_manager::fs() const

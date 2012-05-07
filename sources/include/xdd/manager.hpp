@@ -40,7 +40,7 @@ private:
 	class Call_scan : public QThread
 	{
 	protected:
-		Call_scan(Scan_manager* mgr) : _mgr(mgr) {}
+		Call_scan(Scan_manager* mgr) : _mgr(mgr), _soft_stop(false) {}
 		~Call_scan() {}
 
 		void set_params(const Scan_files_param& params) { _params = params; }
@@ -53,6 +53,7 @@ private:
 
 	private:
 		Scan_manager* _mgr;
+		bool _soft_stop;
 		Scan_files_param _params;
 	};
 
@@ -95,7 +96,6 @@ protected:
 
 	void scan(const Scan_files_param& param);
 
-
 protected:
 	static Scan_manager* _instance;
 
@@ -110,6 +110,8 @@ protected:
 
 	uint64 _time_exec;
 	uint64 _start_time;
+
+	bool _soft_stop;
 };
 
 class Clean_manager
