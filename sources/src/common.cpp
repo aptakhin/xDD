@@ -89,32 +89,46 @@ namespace helper {
 		if (seconds >= AVG_YEAR_S)
 		{
 			uint32 years = seconds / AVG_YEAR_S;
-			return QString::number(years).append(" years");
+			if (years == 1)
+				return QString("year");
+			else
+				return QString::number(years).append(" years");
 		}
 
 		if (seconds >= AVG_MONTH_S)
 		{
 			uint32 months = seconds / AVG_MONTH_S;
-			return QString::number(months).append(" months");
+			if (months == 1)
+				return QString("month");
+			else
+				return QString::number(months).append(" months");
 		}
 		
 		if (seconds >= DAY_S)
 		{
 			uint32 days = seconds / DAY_S;
-			return QString::number(days).append(" days");
+			if (days == 1)
+				return QString("days");
+			else
+				return QString::number(days).append(" days");
 		}
 
 		if (seconds >= HOUR_S)
 		{
 			uint32 hours = seconds / HOUR_MS;
-			return QString::number(hours).append(" hours");
+			if (hours == 1)
+				return QString("hour");
+			else
+				return QString::number(hours).append(" hours");
 		}
 
 		if (seconds >= MINUTE_S)
 		{
 			uint32 minutes = seconds / MINUTE_MS;
-			return QString::number(minutes).append(" minutes");
-
+			if (minutes == 1)
+				return QString("minute");
+			else
+				return QString::number(minutes).append(" minutes");
 		}
 
 		return QString::number(seconds).append(" seconds");
