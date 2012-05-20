@@ -14,7 +14,15 @@
 
 # attempt to find static library first if this is set
 if(YAMLCPP_STATIC_LIBRARY)
-    set(YAMLCPP_STATIC libyaml-cpp.a)
+    set(YAMLCPP_LIB_NAME libyaml-cpp.a)
+
+     if (MSVC)
+          if (CMAKE_BUILD_TYPE MATCHES "debug")
+               set(YAMLCPP_LIB_NAME libyaml-cppmdd.lib)
+          else()
+               set(YAMLCPP_LIB_NAME libyaml-cppmd.lib)
+          endif()
+     endif()
 endif()
 
 # find the yaml-cpp include directory
@@ -33,7 +41,7 @@ find_path(YAMLCPP_INCLUDE_DIR yaml-cpp/yaml.h
 
 # find the yaml-cpp library
 find_library(YAMLCPP_LIBRARY
-             NAMES ${YAMLCPP_STATIC} yaml-cpp
+             NAMES ${YAMLCPP_LIB_NAME} yaml-cpp
              PATH_SUFFIXES lib64 lib
              PATHS ~/Library/Frameworks
                     /Library/Frameworks
@@ -48,4 +56,4 @@ find_library(YAMLCPP_LIBRARY
 # handle the QUIETLY and REQUIRED arguments and set YAMLCPP_FOUND to TRUE if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(YAMLCPP DEFAULT_MSG YAMLCPP_INCLUDE_DIR YAMLCPP_LIBRARY)
-mark_as_advanced(YAMLCPP_INCLUDE_DIR YAMLCPP_LIBRARY)
+mark_as_advanced(YAMLCPP_DIR YAMLCPP_INCLUDE_DIR YAMLCPP_LIBRARY)

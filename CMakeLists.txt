@@ -39,6 +39,6 @@ cotire(xdd)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	message("Copying dlls and pdbs from ${QT_LIBRARY_DIR} to ${CMAKE_BINARY_DIR}")
-	install(DIRECTORY ${QT_LIBRARY_DIR}/ DESTINATION ${CMAKE_BINARY_DIR} FILES_MATCHING PATTERN "*.dll")
+	install(DIRECTORY ${QT_LIBRARY_DIR}/../bin DESTINATION ${CMAKE_BINARY_DIR} FILES_MATCHING PATTERN "*.dll")
 endif()
 
