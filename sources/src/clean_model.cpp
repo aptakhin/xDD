@@ -118,9 +118,7 @@ QVariant Clean_model::data(const QModelIndex& index, int role) const
 		return QVariant();
 
 	if (role == Qt::DecorationRole && index.column() == C_NAME)
-	{
 		return QVariant(file->_cached_icon());
-	}
 
 	if (role == Qt::DisplayRole)
 	{
@@ -134,9 +132,7 @@ QVariant Clean_model::data(const QModelIndex& index, int role) const
 	}
 
 	if (role == Qt::ToolTipRole && index.column() == C_NAME)
-	{
 		return Scan_manager::i()->fs()->full_path_of(*file);
-	}
 
 	return QVariant();
 }
@@ -163,18 +159,15 @@ QModelIndex	Clean_model::index(int row, int column, const QModelIndex& parent) c
 	if (!_ready || !hasIndex(row, column, parent))
 		return QModelIndex();
 
-	const File* parent_file = nullptr;
+	const File* parent_file = &_pseudo_root;
 	if (parent.isValid())
 		parent_file = assoc_file(parent);
-	else
-		parent_file = &_pseudo_root;
 
-	if ((size_t)row < parent_file->num_files_to_delete())
-	{
-		const File* file = parent_file->i_file_to_delete((size_t)row); 
-		return createIndex(row, column, (void*)file);
-	}
-	return QModelIndex();
+	if ((size_t)row >= parent_file->num_files_to_delete())
+		return QModelIndex();
+		
+	const File* file = parent_file->i_file_to_delete((size_t)row); 
+	return createIndex(row, column, (void*)file);	
 }
 
 bool Clean_model::hasChildren(const QModelIndex& parent) const

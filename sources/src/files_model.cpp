@@ -55,17 +55,15 @@ void Files_model::notify_scan_finished()
 const File* Files_model::locate(const QModelIndex& index, int role) const
 {
 	QModelIndex parent = index.parent();
-	const File* file = nullptr;
+	const File* file = _fs->root();
 
-	if (parent == QModelIndex())
-		file = _fs->root();
-	else
+	if (parent != QModelIndex())
 		file = locate(parent, role);
 
-	if (file != nullptr && (size_t)index.row() < file->num_children())
-		return file->i_child((size_t)index.row());
-	else
+	if (file == nullptr || (size_t)index.row() >= file->num_children())
 		return nullptr;
+
+	return file->i_child((size_t)index.row());
 }
 
 bool Files_model::setData(const QModelIndex& index, const QVariant& value, int role)
@@ -123,9 +121,7 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 		return QVariant();
 
 	if (role == Qt::DecorationRole && index.column() == C_NAME)
-	{
 		return QVariant(file->_cached_icon());
-	}
 
 	if ((role == Qt::EditRole || role == Qt::CheckStateRole) && index.column() == C_NAME)
 	{
@@ -138,9 +134,7 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 	}
 
 	if (role == Qt::ForegroundRole)
-	{
 		return QVariant(file->for_delete()? _red_brush : _black_brush);
-	}
 
 	if (role == Qt::DisplayRole || role == Qt::ForegroundRole)
 	{
@@ -153,9 +147,7 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 	}
 
 	if (role == Qt::TextAlignmentRole && index.column() == C_SIZE)
-	{
 		return QVariant(Qt::AlignRight);
-	}
 
 	return QVariant();
 }
@@ -201,13 +193,10 @@ bool Files_model::hasChildren(const QModelIndex& parent) const
 	if (!_ready)
 		return false;
 
+	const File* parent_file = _fs->root();
 	if (parent.isValid())
-	{
-		const File* parent_file = assoc_file(parent);
-		return parent_file->has_children();
-	}
-	else
-		return _fs->root()->has_children();
+		parent_file = assoc_file(parent);
+	return parent_file->has_children();
 }
 
 Qt::ItemFlags Files_model::flags(const QModelIndex &index) const
@@ -239,10 +228,10 @@ int	Files_model::rowCount(const QModelIndex& parent) const
 	if (!_ready)
 		return 0;
 
+	const File* parent_file = _fs->root();
 	if (parent.isValid())
-		return assoc_file(parent)->num_children();
-	else
-		return _fs->root()->num_children();
+		parent_file = assoc_file(parent);
+	return parent_file->num_children();
 }
 
 int	Files_model::columnCount(const QModelIndex&) const

@@ -116,9 +116,6 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 				}
 			}
 
-			if (add2fs)
-				add2fs = does_look_at(file_data, depth + 1);
-
 			if (add2fs)// Intresting yet?
 			{
 				File* cur_file = File_system::i()->add_file(
@@ -129,7 +126,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 				{
 					goto_file = cur_file, cur_file->_set_size(size);
 
-					if (reason != nullptr && *reason != EMPTY_STR)// Child added. Can set reason if has some
+					if (reason != nullptr && *reason != EMPTY_STR)// Child added. Should set reason if has some
 						cur_file->mark_for_delete(reason);
 				}
 				else
@@ -202,9 +199,6 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 			type = File::T_DIRECTORY;
 
 		if (add2fs)
-			add2fs = does_look_at(file_data, 0);
-
-		if (add2fs)
 		{
 			File* cur_file = File_system::i()->add_file(
 				File(file->Id(), file_data.filename().toStdWString(), type));
@@ -226,10 +220,5 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 	return full_size;
 }
 #endif
-
-bool Scanner::does_look_at(const File_data&, int)
-{
-	return true;
-}
 
 }// namespace xdd

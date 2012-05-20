@@ -3,6 +3,7 @@
 
 namespace xdd {
 
+// Sometimes I'm fun of fun
 namespace fun {
 
 	template <typename T, typename F>

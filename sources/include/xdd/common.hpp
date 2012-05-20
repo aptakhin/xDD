@@ -63,7 +63,8 @@
 #endif//#ifdef _MSC_VER
 
 #ifndef XDD_CPP11 // For cpp11 compilers
-#	define XDD_CPP11
+// Now all compilers are C++11-compatible
+#	define XDD_CPP11 
 #endif
 
 #ifdef _MSC_VER
