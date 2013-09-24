@@ -1,11 +1,12 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8.8)
 project(XDD)
 
 include_directories("sources/include/")
 include_directories(${CMAKE_BINARY_DIR}) # For MOCced source files
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
-
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} $ENV{QTDIR})
+ 
 add_definitions(-DNOMINMAX) # hate, hate, hate!
 
 if (MSVC)
@@ -17,19 +18,19 @@ if (MSVC)
 
 endif(MSVC)
 
-find_package(Qt4 REQUIRED QtCore QtGui QtMain)
-include(${QT_USE_FILE})
+find_package(Qt5Widgets)
 
-find_package(YamlCpp REQUIRED)
-include_directories(${YAMLCPP_INCLUDE_DIR})
+include("sources/CMakeSources.txt")
 
-include("sources/CmakeSources.txt")
+qt5_wrap_cpp(VD_MOCCED_FILES ${XDD_MOC_FILES})
+qt5_wrap_ui(VD_UICED_FILES ${XDD_UI_FILES})
 
-QT4_WRAP_CPP(XDD_MOCCED_FILES ${XDD_MOC_FILES})
-QT4_WRAP_UI(XDD_UICED_FILES ${XDD_UI_FILES})
+#qt5_add_resources(VD_RES ${XDD_RES_FILES})
 
 add_executable(xdd WIN32 ${XDD_HEADER_FILES} ${XDD_SOURCE_FILES} ${XDD_MOCCED_FILES} ${XDD_UICED_FILES})
-target_link_libraries(xdd ${QT_LIBRARIES} ${YAMLCPP_LIBRARY})
+target_link_libraries(xdd ${QT_LIBRARIES})
+
+qt5_use_modules(xdd Widgets)
 
 include(cotire)
 cotire(xdd)
