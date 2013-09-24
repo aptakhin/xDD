@@ -28,7 +28,8 @@ void Clean_model::notify_scan_started()
 void Clean_model::notify_scan_finished()
 {
 	_ready = true;
-	reset();
+	beginResetModel();
+	endResetModel();
 }
 
 File* Clean_model::assoc_file(const QModelIndex& index)

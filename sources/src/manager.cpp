@@ -218,7 +218,7 @@ void Clean_manager::remove_file(const File* file)
 #ifdef XDD_WIN32_CODE
 	QString tmp;
 	File_system::i()->full_path_of(*file, tmp);
-	const wchar_t* path = tmp.toStdWString().c_str();
+	const wchar_t* path = (wchar_t*) tmp.utf16();
 	DeleteFile(path);
 #else
 	not_implemented("Can't move to recycle bin on this platform!");
@@ -230,7 +230,7 @@ void Clean_manager::remove_directory(const File* file)
 #ifdef XDD_WIN32_CODE
 	QString tmp;
 	File_system::i()->full_path_of(*file, tmp);
-	const wchar_t* path = tmp.toStdWString().c_str();
+	const wchar_t* path = (const wchar_t*) tmp.utf16();
 	RemoveDirectory(path);
 #else
 	not_implemented("Can't move to recycle bin!");
@@ -247,7 +247,7 @@ void File_system_stat::update(const QString& path)
 {
 	ULARGE_INTEGER free_bytes_available, total_number_of_bytes, total_number_of_free_bytes;
 
-	GetDiskFreeSpaceEx(path.toStdWString().c_str(),
+	GetDiskFreeSpaceEx((const wchar_t*) path.utf16(),
 		&free_bytes_available, &total_number_of_bytes, &total_number_of_free_bytes);
 
 	_full_disk_size = total_number_of_bytes.QuadPart;

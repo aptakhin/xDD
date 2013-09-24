@@ -23,7 +23,7 @@ void Scanner::start(const QString& path)
 #ifdef XDD_WIN32_SCANNER
 	wchar_t root_path[MAX_PATH];
 
-	std::wstring wpath = path.toStdWString();
+	std::wstring wpath = (wchar_t*) path.utf16();
 
 #	ifdef _MSC_VER
 	wcscpy_s(root_path, wpath.c_str());
@@ -43,8 +43,7 @@ void Scanner::start(const QString& path)
 
 #ifdef XDD_WIN32_SCANNER
 /*
-Before you've said "WTF code?!" I try to say that it's one of the most 
-important method in whole program.
+WTF-style optimized code.
 It must be fast:).
 */
 uint64 Scanner::_start(wchar_t* path, File* file, int depth)
@@ -60,7 +59,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 	path[--_path_len] = 0;
 
 	XDD_ASSERT3(file_handle != INVALID_HANDLE_VALUE,
-		"Invalid file handle `" << QString::fromStdWString(path) << "`!",
+		"Invalid file handle `" << path << "`!",
 			return 0);
 	
 	size_t restore_to_len = _path_len; // Save current length to restore later fast
@@ -154,7 +153,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 	while (FindNextFile(file_handle, &file_data) != 0);
 
 	XDD_ASSERT3(GetLastError() == ERROR_NO_MORE_FILES,
-		"Error happened while reading `" << QString::fromStdWString(path) << "`!",
+		"Error happened while reading `" << path << "`!",
 		   path[_path_len = restore_to_len] = 0; return full_size);
 
 	FindClose(file_handle);

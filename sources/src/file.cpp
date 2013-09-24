@@ -48,7 +48,7 @@ File::File(File::ID parent, const QString& name, Type type)
 File::File(File::ID parent, const wchar_t* name, size_t len, Type type)
 :	_parent(parent),
 	_id(0),
-	_name(QString::fromWCharArray(name, len)),
+	_name(QString::fromUtf16((const ushort*) name, len)),
 	_type(type),
 	_size(0),
 	_reason_delete(&EMPTY_STR),

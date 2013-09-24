@@ -58,7 +58,7 @@ void File_system::_full_path_of(const File& file, wchar_t* full_path, size_t* le
 	size_t add_sz = file.name().size();
 	if (*len != 0)
 		full_path[*len] = L'\\', full_path[++(*len)] = '\0';
-	memcpy(full_path + *len, file.name().toStdWString().c_str(), sizeof(wchar_t) * (*len + add_sz + 1));
+	memcpy(full_path + *len, (wchar_t*) file.name().utf16(), sizeof(wchar_t) * (*len + add_sz + 1));
 	*len = *len + add_sz;
 }
 

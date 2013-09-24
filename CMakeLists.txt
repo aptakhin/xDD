@@ -19,11 +19,12 @@ if (MSVC)
 endif(MSVC)
 
 find_package(Qt5Widgets)
+#include(${QT_USE_FILE})
 
 include("sources/CMakeSources.txt")
 
-qt5_wrap_cpp(VD_MOCCED_FILES ${XDD_MOC_FILES})
-qt5_wrap_ui(VD_UICED_FILES ${XDD_UI_FILES})
+qt5_wrap_cpp(XDD_MOCCED_FILES ${XDD_MOC_FILES})
+qt5_wrap_ui(XDD_UICED_FILES ${XDD_UI_FILES})
 
 #qt5_add_resources(VD_RES ${XDD_RES_FILES})
 
@@ -36,7 +37,7 @@ include(cotire)
 cotire(xdd)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	message("Copying dlls and pdbs from ${QT_LIBRARY_DIR} to ${CMAKE_BINARY_DIR}")
-	install(DIRECTORY ${QT_LIBRARY_DIR}/../bin DESTINATION ${CMAKE_BINARY_DIR} FILES_MATCHING PATTERN "*.dll")
+	message("Copying dlls and pdbs from ${Qt5Core_DIR}/../../../bin to ${CMAKE_BINARY_DIR}")
+	install(DIRECTORY ${Qt5Core_DIR}/../../../bin/ DESTINATION ${CMAKE_BINARY_DIR} FILES_MATCHING PATTERN "*.dll")
 endif()
 

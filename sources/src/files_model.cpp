@@ -49,7 +49,8 @@ void Files_model::notify_scan_finished()
 {
 	_fs = Scan_manager::i()->fs();
 	_ready = true;
-	reset();
+	beginResetModel();
+	endResetModel();
 }
 
 const File* Files_model::locate(const QModelIndex& index, int role) const

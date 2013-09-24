@@ -31,7 +31,7 @@ protected:
 	const QString _name;
 };
 
-class Size_simple_filter : public Filter, I_love_settings
+class Size_simple_filter : public Filter
 {
 public:
 
@@ -47,13 +47,6 @@ public:
 
 	void set_last_access_sec(uint32 last_access);
 	uint32 last_access_sec() const { return _last_access; }
-
-	void import_setting(Setting* setting);
-
-	Setting _sett_group;
-	Setting _sett_min_size;
-	Setting _sett_pref_size;
-	Setting _sett_last_access;
 
 	static const QString BIG_AND_OUT_OF_DATE;
 

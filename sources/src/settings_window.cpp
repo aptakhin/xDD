@@ -53,7 +53,6 @@ void Settings_window::show()
 void Settings_window::apply_btn_clicked()
 {
 	_simple_size_filter_view.update_filter();
-	Settings_manager::i()->update();
 	hide();
 }
 
