@@ -5,18 +5,19 @@
 
 namespace xdd {
 
+QColor red_brush(255, 0, 0);
+QColor black_brush(0, 0, 0);
+
 Files_model::Files_model(QObject *parent)
 :   QAbstractItemModel(parent), 
-	_fs(nullptr),
-	_ready(false),
-	_red_brush(QColor(255, 0, 0)),
-	_black_brush(QColor(0, 0, 0))
+	fs_(nullptr),
+	ready_(false)
 {
 }
 
 Files_model::~Files_model()
 {
-	delete _fs;
+	delete fs_;
 }
 
 File* Files_model::assoc_file(const QModelIndex& index) 
@@ -41,14 +42,14 @@ void Files_model::remove_deleted()
 
 void Files_model::notify_scan_started()
 {
-	_fs = nullptr;
-	_ready = false;
+	fs_ = nullptr;
+	ready_ = false;
 }
 
 void Files_model::notify_scan_finished()
 {
-	_fs = Scan_manager::i()->fs();
-	_ready = true;
+	fs_ = Scan_manager::i()->fs();
+	ready_ = true;
 	beginResetModel();
 	endResetModel();
 }
@@ -56,7 +57,7 @@ void Files_model::notify_scan_finished()
 const File* Files_model::locate(const QModelIndex& index, int role) const
 {
 	QModelIndex parent = index.parent();
-	const File* file = _fs->root();
+	const File* file = fs_->root();
 
 	if (parent != QModelIndex())
 		file = locate(parent, role);
@@ -77,16 +78,22 @@ bool Files_model::setData(const QModelIndex& index, const QVariant& value, int r
 		class Delete_thread : public QThread
 		{
 		public:
-			Delete_thread(File* file, const QString& reason, Files_model* model) : _file(file), _reason(reason), _model(model) {}
+			Delete_thread(File* file, const QString& reason, Files_model* model) 
+			:	file_(file), 
+				reason_(reason), 
+				model_(model) 
+			{
+			}
+
 			void run()
 			{
-				_file->mark_for_delete(&_reason);
-				emit _model->update_clean();
+				file_->mark_for_delete(&reason_);
+				emit model_->update_clean();
 
-				const File* file = last_file(_file);
+				const File* file = last_file(file_);
 
-				emit _model->dataChanged(_model->createIndex(0, 0, (void*) _file), 
-					_model->createIndex(0, 0, (void*) file));
+				emit model_->dataChanged(model_->createIndex(0, 0, (void*) file_), 
+					model_->createIndex(0, 0, (void*) file));
 			}
 
 		protected:
@@ -100,9 +107,9 @@ bool Files_model::setData(const QModelIndex& index, const QVariant& value, int r
 			}
 
 		protected:
-			File* _file;
-			const QString& _reason;
-			Files_model* _model;
+			File* file_;
+			const QString& reason_;
+			Files_model* model_;
 		};
 
 		Delete_thread* del = new Delete_thread(const_cast<File*>(file), reason, this);
@@ -122,7 +129,7 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 		return QVariant();
 
 	if (role == Qt::DecorationRole && index.column() == C_NAME)
-		return QVariant(file->_cached_icon());
+		return QVariant(file->cached_icon());
 
 	if ((role == Qt::EditRole || role == Qt::CheckStateRole) && index.column() == C_NAME)
 	{
@@ -135,7 +142,7 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 	}
 
 	if (role == Qt::ForegroundRole)
-		return QVariant(file->for_delete()? _red_brush : _black_brush);
+		return QVariant(file->for_delete()? red_brush : black_brush);
 
 	if (role == Qt::DisplayRole || role == Qt::ForegroundRole)
 	{
@@ -172,14 +179,10 @@ QModelIndex Files_model::parent(const QModelIndex& index) const
 
 QModelIndex	Files_model::index(int row, int column, const QModelIndex& parent) const
 {
-	if (!_ready || !hasIndex(row, column, parent))
+	if (!ready_ || !hasIndex(row, column, parent))
 		 return QModelIndex();
 
-	const File* parent_file = nullptr;
-	if (parent.isValid())
-		parent_file = assoc_file(parent);
-	else
-		parent_file = _fs->root();
+	const File* parent_file = parent.isValid()? assoc_file(parent) : fs_->root();
 
 	if ((size_t)row < parent_file->num_children())
 	{
@@ -191,10 +194,10 @@ QModelIndex	Files_model::index(int row, int column, const QModelIndex& parent) c
 
 bool Files_model::hasChildren(const QModelIndex& parent) const
 {
-	if (!_ready)
+	if (!ready_)
 		return false;
 
-	const File* parent_file = _fs->root();
+	const File* parent_file = fs_->root();
 	if (parent.isValid())
 		parent_file = assoc_file(parent);
 	return parent_file->has_children();
@@ -226,10 +229,10 @@ QVariant Files_model::headerData(int section, Qt::Orientation, int role) const
 
 int	Files_model::rowCount(const QModelIndex& parent) const
 {
-	if (!_ready)
+	if (!ready_)
 		return 0;
 
-	const File* parent_file = _fs->root();
+	const File* parent_file = fs_->root();
 	if (parent.isValid())
 		parent_file = assoc_file(parent);
 	return parent_file->num_children();
@@ -237,7 +240,7 @@ int	Files_model::rowCount(const QModelIndex& parent) const
 
 int	Files_model::columnCount(const QModelIndex&) const
 {
-	return _ready? 2 : 0;
+	return ready_? 2 : 0;
 }
 
 } // namespace xdd

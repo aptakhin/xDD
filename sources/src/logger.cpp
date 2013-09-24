@@ -3,37 +3,37 @@
 
 namespace xdd {
 	
-Logger* Logger::_instance = nullptr;
+Logger* Logger::instance_ = nullptr;
 	
 Logger::Logger()
 {
-	_log.open("xdd.log", std::ios_base::app);
+	log_.open("xdd.log", std::ios_base::app);
 
-	XDD_ASSERT3(!Logger::_instance,
+	XDD_ASSERT3(!Logger::instance_,
 		"Singleton of logger is already created!",
 			return);
-	Logger::_instance = this;
+	Logger::instance_ = this;
 }
 
 Logger::~Logger()
 {
-	XDD_ASSERT3(Logger::_instance == this,
+	XDD_ASSERT3(Logger::instance_ == this,
 		"Problem while deleting logger! Another singleton was created!",
 			return);
 
-	Logger::_instance = 0;
+	Logger::instance_ = 0;
 }
 
 Logger& Logger::i() 
 {
-	XDD_ASSERT2(Logger::_instance,
+	XDD_ASSERT2(Logger::instance_,
 		"Singleton of logger wasn't yet created!");
-	return *Logger::_instance; 
+	return *Logger::instance_; 
 }
 
 void Logger::write_header(Message msg)
 {
-	_log << std::setw(21);
+	log_ << std::setw(21);
 
 	char buf[100];
 
@@ -47,26 +47,26 @@ void Logger::write_header(Message msg)
 #endif
 	
 	strftime(buf, 100, "%d %b %Y %H:%M:%S", timeinfo_ptr);
-	_log << std::left << buf;
+	log_ << std::left << buf;
 
-	_log << std::setw(5);
+	log_ << std::setw(5);
 
 	switch (msg)
 	{
-	case M_DEFAULT: _log << "	 "; break;
-	case M_ERROR:   _log << "ERR  "; break;
-	case M_WARNING: _log << "warn "; break;
+	case M_DEFAULT: log_ << "	 "; break;
+	case M_ERROR:   log_ << "ERR  "; break;
+	case M_WARNING: log_ << "warn "; break;
 	}
 }
 
 std::ostream& Logger::write_content()
 {
-	return _log;
+	return log_;
 }
 
 std::ostream& Logger::write_line() 
 {
-	return _log << "--------------------------------------------------------------------------------" << std::endl;
+	return log_ << "--------------------------------------------------------------------------------" << std::endl;
 }
 
 std::ostream& operator << (std::ostream& out, const QString& str)

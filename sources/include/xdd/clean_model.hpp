@@ -33,7 +33,7 @@ public:
 
 	uint64 calculate_free_size() const;
 
-	bool empty() const { return !_pseudo_root.has_files_to_delete(); }
+	bool empty() const { return !pseudo_root_.has_files_to_delete(); }
 
 	void write_cleaning_files_str(const QString& separator, QString& cleaning_files) const;
 	
@@ -71,12 +71,12 @@ public /*overriden*/:
 
 private:
 	
-	File _pseudo_root;
+	File pseudo_root_;
 
-	bool _ready;
+	bool ready_;
 
-	mutable uint64 _free_size;
-	mutable bool _free_size_valid;
+	mutable uint64 free_size_;
+	mutable bool free_size_valid_;
 };
 
 } // namespace xdd

@@ -6,105 +6,105 @@
 
 namespace xdd {
 
-Scan_manager* Scan_manager::_instance = nullptr;
+Scan_manager* Scan_manager::instance_ = nullptr;
 
 Scan_manager::Scan_manager()
-:	_fs(nullptr),
-	_thread(this),
-	_ready(false),
-	_time_exec(0),
-	_start_time(0),
-	_soft_stop(false)
+:	fs_(nullptr),
+	thread_(this),
+	ready_(false),
+	time_exec_(0),
+	start_time_(0),
+	soft_stop_(false)
 {
-	XDD_ASSERT3(!Scan_manager::_instance,
+	XDD_ASSERT3(!Scan_manager::instance_,
 		"Singleton of Scan_manager is already created!",
 			return);
 
-	Scan_manager::_instance = this;
+	Scan_manager::instance_ = this;
 	Logger::i().wl();
 	XDD_LOG("Scan manager initalized");
 }
 
 Scan_manager::~Scan_manager()
 {
-	XDD_ASSERT3(Scan_manager::_instance == this,
+	XDD_ASSERT3(Scan_manager::instance_ == this,
 		"Problem while deleting Scan_manager! Another singleton was created!",
 			return);
 	XDD_LOG("Scan manager destroyed");
 	Logger::i().wl();
-	Scan_manager::_instance = 0;
+	Scan_manager::instance_ = 0;
 }
 
 Scan_manager* Scan_manager::i() 
 {
-	XDD_ASSERT3(Scan_manager::_instance,
+	XDD_ASSERT3(Scan_manager::instance_,
 		"Singleton of Scan_manager wasn't yet created!",
 			return nullptr);
-	return _instance; 
+	return instance_; 
 }
 
 void Scan_manager::start_scan_thread(const Scan_files_param& param)
 {
 	XDD_LOG("Start scanning thread");
-	_thread.set_params(param);
-	_thread.start();
+	thread_.set_params(param);
+	thread_.start();
 }
 
 void Scan_manager::stop_scan_thread()
 {
-	_soft_stop = true;
-	_scanner.sig_soft_stop();
-	_fs->flush_and_ready_async();
+	soft_stop_ = true;
+	scanner_.sig_soft_stop();
+	fs_->flush_and_ready_async();
 }
 
 bool Scan_manager::is_scan_finished() const
 {
-	return _ready;
+	return ready_;
 }
 
 void Scan_manager::prepare_for_scan()
 {
-	if (!_fs)
-		_fs = new File_system;
+	if (!fs_)
+		fs_ = new File_system;
 	
-	_fs->flush_and_ready_async();
-	_ready = false;
+	fs_->flush_and_ready_async();
+	ready_ = false;
 }
 
 void Scan_manager::scan(const Scan_files_param& param)
 {
-	_soft_stop = false;
-	_ready = false;
+	soft_stop_ = false;
+	ready_ = false;
 	
 	QString start = param.start_path;
 
 	if (!start.endsWith('\\'))// add required last slash
 		start += '\\';
 
-	_ready = false;
-	_stat.update(start);
+	ready_ = false;
+	stat_.update(start);
 	XDD_LOG("Scanner started at: " << start);
-	_start_time = helper::get_ms_time();
-	_scanner.start(start);
-	if (!_soft_stop)
+	start_time_ = helper::get_ms_time();
+	scanner_.start(start);
+	if (!soft_stop_)
 	{
 		uint64 end_time = helper::get_ms_time();
-		_time_exec = end_time - _start_time;
-		_start_time = 0;
-		XDD_LOG("Scanner stopped in " << helper::format_time_ms(_time_exec));
+		time_exec_ = end_time - start_time_;
+		start_time_ = 0;
+		XDD_LOG("Scanner stopped in " << helper::format_time_ms(time_exec_));
 
-		File* root = _fs->root();
+		File* root = fs_->root();
 		prepare_files(root);
 	
-		_ready = true;
+		ready_ = true;
 		emit scan_finished();
 	}
 }
 
 const File_system* Scan_manager::fs() const
 {
-	XDD_ASSERT2(_fs, "File system wasn't yet initialized!");
-	return _fs;
+	XDD_ASSERT2(fs_, "File system wasn't yet initialized!");
+	return fs_;
 }
 
 void Scan_manager::update_timer()
@@ -114,8 +114,8 @@ void Scan_manager::update_timer()
 
 void Scan_manager::flush()
 {
-	_ready = false;
-	_fs->flush_and_ready_async();
+	ready_ = false;
+	fs_->flush_and_ready_async();
 }
 
 void Scan_manager::prepare_files(File* file)
@@ -127,28 +127,25 @@ void Scan_manager::prepare_files(File* file)
 
 void Scan_manager::Call_scan::run()
 {
-	if (_mgr != nullptr)
-		_mgr->scan(_params);
+	if (mgr_ != nullptr)
+		mgr_->scan(params_);
 }
 
 uint64 Scan_manager::approx_scan_time_left() const
 {
-	if (_start_time == 0)
+	if (start_time_ == 0)
 		return 0;
 
-	uint64 time_done = helper::get_ms_time() - _start_time;
+	uint64 time_done = helper::get_ms_time() - start_time_;
 
 	if (time_done < 1000)
 		return 0;
 
-	uint64 looked_size = _scanner.get_current_looked_size();
-
+	uint64 looked_size = scanner_.get_current_looked_size();
 	uint64 speed = looked_size / (time_done / 1000);
 
-	std::cout << helper::format_size(looked_size).toStdString() << "/" << helper::format_size(_stat.full_disk_size()).toStdString() << " " << helper::format_size(speed) << std::endl;
-
-	uint64 t = (_stat.full_disk_size() - looked_size) / speed * SECOND_MS;
-
+	std::cout << helper::format_size(looked_size).toStdString() << "/" << helper::format_size(stat_.full_disk_size()).toStdString() << " " << helper::format_size(speed) << std::endl;
+	uint64 t = (stat_.full_disk_size() - looked_size) / speed * SECOND_MS;
 	return t;
 }
 
@@ -221,8 +218,8 @@ void Clean_manager::remove_directory(const File* file)
 }
 
 File_system_stat::File_system_stat()
-:	_full_disk_size(0),
-	_free_disk_size(0)
+:	full_disk_size_(0),
+	free_disk_size_(0)
 {
 }
 
@@ -233,12 +230,12 @@ void File_system_stat::update(const QString& path)
 	GetDiskFreeSpaceEx((const wchar_t*) path.utf16(),
 		&free_bytes_available, &total_number_of_bytes, &total_number_of_free_bytes);
 
-	_full_disk_size = total_number_of_bytes.QuadPart;
-	_free_disk_size =  free_bytes_available.QuadPart;
+	full_disk_size_ = total_number_of_bytes.QuadPart;
+	free_disk_size_ =  free_bytes_available.QuadPart;
 }
 
 File_histogram_manager::File_histogram_manager()
-:	_hist(0, MEGABYTE, KILOBYTE/4)
+:	hist_(0, MEGABYTE, KILOBYTE/4)
 {
 }
 
@@ -256,12 +253,12 @@ void File_histogram_manager::go(const File* file)
 			go(file->i_child(i));
 	}
 	else 
-		_hist.add(file->size());
+		hist_.add(file->size());
 }
 
 const File_histogram_manager::File_hist& File_histogram_manager::histogram() const
 {
-	return _hist;
+	return hist_;
 }
 
 const File_system* File_histogram_manager::fs()

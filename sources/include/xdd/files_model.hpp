@@ -54,11 +54,8 @@ private:
 	const File* assoc_file(const QModelIndex& index) const;
 
 private:
-	const File_system* _fs;
-	bool _ready;
-
-	QBrush _red_brush;
-	QBrush _black_brush;
+	const File_system* fs_;
+	bool ready_;
 };
 
 } // namespace xdd

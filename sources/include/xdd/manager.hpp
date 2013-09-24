@@ -23,13 +23,13 @@ public:
 
 	void update(const QString& path);
 
-	uint64 full_disk_size() const { return _full_disk_size; }
-	uint64 free_disk_size() const { return _free_disk_size; }
+	uint64 full_disk_size() const { return full_disk_size_; }
+	uint64 free_disk_size() const { return free_disk_size_; }
 
 protected:
 
-	uint64 _full_disk_size;
-	uint64 _free_disk_size;
+	uint64 full_disk_size_;
+	uint64 free_disk_size_;
 };
 
 class Scan_manager : public QObject
@@ -40,10 +40,10 @@ private:
 	class Call_scan : public QThread
 	{
 	protected:
-		Call_scan(Scan_manager* mgr) : _mgr(mgr), _soft_stop(false) {}
+		Call_scan(Scan_manager* mgr) : mgr_(mgr), soft_stop_(false) {}
 		~Call_scan() {}
 
-		void set_params(const Scan_files_param& params) { _params = params; }
+		void set_params(const Scan_files_param& params) { params_ = params; }
 
 		void run();
 
@@ -52,9 +52,9 @@ private:
 		friend class Scan_manager; 
 
 	private:
-		Scan_manager* _mgr;
-		bool _soft_stop;
-		Scan_files_param _params;
+		Scan_manager* mgr_;
+		bool soft_stop_;
+		Scan_files_param params_;
 	};
 
 public:
@@ -73,13 +73,13 @@ public:
 
 	const File_system* fs() const;
 
-	const File_system_stat* fs_stat() const { return _ready? &_stat : nullptr; }
+	const File_system_stat* fs_stat() const { return ready_? &stat_ : nullptr; }
 
-	uint64 last_time_exec() const { return _time_exec; }
+	uint64 last_time_exec() const { return time_exec_; }
 
 	uint64 approx_scan_time_left() const;
 
-	Scanner& scanner() { return _scanner; }
+	Scanner& scanner() { return scanner_; }
 
 	void flush();
 
@@ -97,21 +97,21 @@ protected:
 	void scan(const Scan_files_param& param);
 
 protected:
-	static Scan_manager* _instance;
+	static Scan_manager* instance_;
 
-	File_system* _fs;
-	Scanner _scanner;
+	File_system* fs_;
+	Scanner scanner_;
 
-	Call_scan _thread;
+	Call_scan thread_;
 
-	bool _ready;
+	bool ready_;
 
-	File_system_stat _stat;
+	File_system_stat stat_;
 
-	uint64 _time_exec;
-	uint64 _start_time;
+	uint64 time_exec_;
+	uint64 start_time_;
 
-	bool _soft_stop;
+	bool soft_stop_;
 };
 
 class Clean_manager
@@ -142,53 +142,53 @@ class Histogram
 {
 public:
 	typedef std::vector<S> Bars_array;
-	Bars_array _bars;
+	Bars_array bars_;
 
 public:
 	Histogram(const T& min, const T& max, const T& bar)
-	:	_min(min), _max(max), _bar(bar)
+	:	min_(min), max_(max), bar_(bar)
 	{
 		size_t sz = size_t((max - min + bar - 1) / bar);
-		_bars.resize(sz);
-		memset(&_bars.front(), 0, sz * sizeof(S));
+		bars_.resize(sz);
+		memset(&bars_.front(), 0, sz * sizeof(S));
 	}
 
 	void add(const T& val)
 	{
-		_bars[select_bar(val)]++;
+		bars_[select_bar(val)]++;
 	}
 
 	const Bars_array& get_all() const
 	{
-		return _bars;
+		return bars_;
 	}
 
 	S get(size_t i_bar) const
 	{
-		return _bars[i_bar];
+		return bars_[i_bar];
 	}
 
-	const T& min() const { return _min; }
-	const T& max() const { return _max; }
-	const T& bar() const { return _bar; }
+	const T& min() const { return min_; }
+	const T& max() const { return max_; }
+	const T& bar() const { return bar_; }
 
-	T left(size_t i_bar)  const { return _min + i_bar * _bar;}
-	T right(size_t i_bar) const { return _min + (i_bar + 1) * _bar;}
+	T left(size_t i_bar)  const { return min_ + i_bar * bar_;}
+	T right(size_t i_bar) const { return min_ + (i_bar + 1) * bar_;}
 
-	size_t bars() const { return _bars.size(); }
+	size_t bars() const { return bars_.size(); }
 
 protected:
 	size_t select_bar(const T& val)
 	{
-		if (val < _min) return 0;
-		if (val > _max) return _bars.size() - 1;
-		return (val - _min) / _bar;
+		if (val < min_) return 0;
+		if (val > max_) return bars_.size() - 1;
+		return (val - min_) / bar_;
 	}
 
 protected:
 	
-	const T _min, _max;
-	const T _bar;
+	const T min_, max_;
+	const T bar_;
 };
 
 class File_histogram_manager
@@ -210,7 +210,7 @@ protected:
 
 protected:
 	
-	File_hist _hist;
+	File_hist hist_;
 };
 
 } // namespace xdd

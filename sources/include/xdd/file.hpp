@@ -41,16 +41,16 @@ public:
 
 	void operator = (const File& cpy);
 
-	const QString& name() const { return _name; }
-	File::ID Id() const { return _id; }
+	const QString& name() const { return name_; }
+	File::ID Id() const { return id_; }
 
-	bool is_root() const { return _parent == (ID)-1; }
-	bool is_directory() const { return _type == T_DIRECTORY; }
+	bool is_root() const { return parent_ == (ID)-1; }
+	bool is_directory() const { return type_ == T_DIRECTORY; }
 
-	uint64 size() const { return _size; }
-	void _set_size(uint64 size) { _size = size; }
+	uint64 size() const { return size_; }
+	void set_size_impl(uint64 size) { size_ = size; }
 
-	File::ID parent_id() const { return _parent; }
+	File::ID parent_id() const { return parent_; }
 	File* parent();
 	const File* parent() const;
 
@@ -58,12 +58,12 @@ public:
 
 	void sort_size_desc();
 
-	bool has_children() const { return !_children.empty(); }
-	size_t num_children() const { return _children.size(); }
+	bool has_children() const { return !children_.empty(); }
+	size_t num_children() const { return children_.size(); }
 
-	const Files& children() const { return _children; }
+	const Files& children() const { return children_; }
 
-	File::ID i_child_id(size_t i) const { return _children[i]; }
+	File::ID i_child_id(size_t i) const { return children_[i]; }
 	File* i_child(size_t i);
 	const File* i_child(size_t i) const;
 
@@ -76,11 +76,11 @@ public:
 		Don't push there nullptr pointer! Valid pointer object must be pushed. */
 	void mark_for_delete(const QString* reason);
 
-	const QString& delete_reason() const { return *_reason_delete; }
+	const QString& delete_reason() const { return *reason_delete_; }
 
 	bool for_delete() const;
 
-	const Files& files_to_delete() const { return _to_delete; }
+	const Files& files_to_delete() const { return to_delete_; }
 
 	size_t num_files_to_delete() const;
 	File* i_file_to_delete(size_t i) const;
@@ -93,14 +93,14 @@ public:
 
 	void sort_marked_for_delete(Field field, Sort_order order);
 
-	void _add_child_to_delete_list(const File* child);
-	void _remove_child_from_delete_list(const File* child);
+	void add_child_to_delete_list_impl(const File* child);
+	void remove_child_from_delete_list_impl(const File* child);
 
 	void _remove_all_children_from_delete_list();
 
 	bool _has_cached_icon() const;
 	void _set_cached_icon(const QIcon& icon);
-	const QIcon& _cached_icon() const;
+	const QIcon& cached_icon() const;
 
 	bool has_for_delete_cache() const;
 	bool update_delete_cache_rec() const;
@@ -109,7 +109,7 @@ public:
 	bool deleted_children_if_any(T fun) const
 	{
 		bool result = false;
-		for (Files::const_iterator i = _to_delete.begin(); i != _to_delete.end(); ++i)
+		for (Files::const_iterator i = to_delete_.begin(); i != to_delete_.end(); ++i)
 		{
 			if (fun(File_system::i()->file_with_id(*i)))
 				result = true;
@@ -121,7 +121,7 @@ public:
 	bool children_if_any(T fun) const
 	{
 		bool result = false;
-		for (Files::const_iterator i = _children.begin(); i != _children.end(); ++i)
+		for (Files::const_iterator i = children_.begin(); i != children_.end(); ++i)
 		{
 			if (fun(File_system::i()->file_with_id(*i)))
 				result = true;
@@ -135,27 +135,27 @@ protected:
 	/// Only parent can call this
 	void _parent_marks_for_delete(const QString& reason);
 
-	void _set_id(File::ID id) { _id = id; }
+	void _set_id(File::ID id) { id_ = id; }
 
 	Files::iterator child_to_delete_iter_by_id(File::ID id);
 	
 protected:
-	File::ID _parent;
-	File::ID _id;
-	QString _name;
-	Type _type;
+	File::ID parent_;
+	File::ID id_;
+	QString name_;
+	Type type_;
 
-	uint64 _size;
+	uint64 size_;
 
-	Files _children;
+	Files children_;
 
-	const QString* _reason_delete;
+	const QString* reason_delete_;
 
-	mutable QIcon _icon_cache;
+	mutable QIcon icon_cache_;
 
-	Files _to_delete;
+	Files to_delete_;
 
-	mutable bool _has_for_delete_cache;
+	mutable bool has_for_delete_cache_;
 };
 
 template <typename F>

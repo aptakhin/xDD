@@ -9,10 +9,10 @@ namespace xdd {
 
 Clean_model::Clean_model(QObject *parent)
 :   QAbstractItemModel(parent),
-	_pseudo_root((size_t)-1, QString("Pseudo root"), File::T_DIRECTORY),
-	_ready(false),
-	_free_size(0),
-	_free_size_valid(false)
+	pseudo_root_((size_t)-1, QString("Pseudo root"), File::T_DIRECTORY),
+	ready_(false),
+	free_size_(0),
+	free_size_valid_(false)
 {
 }
 
@@ -22,12 +22,12 @@ Clean_model::~Clean_model()
 
 void Clean_model::notify_scan_started()
 {
-	_ready = false;
+	ready_ = false;
 }
 
 void Clean_model::notify_scan_finished()
 {
-	_ready = true;
+	ready_ = true;
 	beginResetModel();
 	endResetModel();
 }
@@ -44,24 +44,24 @@ const File* Clean_model::assoc_file(const QModelIndex& index) const
 
 const File* Clean_model::parent(const File* file) const
 {
-	if (_pseudo_root.has_to_delete(file))
-		return &_pseudo_root;
+	if (pseudo_root_.has_to_delete(file))
+		return &pseudo_root_;
 	else
 		return file->parent();
 }
 
 void Clean_model::flush(bool hint_do_rec_reset)
 {
-	_pseudo_root._remove_all_children_from_delete_list();
+	pseudo_root_._remove_all_children_from_delete_list();
 	if (hint_do_rec_reset)
 		reset_node_rec(File_system::i()->root());
-	_free_size_valid = false;
+	free_size_valid_ = false;
 }
 
 void Clean_model::reset_node_rec(const File* node)
 {
 	if (node->for_delete())
-		_pseudo_root.child_marked_for_delete(node);// Find child. Add to list and return.
+		pseudo_root_.child_marked_for_delete(node);// Find child. Add to list and return.
 	else
 	{
 		size_t sz = node->num_children();
@@ -72,17 +72,17 @@ void Clean_model::reset_node_rec(const File* node)
 
 uint64 Clean_model::calculate_free_size() const
 {
-	if (!_free_size_valid)
+	if (!free_size_valid_)
 	{
 		uint64 size = 0;
-		files_each(_pseudo_root.files_to_delete(), [&size] (const File* file) {
+		files_each(pseudo_root_.files_to_delete(), [&size] (const File* file) {
 			size += file->size();
 		});
-		_free_size = size;
+		free_size_ = size;
 
-		_free_size_valid = true;
+		free_size_valid_ = true;
 	}
-	return _free_size;
+	return free_size_;
 }
 
 const File* Clean_model::locate(const QModelIndex& index, int role) const
@@ -91,7 +91,7 @@ const File* Clean_model::locate(const QModelIndex& index, int role) const
 	const File* file = nullptr;
 
 	if (parent == QModelIndex())
-		file = &_pseudo_root;
+		file = &pseudo_root_;
 	else
 		file = locate(parent, role);
 
@@ -112,7 +112,7 @@ QVariant Clean_model::data(const QModelIndex& index, int role) const
 		return QVariant();
 
 	if (role == Qt::DecorationRole && index.column() == C_NAME)
-		return QVariant(file->_cached_icon());
+		return QVariant(file->cached_icon());
 
 	if (role == Qt::DisplayRole)
 	{
@@ -150,10 +150,10 @@ QModelIndex Clean_model::parent(const QModelIndex& index) const
 
 QModelIndex	Clean_model::index(int row, int column, const QModelIndex& parent) const
 {
-	if (!_ready || !hasIndex(row, column, parent))
+	if (!ready_ || !hasIndex(row, column, parent))
 		return QModelIndex();
 
-	const File* parent_file = &_pseudo_root;
+	const File* parent_file = &pseudo_root_;
 	if (parent.isValid())
 		parent_file = assoc_file(parent);
 
@@ -166,10 +166,10 @@ QModelIndex	Clean_model::index(int row, int column, const QModelIndex& parent) c
 
 bool Clean_model::hasChildren(const QModelIndex& parent) const
 {
-	if (!_ready)
+	if (!ready_)
 		return false;
 
-	const File* item = &_pseudo_root;
+	const File* item = &pseudo_root_;
 	if (parent.isValid())
 		item = assoc_file(parent);
 	return item->num_files_to_delete();
@@ -199,10 +199,10 @@ QVariant Clean_model::headerData(int section, Qt::Orientation, int role) const
 
 int	Clean_model::rowCount(const QModelIndex& parent) const
 {
-	if (!_ready)
+	if (!ready_)
 		return 0;
 
-	const File* item = &_pseudo_root;
+	const File* item = &pseudo_root_;
 	if (parent.isValid())
 		item = assoc_file(parent);
 	
@@ -211,7 +211,7 @@ int	Clean_model::rowCount(const QModelIndex& parent) const
 
 int	Clean_model::columnCount(const QModelIndex&) const
 {
-	return _ready? 3 : 0;
+	return ready_? 3 : 0;
 }
 
 bool Clean_model::removeRows(int row, int count, const QModelIndex& parent)
@@ -221,7 +221,7 @@ bool Clean_model::removeRows(int row, int count, const QModelIndex& parent)
 	for (; row < till; ++row)
 		remove_item_at(row, parent);
 	endRemoveRows();
-	_free_size_valid = false;
+	free_size_valid_ = false;
 	return true;
 }
 
@@ -230,7 +230,7 @@ bool Clean_model::removeRow(int row, const QModelIndex& parent)
 	beginRemoveRows(parent, row, row);
 	bool result = remove_item_at(row, parent);
 	endRemoveRows();
-	_free_size_valid = false;
+	free_size_valid_ = false;
 	return result;
 }
 
@@ -242,15 +242,15 @@ bool Clean_model::remove_item_at(int row, const QModelIndex& parent)
 
 	item->mark_for_delete(&EMPTY_STR);
 
-	if (_pseudo_root.has_to_delete(item))
-		_pseudo_root._remove_child_from_delete_list(item);
+	if (pseudo_root_.has_to_delete(item))
+		pseudo_root_.remove_child_from_delete_list_impl(item);
 
 	return true;
 }
 
 void Clean_model::sort(int column, Qt::SortOrder order)
 {
-	sort_rec(&_pseudo_root, column, order);
+	sort_rec(&pseudo_root_, column, order);
 }
 
 void Clean_model::sort_rec(File* node, int column, Qt::SortOrder order)
@@ -274,7 +274,7 @@ void Clean_model::sort_rec(File* node, int column, Qt::SortOrder order)
 void Clean_model::write_cleaning_files_str(const QString& separator, QString& cleaning_files) const
 {
 	cleaning_files.clear();
-	write_cleaning_files_str(&_pseudo_root, separator, cleaning_files);
+	write_cleaning_files_str(&pseudo_root_, separator, cleaning_files);
 }
 
 void Clean_model::write_cleaning_files_str(const File* node, const QString& separator, QString& cleaning_files) const

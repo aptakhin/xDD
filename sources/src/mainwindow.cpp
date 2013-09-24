@@ -12,32 +12,32 @@ namespace xdd {
 MainWindow::MainWindow(QWidget *parent) 
 :	QMainWindow(parent),
 	ui(new ::Ui::MainWindow),
-	_file_dlg(nullptr),
-	_reset_files_model(false),
-	_mbs(MBS_RUN)
+	file_dlg_(nullptr),
+	reset_files_model_(false),
+	mbs_(MBS_RUN)
 {
 	ui->setupUi(this);
 
-	_settings = new Settings_window(this);
-	_settings->hide();
+	settings_ = new Settings_window(this);
+	settings_->hide();
 	
-	_files_model = new Files_model();
-	ui->files->setModel(_files_model);
+	files_model_ = new Files_model();
+	ui->files->setModel(files_model_);
 	ui->files->setAnimated(true);
 	ui->files->setAutoScroll(false);
 
-	_clean_model = new Clean_model();
-	ui->clean->setModel(_clean_model);
+	clean_model_ = new Clean_model();
+	ui->clean->setModel(clean_model_);
 	ui->clean->setAnimated(true);
 	ui->clean->setAutoScroll(false);
 	ui->clean->setSortingEnabled(true);
 
-	_file_dlg = new QFileDialog(this);
-	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
+	file_dlg_ = new QFileDialog(this);
+	file_dlg_->setFileMode(QFileDialog::DirectoryOnly);
 
 	ui->tab->setSizePolicy(QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored));
 
-	ui->root_file->setText("E:\\");
+	ui->root_file->setText("C:\\");
 	root_file_changed("");
 
 	enable_cleaning_tab(false);
@@ -56,14 +56,14 @@ MainWindow::MainWindow(QWidget *parent)
 	
 MainWindow::~MainWindow()
 {
-	delete _file_dlg;
-	delete _settings;
+	delete file_dlg_;
+	delete settings_;
 	delete ui;
 }
 
 void MainWindow::bind_slots()
 {
-	QObject::connect(_files_model, SIGNAL(update_clean()),
+	QObject::connect(files_model_, SIGNAL(update_clean()),
 		this, SLOT(update_clean_rec()));
 
 	QObject::connect(ui->runstop_btn, SIGNAL(clicked()),
@@ -72,13 +72,13 @@ void MainWindow::bind_slots()
 	QObject::connect(ui->root_file, SIGNAL(textChanged(QString)),
 		this, SLOT(root_file_changed(QString)));
 
-	_file_dlg = new QFileDialog(this);
-	_file_dlg->setFileMode(QFileDialog::DirectoryOnly);
+	file_dlg_ = new QFileDialog(this);
+	file_dlg_->setFileMode(QFileDialog::DirectoryOnly);
 	
 	QObject::connect(ui->view_root_file, SIGNAL(clicked()),
 		this, SLOT(show_file_dlg()));
 
-	QObject::connect(_file_dlg, SIGNAL(fileSelected(QString)),
+	QObject::connect(file_dlg_, SIGNAL(fileSelected(QString)),
 		this, SLOT(file_selected(QString)));
 
 	QObject::connect(Scan_manager::i(), SIGNAL(scan_finished()),
@@ -99,10 +99,10 @@ void MainWindow::bind_slots()
 	QObject::connect(ui->settings_btn, SIGNAL(clicked()),
 		this, SLOT(settings_btn_clicked()));
 
-	QObject::connect(_clean_model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+	QObject::connect(clean_model_, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
 		this, SLOT(clean_updated()));
 
-	QObject::connect(&_timer, SIGNAL(timeout()), this, SLOT(scan_updated()));
+	QObject::connect(&timer_, SIGNAL(timeout()), this, SLOT(scan_updated()));
 
 	QObject::connect(ui->clean, SIGNAL(clean_updated()),
 		this, SLOT(clean_updated()));
@@ -113,18 +113,18 @@ void MainWindow::bind_slots()
 
 void MainWindow::runstop_btn_clicked()
 {
-	if (_mbs == MBS_RUN)
+	if (mbs_ == MBS_RUN)
 	{
-		_timer.setSingleShot(false);
-		_timer.start(500);
+		timer_.setSingleShot(false);
+		timer_.start(500);
 
 		Scan_manager::i()->prepare_for_scan();
 
 		Scan_files_param params;
 		params.start_path = ui->root_file->text();
 
-		_files_model->notify_scan_started();
-		_clean_model->notify_scan_started();
+		files_model_->notify_scan_started();
+		clean_model_->notify_scan_started();
 		ui->files->reset();
 		ui->clean->reset();
 
@@ -136,7 +136,7 @@ void MainWindow::runstop_btn_clicked()
 	}
 	else
 	{
-		_timer.stop();
+		timer_.stop();
 		Scan_manager::i()->stop_scan_thread();
 		ui->status->setText("Stopped");
 		update_main_btn(MBS_RUN);
@@ -157,15 +157,15 @@ void MainWindow::enable_cleaning_tab(bool enable)
 
 void MainWindow::scan_finished()
 {
-	_timer.stop();
+	timer_.stop();
 	ui->status->setText("Finished");
 	ui->common_info->setText(
 		QString("Execution time: ") + helper::format_time_ms(Scan_manager::i()->last_time_exec()) +
 		QString("\nFull disk size: ") + helper::format_size(Scan_manager::i()->fs_stat()->full_disk_size()) +
 		QString("\nFree disk size: ") + helper::format_size(Scan_manager::i()->fs_stat()->free_disk_size())
 	);
-	_files_model->notify_scan_finished();
-	_clean_model->notify_scan_finished();
+	files_model_->notify_scan_finished();
+	clean_model_->notify_scan_finished();
 	update_clean_btn_access();
 
 	enable_cleaning_tab(true);
@@ -184,7 +184,7 @@ void MainWindow::scan_finished()
 
 void MainWindow::show_file_dlg()
 {
-	_file_dlg->show();
+	file_dlg_->show();
 }
 
 void MainWindow::file_selected(const QString& file)
@@ -227,7 +227,7 @@ void MainWindow::scan_updated()
 
 void MainWindow::update_clean(bool hint_do_rec_reset)
 {
-	_clean_model->flush(hint_do_rec_reset);
+	clean_model_->flush(hint_do_rec_reset);
 	ui->clean->reset();
 	clean_updated();
 }
@@ -243,20 +243,20 @@ void MainWindow::clean_updated()
 
 	// Show some statistics
 	QString new_stat = QString() +
-		"Bytes will be free: " + helper::format_size(_clean_model->calculate_free_size()) +
+		"Bytes will be free: " + helper::format_size(clean_model_->calculate_free_size()) +
 		"\nTotal free disk size will be: " + 
-		helper::format_size(Scan_manager::i()->fs_stat()->free_disk_size() + _clean_model->calculate_free_size());
+		helper::format_size(Scan_manager::i()->fs_stat()->free_disk_size() + clean_model_->calculate_free_size());
 
 	// update info in both tabs
 	ui->new_stat->setText(new_stat);
 	ui->new_stat2->setText(new_stat);
 
-	_reset_files_model = true;// Have to update some cache
+	reset_files_model_ = true;// Have to update some cache
 
 	if (ui->tab->currentIndex() == T_SCAN)
 	{
-		_files_model->flush();// Can't delay. So update at moment
-		_reset_files_model = false;
+		files_model_->flush();// Can't delay. So update at moment
+		reset_files_model_ = false;
 	}
 }
 
@@ -272,7 +272,7 @@ void MainWindow::select_cleaning_tab()
 
 void MainWindow::update_clean_btn_access()
 {
-	ui->clean_btn->setEnabled(!_clean_model->empty());
+	ui->clean_btn->setEnabled(!clean_model_->empty());
 }
 
 void MainWindow::clean_btn_clicked()
@@ -283,7 +283,7 @@ void MainWindow::clean_btn_clicked()
 	QString what_really = ui->move_to_recycle_opt->isChecked()? 
 		"move files to Recycle Bin" : "erase files";
 	submit_box.setInformativeText(QString() + "Do you realy want to " + what_really + " with " +
-		helper::format_size(_clean_model->calculate_free_size()) + " volume?");
+		helper::format_size(clean_model_->calculate_free_size()) + " volume?");
 	submit_box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 	submit_box.setDefaultButton(QMessageBox::No);
 	int button = submit_box.exec();
@@ -298,7 +298,7 @@ void MainWindow::clean_btn_clicked()
 		else if (ui->remove_from_hd_opt->isChecked())// or to recycle bin
 			clean.make_clean(Clean_manager::A_REMOVE);
 
-		_files_model->remove_deleted();
+		files_model_->remove_deleted();
 
 		update_clean(false);
 	}
@@ -308,22 +308,22 @@ void MainWindow::clean_btn_clicked()
 
 void MainWindow::settings_btn_clicked()
 {
-	_settings->show();
+	settings_->show();
 }
 
 void MainWindow::tab_selected(int tab)
 {
-	if (_reset_files_model && tab == T_SCAN)
+	if (reset_files_model_ && tab == T_SCAN)
 	{
-		_files_model->flush();
-		_reset_files_model = false;
+		files_model_->flush();
+		reset_files_model_ = false;
 	}
 }
 
 void MainWindow::update_main_btn(Main_button_state new_bs)
 {
-	_mbs = new_bs;
-	ui->runstop_btn->setText(_mbs == MBS_RUN? QString("Run") : QString("Stop"));	
+	mbs_ = new_bs;
+	ui->runstop_btn->setText(mbs_ == MBS_RUN? QString("Run") : QString("Stop"));	
 }
 
 } // namespace xdd

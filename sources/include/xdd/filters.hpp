@@ -13,9 +13,9 @@ Suggested that fast filters use given file_data only and not more. They've to pl
 class Filter
 {
 public:
-	Filter(const QString& name) : _name(name) {}
+	Filter(const QString& name) : name_(name) {}
 
-	Filter(const Filter& cpy) : _name(cpy._name) {}
+	Filter(const Filter& cpy) : name_(cpy.name_) {}
 
 	/**
 	nullptr means not show file in files and clean views
@@ -24,11 +24,11 @@ public:
 	*/
 	virtual const QString* look(const File_data& data) = 0;
 
-	const QString& name() const { return _name; }
+	const QString& name() const { return name_; }
 
 
 protected:
-	const QString _name;
+	const QString name_;
 };
 
 class Size_simple_filter : public Filter
@@ -94,7 +94,7 @@ protected:
 	};
 
 	typedef std::vector<Filter_item> Filters;
-	Filters _filters;
+	Filters filters_;
 };
 
 

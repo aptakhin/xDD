@@ -26,9 +26,9 @@ protected:
 public:
 
 	Bucket_vector(uint32 bucket_size)
-	:   _buckets(), 
-	 	_bucket_size(bucket_size),
-		_last_bucket(nullptr)
+	:   buckets_(), 
+	 	bucket_size_(bucket_size),
+		last_bucket_(nullptr)
 	{
 		extend();// add first bucket at creation
 	}
@@ -40,35 +40,35 @@ public:
 
 	void push_back(const T& obj)
 	{
-		if (_last_bucket->size == _bucket_size)
+		if (last_bucket_->size == bucket_size_)
 			extend();// No place. add another one bucket.
 
-		_last_bucket->base[_last_bucket->size++] = obj;
+		last_bucket_->base[last_bucket_->size++] = obj;
 	}
 
 	T& operator [] (uint64 i)
 	{
-		uint bucket = uint(i / _bucket_size);
-		uint local  = uint(i - bucket * _bucket_size);
-		return _buckets[bucket].base[local];
+		uint bucket = uint(i / bucket_size_);
+		uint local  = uint(i - bucket * bucket_size_);
+		return buckets_[bucket].base[local];
 	}
 
 	const T& operator [] (uint64 i) const
 	{
-		uint64 bucket = uint(i / _bucket_size);
-		uint64 local  = uint(i - bucket * _bucket_size);
-		return _buckets[bucket].base[local];
+		uint64 bucket = uint(i / bucket_size_);
+		uint64 local  = uint(i - bucket * bucket_size_);
+		return buckets_[bucket].base[local];
 	}
 
 	T& back()
 	{
-		return _last_bucket->base[_last_bucket->size - 1];
+		return last_bucket_->base[last_bucket_->size - 1];
 	}
 
 	uint32 size() const
 	{
 		// So easy, because there are no deleting interface, yep.
-		return (_buckets.size() - 1) * _bucket_size + _last_bucket->size;
+		return (buckets_.size() - 1) * bucket_size_ + last_bucket_->size;
 	}
 
 	void clear()
@@ -76,12 +76,12 @@ public:
 		XDD_LOG("File system started to clean up");
 		uint64 start_time = helper::get_ms_time();
 
-		Buckets::iterator i = _buckets.begin();
-		while (i != _buckets.end()) // Delete everything
+		Buckets::iterator i = buckets_.begin();
+		while (i != buckets_.end()) // Delete everything
 		{
 			delete[] i->base;
 			i->base = nullptr, i->size = 0;
-			i = _buckets.erase(i);
+			i = buckets_.erase(i);
 		}
 		// Everything was removed. It's now time to add first bucket.
 		extend();
@@ -95,21 +95,21 @@ protected:
 	void extend()
 	{
 		Bucket bucket;
-		bucket.base = new T[_bucket_size];
+		bucket.base = new T[bucket_size_];
 		bucket.size = 0;
-		_buckets.push_back(bucket);
-		_last_bucket = &_buckets.back();
+		buckets_.push_back(bucket);
+		last_bucket_ = &buckets_.back();
 	}
 
 protected:
 
 	typedef std::vector<Bucket> Buckets;
-	Buckets _buckets;
+	Buckets buckets_;
 
 	/// size of each bucket vector
-	const uint32 _bucket_size;
+	const uint32 bucket_size_;
 
-	Bucket* _last_bucket;
+	Bucket* last_bucket_;
 };
 
 class File_system
@@ -139,15 +139,15 @@ public:
 	void flush_and_ready_async();
 
 protected:
-	void _full_path_of(const File& file, QString& path) const;
-	void _full_path_of(const File& file, wchar_t* full_path, size_t* len) const;
+	void full_path_of_impl(const File& file, QString& path) const;
+	void full_path_of_impl(const File& file, wchar_t* full_path, size_t* len) const;
 
 protected:
-	static File_system* _instance;
+	static File_system* instance_;
 
-	int _init_bucket_size;
+	int init_bucket_size_;
 
-	Bucket_vector<File>* _files;
+	Bucket_vector<File>* files_;
 };
 
 }// namespace xdd

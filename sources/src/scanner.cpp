@@ -9,14 +9,14 @@ namespace xdd {
 
 void Scanner::add_fast_filter(Filter* filter)
 {
-	_fast_filters.push_back(filter);
+	fast_filters_.push_back(filter);
 }
 
 void Scanner::start(const QString& path)
 {
-	_path_len = 0;
-	_all_looked_size = 0;
-	_soft_stop = false;
+	path_len_ = 0;
+	all_looked_size_ = 0;
+	soft_stop_ = false;
 	// Add root for file system - it's out start folder
 	File* root = File_system::i()->add_file(File((File::ID)-1, path, File::T_DIRECTORY));
 
@@ -30,13 +30,13 @@ void Scanner::start(const QString& path)
 #	else
 	wcscpy(root_path, wpath.c_str());
 #	endif//#ifdef _MSC_VER
-	_path_len = wcslen(root_path);
-	uint64 sz = _start(root_path, root, 0);
-	root->_set_size(sz);
+	path_len_ = wcslen(root_path);
+	uint64 sz = start_impl(root_path, root, 0);
+	root->set_size_impl(sz);
 #endif//#ifdef XDD_WIN32_SCANNER
 
 #ifdef XDD_UNIVERSAL_SCANNER
-	_start(root, QDir(QString::fromStdWString(path)));
+	start_impl(root, QDir(QString::fromStdWString(path)));
 #endif//#ifdef XDD_WIN32_SCANNER
 }
 
@@ -46,27 +46,27 @@ void Scanner::start(const QString& path)
 WTF-style optimized code.
 It must be fast:).
 */
-uint64 Scanner::_start(wchar_t* path, File* file, int depth)
+uint64 Scanner::start_impl(wchar_t* path, File* file, int depth)
 {
 	uint64 full_size = 0;
 	WIN32_FIND_DATA file_data;
 
-	path[_path_len++] = L'*', path[_path_len] = 0;// Cat `*` for query
+	path[path_len_++] = L'*', path[path_len_] = 0;// Cat `*` for query
 
 	HANDLE file_handle = FindFirstFile(path, &file_data);
 
 	// Query done. Erase last `*` from path
-	path[--_path_len] = 0;
+	path[--path_len_] = 0;
 
 	XDD_ASSERT3(file_handle != INVALID_HANDLE_VALUE,
 		"Invalid file handle `" << path << "`!",
 			return 0);
 	
-	size_t restore_to_len = _path_len; // Save current length to restore later fast
+	size_t restore_to_len = path_len_; // Save current length to restore later fast
 
 	do
 	{
-		if (_soft_stop)
+		if (soft_stop_)
 			break;
 
 		File::Type type = File::T_FILE;
@@ -79,7 +79,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 			continue;
 
 		// Back to original filename
-		path[_path_len = restore_to_len] = 0;
+		path[path_len_ = restore_to_len] = 0;
 
 		if (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 			type = File::T_DIRECTORY;
@@ -87,16 +87,16 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		{
 			size = helper::quad_part(file_data.nFileSizeLow, file_data.nFileSizeHigh);
 			full_size += size;// Update size and full folder size
-			_all_looked_size += size;
+			all_looked_size_ += size;
 		}
 
 		// Cat new filename
 		size_t file_name_sz = wcslen(file_data.cFileName);
-		memcpy(path + _path_len, file_data.cFileName, sizeof(wchar_t) * (file_name_sz + 1));
-		_path_len += file_name_sz;
+		memcpy(path + path_len_, file_data.cFileName, sizeof(wchar_t) * (file_name_sz + 1));
+		path_len_ += file_name_sz;
 
 		if (type == File::T_DIRECTORY)
-			path[_path_len++] = L'\\', path[_path_len] = 0;
+			path[path_len_++] = L'\\', path[path_len_] = 0;
 
 		bool add2fs = false;
 
@@ -105,7 +105,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 			// Fast filter's work
 			const QString* reason = nullptr;
 				
-			for (Filters::iterator i = _fast_filters.begin(); i != _fast_filters.end(); ++i)
+			for (Filters::iterator i = fast_filters_.begin(); i != fast_filters_.end(); ++i)
 			{
 				reason = (*i)->look(file_data);
 				if (reason != nullptr)
@@ -123,7 +123,7 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 				// Add file to fs. If successful, set size and go on
 				if (cur_file != nullptr && file->add_child(cur_file->Id()))
 				{
-					goto_file = cur_file, cur_file->_set_size(size);
+					goto_file = cur_file, cur_file->set_size_impl(size);
 
 					if (reason != nullptr && *reason != EMPTY_STR)// Child added. Should set reason if has some
 						cur_file->mark_for_delete(reason);
@@ -143,10 +143,10 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 		if (type == File::T_DIRECTORY)
 		{
 			// Go to subfolder
-			uint64 set_size = _start(path, goto_file, depth + 1);
+			uint64 set_size = start_impl(path, goto_file, depth + 1);
 
 			if (goto_file != nullptr)
-				goto_file->_set_size(set_size);
+				goto_file->set_size_impl(set_size);
 			full_size += set_size;
 		}
 	}
@@ -154,11 +154,11 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 
 	XDD_ASSERT3(GetLastError() == ERROR_NO_MORE_FILES,
 		"Error happened while reading `" << path << "`!",
-		   path[_path_len = restore_to_len] = 0; return full_size);
+		   path[path_len_ = restore_to_len] = 0; return full_size);
 
 	FindClose(file_handle);
 
-	path[_path_len = restore_to_len] = 0;// Restore
+	path[path_len_ = restore_to_len] = 0;// Restore
 	return full_size;
 }
 // — WTF?!
@@ -166,14 +166,14 @@ uint64 Scanner::_start(wchar_t* path, File* file, int depth)
 #endif//#ifdef XDD_WIN32_SCANNER
 
 #ifdef XDD_UNIVERSAL_SCANNER
-uint64 Scanner::_start(File* file, const QDir& cur_dir)
+uint64 Scanner::start_impl(File* file, const QDir& cur_dir)
 {
 	uint64 full_size = 0;
 
 	QFileInfoList list = cur_dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
 	for (int child_i = 0; child_i < list.size(); ++child_i) 
 	{
-		if (_soft_stop)
+		if (soft_stop_)
 			break;
 
 		File* goto_file = nullptr;
@@ -185,7 +185,7 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 		uint64 size = file_data.size();
 		full_size += size;
 
-		for (Filters::iterator i = _fast_filters.begin(); i != _fast_filters.end(); ++i)
+		for (Filters::iterator i = fast_filters_.begin(); i != fast_filters_.end(); ++i)
 		{
 			if ((*i)->look(file_data) == Filter::S_MARK)
 			{
@@ -203,16 +203,16 @@ uint64 Scanner::_start(File* file, const QDir& cur_dir)
 				File(file->Id(), file_data.filename().toStdWString(), type));
 
 			if (cur_file != nullptr && file->add_child(cur_file->Id()))
-				goto_file = cur_file, cur_file->_set_size(size);
+				goto_file = cur_file, cur_file->set_size_impl(size);
 			else
 				goto_file = nullptr;
 		}
 
 		if (file_data.isDir())
 		{
-			uint64 set_size = _start(goto_file, QDir(file_data.absoluteFilePath()));
+			uint64 set_size = start_impl(goto_file, QDir(file_data.absoluteFilePath()));
 			if (goto_file != nullptr)
-				goto_file->_set_size(set_size);
+				goto_file->set_size_impl(set_size);
 			full_size += set_size;
 		}
 	}

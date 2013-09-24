@@ -30,9 +30,9 @@ public:
 	std::ostream& wl() { return write_line(); }
 
 protected:
-	static Logger* _instance;
+	static Logger* instance_;
 
-	std::ofstream _log;
+	std::ofstream log_;
 };
 
 std::ostream& operator << (std::ostream& out, const QString& str);

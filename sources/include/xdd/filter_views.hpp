@@ -57,9 +57,9 @@ protected slots:
 	void file_last_access_changed(int);
 
 protected:
-	Size_simple_filter* _filter;
+	Size_simple_filter* filter_;
 
-	::Ui::Simple_filter_form _ui;
+	::Ui::Simple_filter_form ui_;
 };
 
 

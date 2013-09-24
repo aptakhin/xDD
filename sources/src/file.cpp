@@ -13,58 +13,58 @@
 namespace xdd {
 
 File::File()
-:	_parent(0),
-	_id(0),
-	_name(),
-	_type(T_FILE),
-	_size(0),
-	_reason_delete(&EMPTY_STR),
-	_has_for_delete_cache(false)
+:	parent_(0),
+	id_(0),
+	name_(),
+	type_(T_FILE),
+	size_(0),
+	reason_delete_(&EMPTY_STR),
+	has_for_delete_cache_(false)
 {
 }
 
 File::File(const File& cpy)
-:	_parent(cpy._parent),
-	_id(cpy._id),
-	_name(cpy._name),
-	_type(cpy._type),
-	_size(cpy._size),
-	_reason_delete(&EMPTY_STR),
-	_has_for_delete_cache(false)
+:	parent_(cpy.parent_),
+	id_(cpy.id_),
+	name_(cpy.name_),
+	type_(cpy.type_),
+	size_(cpy.size_),
+	reason_delete_(&EMPTY_STR),
+	has_for_delete_cache_(false)
 {
 }
 
 File::File(File::ID parent, const QString& name, Type type)
-:   _parent(parent),
-	_id(0),
-	_name(name),
-	_type(type),
-	_size(0),
-	_reason_delete(&EMPTY_STR),
-	_has_for_delete_cache(false)
+:   parent_(parent),
+	id_(0),
+	name_(name),
+	type_(type),
+	size_(0),
+	reason_delete_(&EMPTY_STR),
+	has_for_delete_cache_(false)
 {
 }
 
 File::File(File::ID parent, const wchar_t* name, size_t len, Type type)
-:	_parent(parent),
-	_id(0),
-	_name(QString::fromUtf16((const ushort*) name, len)),
-	_type(type),
-	_size(0),
-	_reason_delete(&EMPTY_STR),
-	_has_for_delete_cache(false)
+:	parent_(parent),
+	id_(0),
+	name_(QString::fromUtf16((const ushort*) name, len)),
+	type_(type),
+	size_(0),
+	reason_delete_(&EMPTY_STR),
+	has_for_delete_cache_(false)
 {
 }
 
 void File::operator = (const File& cpy)
 {
-	_parent			      = cpy._parent;
-	_id					  = cpy._id;
-	_name				  = cpy._name;
-	_type				  = cpy._type;
-	_size				  = cpy._size;
-	_reason_delete		  = cpy._reason_delete;
-	_has_for_delete_cache = cpy._has_for_delete_cache;
+	parent_			      = cpy.parent_;
+	id_					  = cpy.id_;
+	name_				  = cpy.name_;
+	type_				  = cpy.type_;
+	size_				  = cpy.size_;
+	reason_delete_		  = cpy.reason_delete_;
+	has_for_delete_cache_ = cpy.has_for_delete_cache_;
 }
 
 File::~File()
@@ -73,7 +73,7 @@ File::~File()
 
 bool File::add_child(const File::ID& file_id)
 {
-	_children.push_back(file_id);
+	children_.push_back(file_id);
 	return true;
 }
 
@@ -88,15 +88,15 @@ void File::sort_size_desc()
 		}
 	} pred;
 
-	if (!_children.empty())
-		std::sort(_children.begin(), _children.end(), pred);
+	if (!children_.empty())
+		std::sort(children_.begin(), children_.end(), pred);
 }
 
 size_t File::number_of(File::ID id) const
 {
-	for (size_t i = 0; i < _children.size(); ++i)
+	for (size_t i = 0; i < children_.size(); ++i)
 	{
-		if (_children[i] == id)
+		if (children_[i] == id)
 			return i;
 	}
 
@@ -110,70 +110,70 @@ bool File::has_child(File::ID id) const
 
 File* File::parent()
 {
-	return File_system::i()->file_with_id(_parent);
+	return File_system::i()->file_with_id(parent_);
 }
 
 const File* File::parent() const
 {
-	return File_system::i()->file_with_id(_parent);
+	return File_system::i()->file_with_id(parent_);
 }
 
 File* File::i_child(size_t i)
 {
-	return File_system::i()->file_with_id(_children[i]);
+	return File_system::i()->file_with_id(children_[i]);
 }
 
 const File* File::i_child(size_t i) const
 {
-	return File_system::i()->file_with_id(_children[i]);
+	return File_system::i()->file_with_id(children_[i]);
 }
 
 void File::mark_for_delete(const QString* reason)
 { 
-	_reason_delete = reason != nullptr? reason : &EMPTY_STR;
+	reason_delete_ = reason != nullptr? reason : &EMPTY_STR;
 
 	if (parent())
 		parent()->child_marked_for_delete(this);
 
 	size_t sz = num_children();
-	_to_delete.reserve(sz);
+	to_delete_.reserve(sz);
 	for (size_t i = 0; i < sz; ++i)
 	{
 		File* child = i_child(i);
 		child->_parent_marks_for_delete(*reason);
-		_to_delete.push_back(child->Id());
+		to_delete_.push_back(child->Id());
 	}
 }
 
 void File::_parent_marks_for_delete(const QString& reason)
 {
-	_reason_delete = &reason;
-	_to_delete.clear();
+	reason_delete_ = &reason;
+	to_delete_.clear();
 
 	size_t sz = num_children();
 	bool push = reason.length() > 0;
 	if (push) 
-		_to_delete.reserve(sz);
+		to_delete_.reserve(sz);
 	for (size_t i = 0; i < sz; ++i)
 	{
 		File* child = i_child(i);
 		if (push)
-			_to_delete.push_back(child->Id());
+			to_delete_.push_back(child->Id());
 		child->_parent_marks_for_delete(reason);
 	}
 }
 
 bool File::for_delete() const 
 { 
-	return _reason_delete->length() > 0; 
+	return reason_delete_->length() > 0; 
 }
 
 size_t File::number_of_deleted(const File* file) const
 {
-	size_t sz = _to_delete.size();
+	size_t sz = to_delete_.size();
 	for (size_t i = 0; i != sz; ++i)
 	{
-		if (_to_delete[i] == file->Id())
+		if (to_delete_[i] == file->Id())
 			return i;
 	}
 	return (size_t)-1;
@@ -186,70 +186,70 @@ bool File::has_to_delete(const File* file) const
 
 size_t File::num_files_to_delete() const
 {
-	return _to_delete.size();
+	return to_delete_.size();
 }
 
 File* File::i_file_to_delete(size_t i) const
 {
-	XDD_ASSERT3(i < _to_delete.size(), "File item is out of bounds!", return nullptr);
-	return File_system::i()->file_with_id(_to_delete[i]);
+	XDD_ASSERT3(i < to_delete_.size(), "File item is out of bounds!", return nullptr);
+	return File_system::i()->file_with_id(to_delete_[i]);
 }
 
 bool File::has_files_to_delete() const
 {
-	return !_to_delete.empty();
+	return !to_delete_.empty();
 }
 
 bool File::_has_cached_icon() const
 {
-	return !_icon_cache.isNull();
+	return !icon_cache_.isNull();
 }
 
 void File::_set_cached_icon(const QIcon& icon)
 {
-	_icon_cache = icon;
+	icon_cache_ = icon;
 }
 
-const QIcon& File::_cached_icon() const
+const QIcon& File::cached_icon() const
 {
-	if (_icon_cache.isNull())
+	if (icon_cache_.isNull())
 	{
 		QString path;
 		Scan_manager::i()->fs()->full_path_of(*this, path);
 		QFileInfo info(path);
-		_icon_cache = QFileIconProvider().icon(info);
+		icon_cache_ = QFileIconProvider().icon(info);
 	}
 
-	return _icon_cache;
+	return icon_cache_;
 }
 
 bool File::update_delete_cache_rec() const
 {
 	if (for_delete())
-		return _has_for_delete_cache = true;
+		return has_for_delete_cache_ = true;
 
-	return _has_for_delete_cache = children_if_any([] (const File* child) {
+	return has_for_delete_cache_ = children_if_any([] (const File* child) {
 		return child->update_delete_cache_rec();
 	});
 }
 
 bool File::has_for_delete_cache() const
 {
-	return _has_for_delete_cache;
+	return has_for_delete_cache_;
 }
 
 void File::child_marked_for_delete(const File* child)
 {
 	if (child->delete_reason() != EMPTY_STR) 
-		_add_child_to_delete_list(child);
+		add_child_to_delete_list_impl(child);
 	else
-		_remove_child_from_delete_list(child);	
+		remove_child_from_delete_list_impl(child);	
 }
 
 File::Files::iterator File::child_to_delete_iter_by_id(File::ID id)
 {
-	Files::iterator child_iter = _to_delete.begin();
-	for (; child_iter != _to_delete.end(); ++child_iter)
+	Files::iterator child_iter = to_delete_.begin();
+	for (; child_iter != to_delete_.end(); ++child_iter)
 	{
 		if (*child_iter == id)
 			break;
@@ -257,22 +257,22 @@ File::Files::iterator File::child_to_delete_iter_by_id(File::ID id)
 	return child_iter;
 }
 
-void File::_add_child_to_delete_list(const File* child)
+void File::add_child_to_delete_list_impl(const File* child)
 {
-	if (child_to_delete_iter_by_id(child->Id()) == _to_delete.end())
-		_to_delete.push_back(child->Id());// add child if it doesn't present
+	if (child_to_delete_iter_by_id(child->Id()) == to_delete_.end())
+		to_delete_.push_back(child->Id());// add child if it doesn't present
 }
 
-void File::_remove_child_from_delete_list(const File* child)
+void File::remove_child_from_delete_list_impl(const File* child)
 {
 	Files::iterator child_iter = child_to_delete_iter_by_id(child->Id());
-	if (child_iter != _to_delete.end())
-		_to_delete.erase(child_iter);// Remove from delete lists
+	if (child_iter != to_delete_.end())
+		to_delete_.erase(child_iter);// Remove from delete lists
 }
 
 void File::_remove_all_children_from_delete_list()
 {
-	_to_delete.clear();
+	to_delete_.clear();
 }
 
 void File::sort_marked_for_delete(Field field, Sort_order order)
@@ -293,7 +293,7 @@ void File::sort_marked_for_delete(Field field, Sort_order order)
 				return relation(file_with_id(a)->name(), file_with_id(b)->name(), _order);
 			}
 		} pred(order);
-		std::stable_sort(_to_delete.begin(), _to_delete.end(), pred);
+		std::stable_sort(to_delete_.begin(), to_delete_.end(), pred);
 	}
 		break;
 
@@ -306,7 +306,7 @@ void File::sort_marked_for_delete(Field field, Sort_order order)
 				return relation(file_with_id(a)->size(), file_with_id(b)->size(), _order);
 			}
 		} pred(order);
-		std::stable_sort(_to_delete.begin(), _to_delete.end(), pred);
+		std::stable_sort(to_delete_.begin(), to_delete_.end(), pred);
 	}
 		break;
 
@@ -319,7 +319,7 @@ void File::sort_marked_for_delete(Field field, Sort_order order)
 				return relation(file_with_id(a)->delete_reason(), file_with_id(b)->delete_reason(), _order);
 			}
 		} pred(order);
-		std::stable_sort(_to_delete.begin(), _to_delete.end(), pred);
+		std::stable_sort(to_delete_.begin(), to_delete_.end(), pred);
 	}
 		break;
 	}

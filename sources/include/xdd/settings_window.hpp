@@ -25,7 +25,7 @@ public:
 
 	void install_filter_view(Filter_view* view);
 
-	Size_simple_filter_view* simple_filter_view() { return &_simple_size_filter_view; }
+	Size_simple_filter_view* simple_filter_view() { return &simple_size_filter_view_; }
 
 public /*overriden*/:
 	void show();
@@ -35,9 +35,9 @@ public slots:
 	void cancel_btn_clicked();
 
 private:
-	::Ui::SettingsWindow* _ui;
+	::Ui::SettingsWindow* ui_;
 
-	Size_simple_filter_view _simple_size_filter_view;
+	Size_simple_filter_view simple_size_filter_view_;
 };
 
 } // namespace xdd

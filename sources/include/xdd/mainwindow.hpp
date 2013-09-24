@@ -80,18 +80,18 @@ private /*overriden*/:
 private:
 	::Ui::MainWindow* ui;
 
-	Settings_window* _settings;
+	Settings_window* settings_;
 
-	QFileDialog* _file_dlg;
+	QFileDialog* file_dlg_;
 
-	Files_model* _files_model;
-	Clean_model* _clean_model;
+	Files_model* files_model_;
+	Clean_model* clean_model_;
 
-	QTimer _timer;
+	QTimer timer_;
 
-	bool _reset_files_model;
+	bool reset_files_model_;
 
-	Main_button_state _mbs;
+	Main_button_state mbs_;
 };
 
 } // namespace xdd
