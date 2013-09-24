@@ -161,7 +161,6 @@ void Clean_manager::make_clean(Action action)
 
 void Clean_manager::make_clean_rec(const File* file, Action action)
 {
-#ifdef XDD_CPP11
 	children_each_rec(file, [action] (const File* file) {
 		if (!file->is_directory() && file->for_delete())
 		{
@@ -173,22 +172,6 @@ void Clean_manager::make_clean_rec(const File* file, Action action)
 			// TODO: Check if there is no more file files in directory. Remove/move it too
 		}
 	});
-#else
-	if (file->is_directory())
-	{
-		size_t sz = file->num_children();
-		for (size_t i = 0; i < sz; ++i)
-			make_clean_rec(file->i_child(i), action);
-		// TODO: Check if there is no more file files in directory. Remove/move it too
-	}
-	else if (file->for_delete())
-	{
-		if (action == A_MOVE_TO_RECYCLE_BIN)
-			move_file_to_recycle_bin(file);
-		else if (action == A_REMOVE)
-			remove_file(file);
-	}
-#endif//#ifdef XDD_CPP11
 }
 
 void Clean_manager::move_file_to_recycle_bin(const File* file)

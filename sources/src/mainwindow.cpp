@@ -207,7 +207,7 @@ void MainWindow::scan_updated()
 	const int max_dots = 3;
 
 	QString status = ui->status->text();
-	int l = (int)status.size() - 1;
+	int l = status.size() - 1;
 	for (; l >= 0; --l, ++dots)
 	{
 		if (status[l] != L'.')
@@ -279,14 +279,14 @@ void MainWindow::clean_btn_clicked()
 {
 	// Are you sure? Are you really sure? Are you really sure of you real sure? 
 	// Don't you stupid to format disc? No? Fuh, I'm glad!
-	QMessageBox submitBox(QMessageBox::Question, "Cleaning", "Submit cleaning?", QMessageBox::NoButton, this);
+	QMessageBox submit_box(QMessageBox::Question, "Cleaning", "Submit cleaning?", QMessageBox::NoButton, this);
 	QString what_really = ui->move_to_recycle_opt->isChecked()? 
 		"move files to Recycle Bin" : "erase files";
-	submitBox.setInformativeText(QString() + "Do you realy want to " + what_really + " with " +
+	submit_box.setInformativeText(QString() + "Do you realy want to " + what_really + " with " +
 		helper::format_size(_clean_model->calculate_free_size()) + " volume?");
-	submitBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-	submitBox.setDefaultButton(QMessageBox::No);
-	int button = submitBox.exec();
+	submit_box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	submit_box.setDefaultButton(QMessageBox::No);
+	int button = submit_box.exec();
 	
 	switch (button) 
 	{
@@ -323,10 +323,7 @@ void MainWindow::tab_selected(int tab)
 void MainWindow::update_main_btn(Main_button_state new_bs)
 {
 	_mbs = new_bs;
-	if (_mbs == MBS_RUN)
-		ui->runstop_btn->setText(QString("Run"));
-	else
-		ui->runstop_btn->setText(QString("Stop"));
+	ui->runstop_btn->setText(_mbs == MBS_RUN? QString("Run") : QString("Stop"));	
 }
 
 } // namespace xdd

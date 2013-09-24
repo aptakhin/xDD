@@ -130,10 +130,7 @@ const File* File::i_child(size_t i) const
 
 void File::mark_for_delete(const QString* reason)
 { 
-	if (reason != nullptr)
-		_reason_delete = reason;
-	else
-		_reason_delete = &EMPTY_STR;
+	_reason_delete = reason != nullptr? reason : &EMPTY_STR;
 
 	if (parent())
 		parent()->child_marked_for_delete(this);
@@ -231,21 +228,9 @@ bool File::update_delete_cache_rec() const
 	if (for_delete())
 		return _has_for_delete_cache = true;
 
-#ifdef XDD_CPP11
 	return _has_for_delete_cache = children_if_any([] (const File* child) {
 		return child->update_delete_cache_rec();
 	});
-#else
-	struct Func
-	{
-		bool operator (const File* child) {
-			return child->has_marked_for_delete_rec();
-		}
-	} func;
-
-	return _has_for_delete_cache = children_if_any(func);
-
-#endif//#ifdef XDD_CPP11
 }
 
 bool File::has_for_delete_cache() const
@@ -308,7 +293,7 @@ void File::sort_marked_for_delete(Field field, Sort_order order)
 				return relation(file_with_id(a)->name(), file_with_id(b)->name(), _order);
 			}
 		} pred(order);
-		std::sort(_to_delete.begin(), _to_delete.end(), pred);
+		std::stable_sort(_to_delete.begin(), _to_delete.end(), pred);
 	}
 		break;
 
@@ -321,7 +306,7 @@ void File::sort_marked_for_delete(Field field, Sort_order order)
 				return relation(file_with_id(a)->size(), file_with_id(b)->size(), _order);
 			}
 		} pred(order);
-		std::sort(_to_delete.begin(), _to_delete.end(), pred);
+		std::stable_sort(_to_delete.begin(), _to_delete.end(), pred);
 	}
 		break;
 
@@ -334,7 +319,7 @@ void File::sort_marked_for_delete(Field field, Sort_order order)
 				return relation(file_with_id(a)->delete_reason(), file_with_id(b)->delete_reason(), _order);
 			}
 		} pred(order);
-		std::sort(_to_delete.begin(), _to_delete.end(), pred);
+		std::stable_sort(_to_delete.begin(), _to_delete.end(), pred);
 	}
 		break;
 	}

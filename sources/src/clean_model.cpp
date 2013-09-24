@@ -74,18 +74,11 @@ uint64 Clean_model::calculate_free_size() const
 {
 	if (!_free_size_valid)
 	{
-	#ifdef XDD_CPP11
 		uint64 size = 0;
 		files_each(_pseudo_root.files_to_delete(), [&size] (const File* file) {
 			size += file->size();
 		});
 		_free_size = size;
-	#else
-		_free_size = 0;
-		size_t i = 0, sz = _pseudo_root.num_files_to_delete();
-		for (; i < sz; ++i)
-			_free_size += _pseudo_root.i_file_to_delete(i)->size();
-	#endif//#ifdef XDD_CPP11
 
 		_free_size_valid = true;
 	}
@@ -273,17 +266,9 @@ void Clean_model::sort_rec(File* node, int column, Qt::SortOrder order)
 
 	node->sort_marked_for_delete(field, from_qt(order));
 
-#ifdef XDD_CPP11
 	to_delete_each_rec(node, [column, order] (const File* child) {
 		sort_rec(const_cast<File*>(child), column, order);
 	});
-#else
-	size_t i = 0, sz = node->num_files_to_delete();
-	for (; i < sz; ++i)
-	{
-		sort_rec(node->i_file_to_delete(i), column, order);
-	}
-#endif
 }
 
 void Clean_model::write_cleaning_files_str(const QString& separator, QString& cleaning_files) const
@@ -294,15 +279,11 @@ void Clean_model::write_cleaning_files_str(const QString& separator, QString& cl
 
 void Clean_model::write_cleaning_files_str(const File* node, const QString& separator, QString& cleaning_files) const
 {
-#ifdef XDD_CPP11
 	QString acc;
 	files_each(node->files_to_delete(), [&acc, &separator] (const File* file) {
 		acc += File_system::i()->full_path_of(*file) + separator;
 	});
 	cleaning_files = acc;
-#else
-#	error "I'm too lazy"
-#endif//#ifdef XDD_CPP11
 }
 
 } // namespace xdd

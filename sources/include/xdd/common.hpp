@@ -57,15 +57,8 @@
 #ifdef _MSC_VER
 #	if _MSC_VER >= 1600 // Younger or equal than MSVS 10
 #		include <functional>
-#		// MSVS 10 doesn't support a few features of C++11, but we try not to use them
-#		define XDD_CPP11
 #	endif
 #endif//#ifdef _MSC_VER
-
-#ifndef XDD_CPP11 // For cpp11 compilers
-// Now all compilers are C++11-compatible
-#	define XDD_CPP11 
-#endif
 
 #ifdef _MSC_VER
 #	define XDD_INLINE __forceinline
@@ -167,40 +160,6 @@ namespace helper
 	}
 
 }// namespace helper
-
-template <typename T>
-class Numeric_accum
-{
-public:
-	Numeric_accum() : _acc(0){};
-	Numeric_accum(T t) : _acc(t){};
-
-	T operator () () const { return _acc; }
-	T operator () (T t) { _acc += t; return _acc; }
-	
-	T value() const { return _acc; }
-
-protected:
-	T _acc;
-};
-
-template <typename T>
-class Object_accum
-{
-public:
-	Object_accum() : _acc(){};
-	Object_accum(const T& t) : _acc(t){};
-
-	const T& operator () () const { return _acc; }
-	T& operator () (const T& t) { _acc += t; return _acc; }
-	
-	T& value() { return _acc; }
-	const T& value() const { return _acc; }
-
-protected:
-	T _acc;
-};
-
 
 }// namespace xdd
 

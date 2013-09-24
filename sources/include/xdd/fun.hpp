@@ -30,7 +30,6 @@ namespace fun {
 		return nullptr;
 	}
 
-
 } // namespace fun
 
 } // namespace xdd
