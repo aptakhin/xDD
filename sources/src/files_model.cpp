@@ -69,7 +69,7 @@ const File* Files_model::locate(const QModelIndex& index, int role) const
 bool Files_model::setData(const QModelIndex& index, const QVariant& value, int role)
 {
 	const File* file = locate(index, role);
-	if (role == Qt::CheckStateRole && file != nullptr && index.column() == C_NAME)
+	if (role == Qt::CheckStateRole && file != nullptr && index.column() == NAME)
 	{
 		const QString& reason = value.toInt() == Qt::Checked? USER_WANTS_STR : EMPTY_STR;
 
@@ -126,10 +126,10 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 	if (file == nullptr)
 		return QVariant();
 
-	if (role == Qt::DecorationRole && index.column() == C_NAME)
+	if (role == Qt::DecorationRole && index.column() == NAME)
 		return QVariant(file->cached_icon());
 
-	if ((role == Qt::EditRole || role == Qt::CheckStateRole) && index.column() == C_NAME)
+	if ((role == Qt::EditRole || role == Qt::CheckStateRole) && index.column() == NAME)
 	{
 		if (file->for_delete())
 			return QVariant(Qt::Checked);
@@ -146,13 +146,13 @@ QVariant Files_model::data(const QModelIndex& index, int role) const
 	{
 		switch (index.column())
 		{
-			case C_NAME: return file->name();
-			case C_SIZE: return helper::format_size(file->size());
+			case NAME: return file->name();
+			case SIZE: return helper::format_size(file->size());
 		}
 		return QVariant();
 	}
 
-	if (role == Qt::TextAlignmentRole && index.column() == C_SIZE)
+	if (role == Qt::TextAlignmentRole && index.column() == SIZE)
 		return QVariant(Qt::AlignRight);
 
 	return QVariant();
@@ -206,7 +206,7 @@ Qt::ItemFlags Files_model::flags(const QModelIndex &index) const
 	 if (!index.isValid())
 		 return Qt::ItemIsEnabled;
 
-	 if (index.column() == C_NAME)
+	 if (index.column() == NAME)
 		 return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
 
 	 return Qt::ItemIsEnabled;
@@ -219,8 +219,8 @@ QVariant Files_model::headerData(int section, Qt::Orientation, int role) const
 
 	switch (section)
 	{
-		case C_NAME: return QString("Name");
-		case C_SIZE: return QString("Size");
+		case NAME: return QString("Name");
+		case SIZE: return QString("Size");
 	}
 	return QVariant();
  }

@@ -157,9 +157,9 @@ Sort_order from_qt(Qt::SortOrder order)
 {
 	switch (order)
 	{
-	case Qt::AscendingOrder:  return S_ASCENDING;
-	case Qt::DescendingOrder: return S_DESCENDING;
-	default: XDD_ERR2("Unbelievable!", return S_ASCENDING);
+	case Qt::AscendingOrder:  return Sort_order::ASCENDING;
+	case Qt::DescendingOrder: return Sort_order::DESCENDING;
+	default: XDD_ERR2("Unbelievable!", return Sort_order::ASCENDING);
 	}
 }
 

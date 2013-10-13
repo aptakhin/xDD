@@ -14,34 +14,22 @@ Size_simple_filter::Size_simple_filter()
 	min_size_(0),
 	pref_size_(0),
 	last_access_(0)
-	//_sett_group("Size_simple_filter", Value::T_GROUP, this),
-	//_sett_min_size(&_sett_group, "min_size", Value::T_UINT64),
-	//_sett_pref_size(&_sett_group, "pref_size", Value::T_UINT64),
-	//_sett_last_access(&_sett_group, "last_access", Value::T_UINT32)
 {
-	//_sett_min_size.set_uint64(10000);
-	//_sett_pref_size.set_uint64(50000);
-	//_sett_pref_size.set_uint32(0);
-
-	//Settings_manager::bind_group(&_sett_group);
 }
 
 void Size_simple_filter::set_min_size(uint64 min_size) 
 {
 	min_size_ = min_size; 
-	//_sett_min_size.set_uint64(_min_size);
 }
 
 void Size_simple_filter::set_pref_size(uint64 pref_size) 
 {
 	pref_size_ = pref_size; 
-	//_sett_pref_size.set_uint64(_pref_size);
 }
 
 void Size_simple_filter::set_last_access_sec(uint32 last_access) 
 {
 	last_access_ = last_access; 
-	//_sett_last_access.set_uint32(_last_access);
 }
 	
 const QString* Size_simple_filter::look(const File_data& data)

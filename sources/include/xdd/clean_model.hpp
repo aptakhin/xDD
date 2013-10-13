@@ -21,9 +21,9 @@ public:
 
 	enum Columns
 	{
-		C_NAME,
-		C_SIZE,
-		C_REASON,
+		NAME,
+		SIZE,
+		REASON,
 	};
 
 	void flush(bool hint_do_rec_reset);

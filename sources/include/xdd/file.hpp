@@ -17,24 +17,23 @@ public:
 	/// Unique global file id
 	typedef uint32 ID;
 
-	enum Type
+	enum class Type
 	{
-		T_FILE,
-		T_DIRECTORY
+		FILE,
+		DIRECTORY
 	};
 
 	enum Field
 	{
-		F_NAME,
-		F_SIZE,
-		F_DELETE_REASON
+		NAME,
+		SIZE,
+		DELETE_REASON
 	};
 
 	typedef std::vector<File::ID> Files;
 
 public:
 	File();
-	File(const File& cpy);
 	File(File::ID parent, const QString& name, Type type);
 	File(File::ID parent, const wchar_t* name, size_t len, Type type);
 	~File();
@@ -43,7 +42,7 @@ public:
 	File::ID Id() const { return id_; }
 
 	bool is_root() const { return parent_ == (ID)-1; }
-	bool is_directory() const { return type_ == T_DIRECTORY; }
+	bool is_directory() const { return type_ == File::Type::DIRECTORY; }
 
 	uint64 size() const { return size_; }
 	void set_size_impl(uint64 size) { size_ = size; }

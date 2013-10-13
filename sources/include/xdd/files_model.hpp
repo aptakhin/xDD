@@ -20,8 +20,8 @@ public:
 
 	enum Columns
 	{
-		C_NAME,
-		C_SIZE
+		NAME,
+		SIZE
 	};
 
 	const File* locate(const QModelIndex& index, int role) const;

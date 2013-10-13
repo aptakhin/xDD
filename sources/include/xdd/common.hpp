@@ -103,10 +103,10 @@ const uint32 AVG_YEAR_S  = 365 * DAY_S;
 class File;
 class File_system;
 
-enum Sort_order
+enum class Sort_order
 {
-	S_ASCENDING,
-	S_DESCENDING
+	ASCENDING,
+	DESCENDING
 };
 
 Sort_order from_qt(Qt::SortOrder order);
@@ -114,7 +114,7 @@ Sort_order from_qt(Qt::SortOrder order);
 template <typename T>
 XDD_INLINE bool relation(const T& a, const T& b, Sort_order order)
 {
-	return order == S_ASCENDING? a < b: a > b;
+	return order == Sort_order::ASCENDING? a < b: a > b;
 }
 
 void not_implemented(const QString& msg = "yet");

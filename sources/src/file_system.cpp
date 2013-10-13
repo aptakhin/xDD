@@ -116,11 +116,11 @@ void File_system::flush_and_ready_async()
 	class Flush_thread : public QThread
 	{
 	public:
-		Bucket_vector<File>* _to_flush;
-		Flush_thread(Bucket_vector<File>* to_flush) : _to_flush(to_flush) {}
-		void run()
+		Bucket_vector<File>* to_flush_;
+		Flush_thread(Bucket_vector<File>* to_flush) : to_flush_(to_flush) {}
+		void run() override
 		{
-			delete _to_flush;
+			delete to_flush_;
 		}
 	};
 	// Now ready to work with new buckets and delete async old buckets

@@ -161,9 +161,9 @@ void Clean_manager::make_clean_rec(const File* file, Action action)
 	children_each_rec(file, [action] (const File* file) {
 		if (!file->is_directory() && file->for_delete())
 		{
-			if (action == Clean_manager::A_MOVE_TO_RECYCLE_BIN)
+			if (action == Clean_manager::MOVE_TO_RECYCLE_BIN)
 				move_file_to_recycle_bin(file);
-			else if (action == Clean_manager::A_REMOVE)
+			else if (action == Clean_manager::REMOVE)
 				remove_file(file);
 
 			// TODO: Check if there is no more file files in directory. Remove/move it too

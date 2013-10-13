@@ -18,7 +18,7 @@ void Scanner::start(const QString& path)
 	all_looked_size_ = 0;
 	soft_stop_ = false;
 	// Add root for file system - it's out start folder
-	File* root = File_system::i()->add_file(File((File::ID)-1, path, File::T_DIRECTORY));
+	File* root = File_system::i()->add_file(File((File::ID)-1, path, File::Type::DIRECTORY));
 
 #ifdef XDD_WIN32_SCANNER
 	wchar_t root_path[MAX_PATH];
@@ -69,7 +69,7 @@ uint64 Scanner::start_impl(wchar_t* path, File* file, int depth)
 		if (soft_stop_)
 			break;
 
-		File::Type type = File::T_FILE;
+		File::Type type = File::Type::FILE;
 		File* goto_file = nullptr;
 
 		uint64 size = 0;
@@ -82,7 +82,7 @@ uint64 Scanner::start_impl(wchar_t* path, File* file, int depth)
 		path[path_len_ = restore_to_len] = 0;
 
 		if (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			type = File::T_DIRECTORY;
+			type = File::Type::DIRECTORY;
 		else
 		{
 			size = helper::quad_part(file_data.nFileSizeLow, file_data.nFileSizeHigh);
@@ -95,7 +95,7 @@ uint64 Scanner::start_impl(wchar_t* path, File* file, int depth)
 		memcpy(path + path_len_, file_data.cFileName, sizeof(wchar_t) * (file_name_sz + 1));
 		path_len_ += file_name_sz;
 
-		if (type == File::T_DIRECTORY)
+		if (type == File::Type::DIRECTORY)
 			path[path_len_++] = L'\\', path[path_len_] = 0;
 
 		bool add2fs = false;
@@ -140,7 +140,7 @@ uint64 Scanner::start_impl(wchar_t* path, File* file, int depth)
 			// to file tree
 		}
 
-		if (type == File::T_DIRECTORY)
+		if (type == File::Type::DIRECTORY)
 		{
 			// Go to subfolder
 			uint64 set_size = start_impl(path, goto_file, depth + 1);
@@ -178,7 +178,7 @@ uint64 Scanner::start_impl(File* file, const QDir& cur_dir)
 
 		File* goto_file = nullptr;
 		QFileInfo file_data = list.at(child_i);
-		File::Type type = File::T_FILE;
+		File::Type type = File::FILE;
 
 		bool add2fs = false;
 
@@ -195,7 +195,7 @@ uint64 Scanner::start_impl(File* file, const QDir& cur_dir)
 		}
 
 		if (file_data.isDir())
-			type = File::T_DIRECTORY;
+			type = File::File::DIRECTORY;
 
 		if (add2fs)
 		{

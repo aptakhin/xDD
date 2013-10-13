@@ -9,7 +9,7 @@ namespace xdd {
 
 Clean_model::Clean_model(QObject *parent)
 :   QAbstractItemModel(parent),
-	pseudo_root_((size_t)-1, QString("Pseudo root"), File::T_DIRECTORY),
+	pseudo_root_((size_t)-1, QString("Pseudo root"), File::Type::DIRECTORY),
 	ready_(false),
 	free_size_(0),
 	free_size_valid_(false)
@@ -111,21 +111,21 @@ QVariant Clean_model::data(const QModelIndex& index, int role) const
 	if (!file)
 		return QVariant();
 
-	if (role == Qt::DecorationRole && index.column() == C_NAME)
+	if (role == Qt::DecorationRole && index.column() == NAME)
 		return QVariant(file->cached_icon());
 
 	if (role == Qt::DisplayRole)
 	{
 		switch (index.column())
 		{
-		case C_NAME:    return file->name();
-		case C_SIZE:    return helper::format_size(file->size());
-		case C_REASON:  return file->delete_reason();
+		case NAME:    return file->name();
+		case SIZE:    return helper::format_size(file->size());
+		case REASON:  return file->delete_reason();
 		}
 		return QVariant();
 	}
 
-	if (role == Qt::ToolTipRole && index.column() == C_NAME)
+	if (role == Qt::ToolTipRole && index.column() == NAME)
 		return Scan_manager::i()->fs()->full_path_of(*file);
 
 	return QVariant();
@@ -190,9 +190,9 @@ QVariant Clean_model::headerData(int section, Qt::Orientation, int role) const
 
 	switch (section)
 	{
-	case C_NAME:    return QString("Name");
-	case C_SIZE:    return QString("Size");
-	case C_REASON:  return QString("Reason");
+	case NAME:    return QString("Name");
+	case SIZE:    return QString("Size");
+	case REASON:  return QString("Reason");
 	}
 	return QVariant();
  }
@@ -250,9 +250,9 @@ void Clean_model::sort_rec(File* node, int column, Qt::SortOrder order)
 
 	switch (column)
 	{
-	case Clean_model::C_NAME:   field = File::F_NAME; break;
-	case Clean_model::C_SIZE:   field = File::F_SIZE; break;
-	case Clean_model::C_REASON: field = File::F_DELETE_REASON; break;
+	case Clean_model::NAME:   field = File::Field::NAME; break;
+	case Clean_model::SIZE:   field = File::Field::SIZE; break;
+	case Clean_model::REASON: field = File::Field::DELETE_REASON; break;
 	}
 
 	node->sort_marked_for_delete(field, from_qt(order));

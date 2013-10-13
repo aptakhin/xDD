@@ -16,19 +16,8 @@ File::File()
 :	parent_(0),
 	id_(0),
 	name_(),
-	type_(T_FILE),
+	type_(Type::FILE),
 	size_(0),
-	reason_delete_(&EMPTY_STR),
-	has_for_delete_cache_(false)
-{
-}
-
-File::File(const File& cpy)
-:	parent_(cpy.parent_),
-	id_(cpy.id_),
-	name_(cpy.name_),
-	type_(cpy.type_),
-	size_(cpy.size_),
 	reason_delete_(&EMPTY_STR),
 	has_for_delete_cache_(false)
 {
@@ -262,49 +251,32 @@ void File::_remove_all_children_from_delete_list()
 
 void File::sort_marked_for_delete(Field field, Sort_order order)
 {
-	struct Field_comparator {
-		Field_comparator(Sort_order order) : _order(order) {}
-		Sort_order _order;
-		File* file_with_id(File::ID id) { return  File_system::i()->file_with_id(id); }
-	};
-
 	switch (field)
 	{
-	case F_NAME:
+	case Field::NAME:
 	{
-		struct Name_field_comparator : public Field_comparator {
-			Name_field_comparator(Sort_order order) : Field_comparator(order) {}
-			bool operator ()(File::ID a, File::ID b) {
-				return relation(file_with_id(a)->name(), file_with_id(b)->name(), _order);
-			}
-		} pred(order);
-		std::stable_sort(to_delete_.begin(), to_delete_.end(), pred);
+		std::stable_sort(to_delete_.begin(), to_delete_.end(), [order] (File::ID a, File::ID b) {
+			return relation(File_system::i()->file_with_id(a)->name(), 
+				File_system::i()->file_with_id(b)->name(), order);
+		});
 	}
 		break;
 
-	case F_SIZE:
+	case Field::SIZE:
 	{
-		struct size_field_comparator : public Field_comparator {
-			size_field_comparator(Sort_order order) : Field_comparator(order) {}
-			Sort_order _order;
-			bool operator ()(File::ID a, File::ID b) {
-				return relation(file_with_id(a)->size(), file_with_id(b)->size(), _order);
-			}
-		} pred(order);
-		std::stable_sort(to_delete_.begin(), to_delete_.end(), pred);
+		std::stable_sort(to_delete_.begin(), to_delete_.end(), [order] (File::ID a, File::ID b) {
+			return relation(File_system::i()->file_with_id(a)->size(), 
+				File_system::i()->file_with_id(b)->size(), order);
+		});
 	}
 		break;
 
-	case F_DELETE_REASON:
+	case Field::DELETE_REASON:
 	{
-		struct Reason_field_comparator : public Field_comparator {
-			Reason_field_comparator(Sort_order order) : Field_comparator(order) {}
-			Sort_order _order;
-			bool operator ()(File::ID a, File::ID b) {
-				return relation(file_with_id(a)->delete_reason(), file_with_id(b)->delete_reason(), _order);
-			}
-		} pred(order);
-		std::stable_sort(to_delete_.begin(), to_delete_.end(), pred);
+		std::stable_sort(to_delete_.begin(), to_delete_.end(), [order] (File::ID a, File::ID b) {
+			return relation(File_system::i()->file_with_id(a)->delete_reason(), 
+				File_system::i()->file_with_id(b)->delete_reason(), order);
+		});
 	}
 		break;
 	}

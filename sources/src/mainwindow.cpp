@@ -171,11 +171,11 @@ void MainWindow::scan_finished()
 	enable_cleaning_tab(true);
 
 	ui_->files->reset();
-	ui_->files->setColumnWidth(Files_model::C_NAME, 400);
-	ui_->files->setColumnWidth(Files_model::C_SIZE,  50);
+	ui_->files->setColumnWidth(Files_model::NAME, 400);
+	ui_->files->setColumnWidth(Files_model::SIZE,  50);
 
 	ui_->clean->reset();
-	ui_->clean->setColumnWidth(Clean_model::C_NAME, 400);
+	ui_->clean->setColumnWidth(Clean_model::NAME, 400);
 	
 	update_clean(true);
 
@@ -294,9 +294,9 @@ void MainWindow::clean_btn_clicked()
 	{
 		Clean_manager clean;
 		if (ui_->move_to_recycle_opt->isChecked())
-			clean.make_clean(Clean_manager::A_MOVE_TO_RECYCLE_BIN);
+			clean.make_clean(Clean_manager::MOVE_TO_RECYCLE_BIN);
 		else if (ui_->remove_from_hd_opt->isChecked())// or to recycle bin
-			clean.make_clean(Clean_manager::A_REMOVE);
+			clean.make_clean(Clean_manager::REMOVE);
 
 		files_model_->remove_deleted();
 

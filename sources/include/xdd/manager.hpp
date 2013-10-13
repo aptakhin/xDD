@@ -122,8 +122,8 @@ public:
 
 	enum Action 
 	{
-		A_MOVE_TO_RECYCLE_BIN,
-		A_REMOVE
+		MOVE_TO_RECYCLE_BIN,
+		REMOVE
 	};
 
 	/// The most terrifying function

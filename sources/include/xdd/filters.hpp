@@ -89,7 +89,7 @@ public:
 protected:
 	struct Filter_item
 	{
-		Filter* filter;
+		Filter*      filter;
 		Filter_view* view;
 	};
 
