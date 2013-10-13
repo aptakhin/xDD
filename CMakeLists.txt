@@ -19,7 +19,6 @@ if (MSVC)
 endif(MSVC)
 
 find_package(Qt5Widgets)
-#include(${QT_USE_FILE})
 
 include("sources/CMakeSources.txt")
 
