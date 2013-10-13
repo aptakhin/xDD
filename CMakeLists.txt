@@ -9,6 +9,8 @@ set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} $ENV{QTDIR})
  
 add_definitions(-DNOMINMAX) # hate, hate, hate!
 
+message("Prefix: ${CMAKE_PREFIX_PATH}")
+
 if (MSVC)
 
 	add_definitions(-D_UNICODE -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT)
@@ -19,7 +21,6 @@ if (MSVC)
 endif(MSVC)
 
 find_package(Qt5Widgets)
-#include(${QT_USE_FILE})
 
 include("sources/CMakeSources.txt")
 
@@ -28,7 +29,7 @@ qt5_wrap_ui(XDD_UICED_FILES ${XDD_UI_FILES})
 
 #qt5_add_resources(VD_RES ${XDD_RES_FILES})
 
-add_executable(xdd WIN32 ${XDD_HEADER_FILES} ${XDD_SOURCE_FILES} ${XDD_MOCCED_FILES} ${XDD_UICED_FILES})
+add_executable(xdd ${XDD_HEADER_FILES} ${XDD_SOURCE_FILES} ${XDD_MOCCED_FILES} ${XDD_UICED_FILES})
 target_link_libraries(xdd ${QT_LIBRARIES})
 
 qt5_use_modules(xdd Widgets)
