@@ -40,20 +40,20 @@ public:
 	const QString* look(const File_data& data);
 
 	void set_min_size(uint64 min_size);
-	uint64 min_size() const { return _min_size; }
+	uint64 min_size() const { return min_size_; }
 
 	void set_pref_size(uint64 pref_size);
-	uint64 pref_size() const { return _pref_size; }
+	uint64 pref_size() const { return pref_size_; }
 
 	void set_last_access_sec(uint32 last_access);
-	uint32 last_access_sec() const { return _last_access; }
+	uint32 last_access_sec() const { return last_access_; }
 
 	static const QString BIG_AND_OUT_OF_DATE;
 
 protected:
-	uint64 _min_size;
-	uint64 _pref_size;
-	uint32 _last_access;
+	uint64 min_size_;
+	uint64 pref_size_;
+	uint32 last_access_;
 };
 
 /// Marks everything to delete

@@ -225,15 +225,6 @@ bool Clean_model::removeRows(int row, int count, const QModelIndex& parent)
 	return true;
 }
 
-bool Clean_model::removeRow(int row, const QModelIndex& parent)
-{
-	beginRemoveRows(parent, row, row);
-	bool result = remove_item_at(row, parent);
-	endRemoveRows();
-	free_size_valid_ = false;
-	return result;
-}
-
 bool Clean_model::remove_item_at(int row, const QModelIndex& parent)
 {
 	File* item = assoc_file(index(row, 0, parent));

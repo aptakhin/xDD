@@ -25,11 +25,12 @@ include("sources/CMakeSources.txt")
 
 qt5_wrap_cpp(XDD_MOCCED_FILES ${XDD_MOC_FILES})
 qt5_wrap_ui(XDD_UICED_FILES ${XDD_UI_FILES})
+qt5_add_resources(XDD_RES sources/res/all.qrc)
 
 
 #qt5_add_resources(VD_RES ${XDD_RES_FILES})
 
-add_executable(xdd ${XDD_HEADER_FILES} ${XDD_SOURCE_FILES} ${XDD_MOCCED_FILES} ${XDD_UICED_FILES})
+add_executable(xdd ${XDD_HEADER_FILES} ${XDD_SOURCE_FILES} ${XDD_MOCCED_FILES} ${XDD_UICED_FILES} ${XDD_RES})
 target_link_libraries(xdd ${QT_LIBRARIES})
 
 qt5_use_modules(xdd Widgets)

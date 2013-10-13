@@ -56,17 +56,6 @@ File::File(File::ID parent, const wchar_t* name, size_t len, Type type)
 {
 }
 
-void File::operator = (const File& cpy)
-{
-	parent_			      = cpy.parent_;
-	id_					  = cpy.id_;
-	name_				  = cpy.name_;
-	type_				  = cpy.type_;
-	size_				  = cpy.size_;
-	reason_delete_		  = cpy.reason_delete_;
-	has_for_delete_cache_ = cpy.has_for_delete_cache_;
-}
-
 File::~File()
 {
 }
@@ -79,17 +68,13 @@ bool File::add_child(const File::ID& file_id)
 
 void File::sort_size_desc()
 {
-	struct file_size_comparer
+	if (!children_.empty())
 	{
-		bool operator () (File::ID a, File::ID b)
-		{
+		std::sort(children_.begin(), children_.end(), [] (File::ID a, File::ID b) {
 			File_system* fs = File_system::i();
 			return fs->file_with_id(a)->size() > fs->file_with_id(b)->size();
-		}
-	} pred;
-
-	if (!children_.empty())
-		std::sort(children_.begin(), children_.end(), pred);
+		});
+	}
 }
 
 size_t File::number_of(File::ID id) const
@@ -130,7 +115,7 @@ const File* File::i_child(size_t i) const
 
 void File::mark_for_delete(const QString* reason)
 { 
-	reason_delete_ = reason != nullptr? reason : &EMPTY_STR;
+	reason_delete_ = (reason != nullptr)? reason : &EMPTY_STR;
 
 	if (parent())
 		parent()->child_marked_for_delete(this);
@@ -200,12 +185,12 @@ bool File::has_files_to_delete() const
 	return !to_delete_.empty();
 }
 
-bool File::_has_cached_icon() const
+bool File::has_cached_icon() const
 {
 	return !icon_cache_.isNull();
 }
 
-void File::_set_cached_icon(const QIcon& icon)
+void File::set_cached_icon(const QIcon& icon)
 {
 	icon_cache_ = icon;
 }

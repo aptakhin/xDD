@@ -11,9 +11,9 @@ const QString Size_simple_filter::BIG_AND_OUT_OF_DATE = "Big and out of date [Si
 
 Size_simple_filter::Size_simple_filter()
 :	Filter("Size_simple_filter"),
-	_min_size(0),
-	_pref_size(0),
-	_last_access(0)
+	min_size_(0),
+	pref_size_(0),
+	last_access_(0)
 	//_sett_group("Size_simple_filter", Value::T_GROUP, this),
 	//_sett_min_size(&_sett_group, "min_size", Value::T_UINT64),
 	//_sett_pref_size(&_sett_group, "pref_size", Value::T_UINT64),
@@ -28,19 +28,19 @@ Size_simple_filter::Size_simple_filter()
 
 void Size_simple_filter::set_min_size(uint64 min_size) 
 {
-	_min_size = min_size; 
+	min_size_ = min_size; 
 	//_sett_min_size.set_uint64(_min_size);
 }
 
 void Size_simple_filter::set_pref_size(uint64 pref_size) 
 {
-	_pref_size= pref_size; 
+	pref_size_ = pref_size; 
 	//_sett_pref_size.set_uint64(_pref_size);
 }
 
 void Size_simple_filter::set_last_access_sec(uint32 last_access) 
 {
-	_last_access = last_access; 
+	last_access_ = last_access; 
 	//_sett_last_access.set_uint32(_last_access);
 }
 	
@@ -50,9 +50,9 @@ const QString* Size_simple_filter::look(const File_data& data)
 	uint64 file_size   = helper::quad_part(data.nFileSizeLow, data.nFileSizeHigh);
 	uint64 last_access = helper::quad_part(data.ftLastAccessTime.dwLowDateTime, data.ftLastAccessTime.dwHighDateTime);
 
-	if (file_size > _pref_size && last_access > _last_access)
+	if (file_size > pref_size_ && last_access > last_access_)
 		return &BIG_AND_OUT_OF_DATE;
-	else if (file_size > _min_size || (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+	else if (file_size > min_size_ || (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 		return &EMPTY_STR;
 	else
 		return nullptr;
@@ -60,9 +60,9 @@ const QString* Size_simple_filter::look(const File_data& data)
 
 #ifdef XDD_UNIVERSAL_SCANNER
 	uint64 file_size = (uint64)data.size();
-	if (file_size > _pref_size && data.lastRead().toTime_t() > _last_access)
+	if (file_size > pref_size_ && data.lastRead().toTime_t() > last_access_)
 		return &BIG_AND_OUT_OF_DATE;
-	else if (file_size > _min_size || data.isDir())
+	else if (file_size > min_size_ || data.isDir())
 		return &EMPTY_STR;
 	else
 		return nullptr;

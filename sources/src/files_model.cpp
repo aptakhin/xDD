@@ -10,14 +10,12 @@ QColor black_brush(0, 0, 0);
 
 Files_model::Files_model(QObject *parent)
 :   QAbstractItemModel(parent), 
-	fs_(nullptr),
 	ready_(false)
 {
 }
 
 Files_model::~Files_model()
 {
-	delete fs_;
 }
 
 File* Files_model::assoc_file(const QModelIndex& index) 
@@ -42,13 +40,13 @@ void Files_model::remove_deleted()
 
 void Files_model::notify_scan_started()
 {
-	fs_ = nullptr;
+	fs_.reset(nullptr);
 	ready_ = false;
 }
 
 void Files_model::notify_scan_finished()
 {
-	fs_ = Scan_manager::i()->fs();
+	fs_.reset(Scan_manager::i()->fs());
 	ready_ = true;
 	beginResetModel();
 	endResetModel();

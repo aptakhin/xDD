@@ -39,8 +39,6 @@ public:
 	File(File::ID parent, const wchar_t* name, size_t len, Type type);
 	~File();
 
-	void operator = (const File& cpy);
-
 	const QString& name() const { return name_; }
 	File::ID Id() const { return id_; }
 
@@ -98,8 +96,8 @@ public:
 
 	void _remove_all_children_from_delete_list();
 
-	bool _has_cached_icon() const;
-	void _set_cached_icon(const QIcon& icon);
+	bool has_cached_icon() const;
+	void set_cached_icon(const QIcon& icon);
 	const QIcon& cached_icon() const;
 
 	bool has_for_delete_cache() const;
@@ -171,9 +169,7 @@ void children_each_rec(const File* file, const F& functor)
 {
 	files_each(file->children(), [file, &functor] (const File* file) {
 		if (file->is_directory())
-		{
 			children_each_rec(file, functor);
-		}
 		functor(file);
 	});
 }
@@ -183,9 +179,7 @@ void to_delete_each_rec(const File* file, const F& functor)
 {
 	files_each(file->files_to_delete(), [file, &functor] (const File* file) {
 		if (file->is_directory())
-		{
 			to_delete_each_rec(file, functor);
-		}
 		functor(file);
 	});
 }
@@ -195,9 +189,7 @@ void filter_each_rec(const File* file, const F& functor)
 {
 	files_each(file->children(), [file, &functor] (const File* file) {
 		if (file->is_directory())
-		{
 			filter_each_rec(file, functor);
-		}
 		functor(file);
 	});
 }

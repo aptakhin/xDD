@@ -11,7 +11,6 @@ namespace xdd {
 	class Simple_filter_form;
 }
 
-
 class Settings_window;
 
 class Filter_view : public QWidget
@@ -20,7 +19,7 @@ class Filter_view : public QWidget
 
 public:
 
-	Filter_view(Filter* filter) : QWidget(), _base_filter(filter) {}
+	Filter_view(Filter* filter) : QWidget(), base_filter_(filter) {}
 
 	/// Called before presetings settings view
 	virtual void update_view() = 0;
@@ -28,10 +27,10 @@ public:
 	/// Called after applying settings
 	virtual void update_filter() = 0;
 
-	const Filter* filter() const { return _base_filter; }
+	const Filter* filter() const { return base_filter_; }
 
 protected:
-	Filter* _base_filter;
+	Filter* base_filter_;
 };
 
 class Size_simple_filter_view : public Filter_view

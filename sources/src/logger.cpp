@@ -21,7 +21,7 @@ Logger::~Logger()
 		"Problem while deleting logger! Another singleton was created!",
 			return);
 
-	Logger::instance_ = 0;
+	Logger::instance_ = nullptr;
 }
 
 Logger& Logger::i() 

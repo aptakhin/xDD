@@ -78,14 +78,14 @@ private /*overriden*/:
 	void init_filters();
 
 private:
-	::Ui::MainWindow* ui;
+	std::unique_ptr<::Ui::MainWindow> ui_;
 
-	Settings_window* settings_;
+	std::unique_ptr<Settings_window> settings_;
 
-	QFileDialog* file_dlg_;
+	std::unique_ptr<QFileDialog> file_dlg_;
 
-	Files_model* files_model_;
-	Clean_model* clean_model_;
+	std::unique_ptr<Files_model> files_model_;
+	std::unique_ptr<Clean_model> clean_model_;
 
 	QTimer timer_;
 

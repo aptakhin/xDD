@@ -9,8 +9,8 @@ void not_implemented(const QString& msg)
 	QMessageBox::critical(nullptr, "Not implemented", msg);
 }
 
-namespace helper {
-
+namespace helper 
+{
 	uint64 quad_part(DWORD low, DWORD high)
 	{
 		LARGE_INTEGER large;
@@ -157,8 +157,8 @@ Sort_order from_qt(Qt::SortOrder order)
 {
 	switch (order)
 	{
-	case Qt::AscendingOrder:	return S_ASCENDING;
-	case Qt::DescendingOrder:	return S_DESCENDING;
+	case Qt::AscendingOrder:  return S_ASCENDING;
+	case Qt::DescendingOrder: return S_DESCENDING;
 	default: XDD_ERR2("Unbelievable!", return S_ASCENDING);
 	}
 }

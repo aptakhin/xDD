@@ -107,8 +107,8 @@ void Size_simple_filter_view::update_filter()
 
 void Size_simple_filter_view::set_filter(Size_simple_filter* filter) 
 {
-	filter_ = filter;
-	_base_filter = filter;
+	filter_      = filter;
+	base_filter_ = filter;
 }
 
 }// namespace xdd

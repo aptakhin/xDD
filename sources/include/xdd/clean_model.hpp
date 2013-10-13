@@ -57,17 +57,16 @@ protected:
 	
 public /*overriden*/:
 
-	int	columnCount(const QModelIndex& parent) const;
-	QVariant data (const QModelIndex& index, int role = Qt::DisplayRole) const;
-	Qt::ItemFlags flags(const QModelIndex& index) const;
-	bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
-	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-	QModelIndex	index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
-	QModelIndex parent(const QModelIndex& index) const;
-	int rowCount(const QModelIndex& parent = QModelIndex()) const;
-	bool removeRow(int row, const QModelIndex& parent = QModelIndex());
-	bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
-	void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+	int	columnCount(const QModelIndex& parent) const override;
+	QVariant data (const QModelIndex& index, int role = Qt::DisplayRole) const override;
+	Qt::ItemFlags flags(const QModelIndex& index) const override;
+	bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+	QModelIndex	index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
+	QModelIndex parent(const QModelIndex& index) const override;
+	int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+	bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
+	void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
 private:
 	
