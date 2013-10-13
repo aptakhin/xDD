@@ -47,7 +47,7 @@ void Size_simple_filter::set_last_access_sec(uint32 last_access)
 const QString* Size_simple_filter::look(const File_data& data)
 {
 #ifdef XDD_WIN32_SCANNER
-	uint64 file_size = helper::quad_part(data.nFileSizeLow, data.nFileSizeHigh);
+	uint64 file_size   = helper::quad_part(data.nFileSizeLow, data.nFileSizeHigh);
 	uint64 last_access = helper::quad_part(data.ftLastAccessTime.dwLowDateTime, data.ftLastAccessTime.dwHighDateTime);
 
 	if (file_size > _pref_size && last_access > _last_access)

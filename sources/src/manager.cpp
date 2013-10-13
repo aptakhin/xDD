@@ -190,7 +190,7 @@ void Clean_manager::move_file_to_recycle_bin(const File* file)
 	fileop.lpszProgressTitle = NULL;
 	SHFileOperationW(&fileop);
 #else
-	not_implemented("Can't delete files on this platform!");
+	not_implemented("Can't move to recycle bin on this platform!");
 #endif//#ifdef XDD_WIN32_CODE
 }
 void Clean_manager::remove_file(const File* file)
@@ -201,7 +201,7 @@ void Clean_manager::remove_file(const File* file)
 	const wchar_t* path = (wchar_t*) tmp.utf16();
 	DeleteFile(path);
 #else
-	not_implemented("Can't move to recycle bin on this platform!");
+	not_implemented("Can't delete files on this platform!");
 #endif//#ifdef XDD_WIN32_CODE
 }
 
