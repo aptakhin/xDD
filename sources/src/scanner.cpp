@@ -14,7 +14,7 @@ void Scanner::add_fast_filter(Filter* filter)
 
 void Scanner::start(const QString& path)
 {
-	path_len_ = 0;
+	path_len_ = 0; 
 	all_looked_size_ = 0;
 	soft_stop_ = false;
 	// Add root for file system - it's out start folder
@@ -162,7 +162,7 @@ uint64 Scanner::start_impl(wchar_t* path, File* file, int depth)
 	return full_size;
 }
 // — WTF?!
-// - xDD
+// — xDD
 #endif//#ifdef XDD_WIN32_SCANNER
 
 #ifdef XDD_UNIVERSAL_SCANNER

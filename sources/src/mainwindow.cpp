@@ -20,10 +20,18 @@ MainWindow::MainWindow(QWidget *parent)
 	settings_.reset(new Settings_window(this));
 	settings_->hide();
 
-	ui_->hdd->setIcon(QIcon(":/icon-hdd.png"));
-	ui_->hdd->setIconSize(QSize(32, 32));
-	ui_->hdd->setText("C:\\");
+	QPushButton* hdd = new QPushButton("C:\\");
+	hdd->setCheckable(true);
+	hdd->setIcon(QIcon(":/icon-hdd.png"));
+	hdd->setIconSize(QSize(32, 32));
+	ui_->select_layout->insertWidget(0, hdd); 
 	
+	QPushButton* hdd2 = new QPushButton("D:\\");
+	hdd2->setCheckable(true);
+	hdd2->setIcon(QIcon(":/icon-hdd.png"));
+	hdd2->setIconSize(QSize(32, 32));
+	ui_->select_layout->insertWidget(1, hdd2); 
+
 	files_model_.reset(new Files_model());
 	ui_->files->setModel(files_model_.get());
 	ui_->files->setAnimated(true);
