@@ -13,6 +13,7 @@
 #include <sstream>
 
 #include <vector>
+#include <deque>
 #include <memory>
 #include <algorithm>
 #include <iomanip>
